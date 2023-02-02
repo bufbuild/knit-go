@@ -1,0 +1,277 @@
+{
+  "name": "buf.knittest.GetFizzResponse",
+  "fields": [
+    {
+      "name": "result",
+      "type": {
+        "message": {
+          "name": "buf.knittest.Fizz",
+          "fields": [
+            {
+              "name": "color",
+              "type": {
+                "scalar": "SCALAR_TYPE_STRING"
+              }
+            },
+            {
+              "name": "density",
+              "type": {
+                "scalar": "SCALAR_TYPE_DOUBLE"
+              }
+            },
+            {
+              "name": "depth",
+              "type": {
+                "scalar": "SCALAR_TYPE_INT32"
+              }
+            },
+            {
+              "name": "bars",
+              "type": {
+                "repeated": {
+                  "message": {
+                    "name": "buf.knittest.Bar",
+                    "fields": [
+                      {
+                        "name": "uid",
+                        "jsonName": "guid",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      },
+                      {
+                        "name": "threshold",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_DOUBLE"
+                        }
+                      },
+                      {
+                        "name": "purpose",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      },
+                      {
+                        "name": "baz",
+                        "type": {
+                          "message": {
+                            "name": "buf.knittest.Baz",
+                            "fields": [
+                              {
+                                "name": "thingies",
+                                "type": {
+                                  "repeated": {
+                                    "scalar": "SCALAR_TYPE_STRING"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "en",
+                                "jsonName": "cuenta",
+                                "type": {
+                                  "scalar": "SCALAR_TYPE_ENUM"
+                                }
+                              },
+                              {
+                                "name": "sequence",
+                                "type": {
+                                  "map": {
+                                    "key": "SCALAR_TYPE_STRING",
+                                    "scalar": "SCALAR_TYPE_ENUM"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "bedazzles",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "buf.knittest.Bedazzle",
+                              "fields": [
+                                {
+                                  "name": "brightness",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_FLOAT"
+                                  }
+                                },
+                                {
+                                  "name": "pattern",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_ENUM"
+                                  }
+                                },
+                                {
+                                  "name": "duration",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Duration"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "frequency",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_DOUBLE"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "name": "barsByCategory",
+              "type": {
+                "map": {
+                  "key": "SCALAR_TYPE_STRING",
+                  "message": {
+                    "name": "buf.knittest.Bar",
+                    "fields": [
+                      {
+                        "name": "uid",
+                        "jsonName": "guid",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      },
+                      {
+                        "name": "threshold",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_DOUBLE"
+                        }
+                      },
+                      {
+                        "name": "purpose",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      },
+                      {
+                        "name": "baz",
+                        "type": {
+                          "message": {
+                            "name": "buf.knittest.Baz",
+                            "fields": [
+                              {
+                                "name": "thingies",
+                                "type": {
+                                  "repeated": {
+                                    "scalar": "SCALAR_TYPE_STRING"
+                                  }
+                                }
+                              },
+                              {
+                                "name": "en",
+                                "jsonName": "cuenta",
+                                "type": {
+                                  "scalar": "SCALAR_TYPE_ENUM"
+                                }
+                              },
+                              {
+                                "name": "sequence",
+                                "type": {
+                                  "map": {
+                                    "key": "SCALAR_TYPE_STRING",
+                                    "scalar": "SCALAR_TYPE_ENUM"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "bedazzles",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "buf.knittest.Bedazzle",
+                              "fields": [
+                                {
+                                  "name": "brightness",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_FLOAT"
+                                  }
+                                },
+                                {
+                                  "name": "pattern",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_ENUM"
+                                  }
+                                },
+                                {
+                                  "name": "duration",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Duration"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "frequency",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_DOUBLE"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            {
+              "name": "buzzes",
+              "type": {
+                "map": {
+                  "key": "SCALAR_TYPE_STRING",
+                  "message": {
+                    "name": "buf.knittest.Buzz",
+                    "fields": [
+                      {
+                        "name": "volume",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_FLOAT"
+                        }
+                      },
+                      {
+                        "name": "clipReference",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      },
+                      {
+                        "name": "startAt",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      },
+                      {
+                        "name": "endAt",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

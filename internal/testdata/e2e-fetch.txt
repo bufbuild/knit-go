@@ -1,0 +1,1536 @@
+{
+  "responses": [
+    {
+      "method": "buf.knittest.FooService.GetFoo",
+      "body": {
+        "results": [
+          {
+            "attributes": {
+              "abc": "def"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 12300,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 1,
+                    "duration": "0.100000000s",
+                    "frequency": 100.05,
+                    "pattern": "SPARKLE"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.1,
+                "uid": "12300"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "123",
+            "name": "abc",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 23400,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "GLITTER"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.2,
+                "uid": "23400"
+              },
+              {
+                "baz": {
+                  "en": 23401,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "defdef"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "UNSET"
+                  },
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "UNSET"
+                  },
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "UNSET"
+                  }
+                ],
+                "purpose": "defdef",
+                "threshold": 0.2,
+                "uid": "23401"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "234",
+            "name": "def",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "defdef"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 34500,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.3,
+                "uid": "34500"
+              },
+              {
+                "baz": {
+                  "en": 34501,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "defdef"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "SHIMMER"
+                  },
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "SHIMMER"
+                  },
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "SHIMMER"
+                  }
+                ],
+                "purpose": "defdef",
+                "threshold": 0.3,
+                "uid": "34501"
+              },
+              {
+                "baz": {
+                  "en": 34502,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghighighi",
+                    "ghighighi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "GLITTER"
+                  },
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "GLITTER"
+                  },
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "GLITTER"
+                  },
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "GLITTER"
+                  }
+                ],
+                "purpose": "ghighighi",
+                "threshold": 0.3,
+                "uid": "34502"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "345",
+            "name": "ghi",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "defdef",
+              "ghighighi"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno",
+              "pqr": "stu"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 45600,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FLASH"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.4,
+                "uid": "45600"
+              },
+              {
+                "baz": {
+                  "en": 45601,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "defdef"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "BLINK"
+                  },
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "BLINK"
+                  },
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "BLINK"
+                  }
+                ],
+                "purpose": "defdef",
+                "threshold": 0.4,
+                "uid": "45601"
+              },
+              {
+                "baz": {
+                  "en": 45602,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghighighi",
+                    "ghighighi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FIREWORKS"
+                  },
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FIREWORKS"
+                  },
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FIREWORKS"
+                  },
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "ghighighi",
+                "threshold": 0.4,
+                "uid": "45602"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "456",
+            "name": "jkl",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "defdef",
+              "ghighighi",
+              "jkljkljkljkl"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno",
+              "pqr": "stu",
+              "vwx": "yz"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 56700,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "UNSET"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.5,
+                "uid": "56700"
+              },
+              {
+                "baz": {
+                  "en": 56701,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "defdef"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "SPARKLE"
+                  },
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "SPARKLE"
+                  },
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "SPARKLE"
+                  }
+                ],
+                "purpose": "defdef",
+                "threshold": 0.5,
+                "uid": "56701"
+              },
+              {
+                "baz": {
+                  "en": 56702,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghighighi",
+                    "ghighighi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "FLASH"
+                  },
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "FLASH"
+                  },
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "FLASH"
+                  },
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "FLASH"
+                  }
+                ],
+                "purpose": "ghighighi",
+                "threshold": 0.5,
+                "uid": "56702"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "567",
+            "name": "mno",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "defdef",
+              "ghighighi",
+              "jkljkljkljkl",
+              "mnomnomnomnomno"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 67800,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 1,
+                    "duration": "0.100000000s",
+                    "frequency": 100.05,
+                    "pattern": "SHIMMER"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.1,
+                "uid": "67800"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "678",
+            "name": "pqr",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 78900,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "BLINK"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.2,
+                "uid": "78900"
+              },
+              {
+                "baz": {
+                  "en": 78901,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "def"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 2,
+                    "duration": "0.200000000s",
+                    "frequency": 100.1,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "def",
+                "threshold": 0.2,
+                "uid": "78901"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "789",
+            "name": "stu",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "def"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 89000,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "FLASH"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.3,
+                "uid": "89000"
+              },
+              {
+                "baz": {
+                  "en": 89001,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "def"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "BLINK"
+                  }
+                ],
+                "purpose": "def",
+                "threshold": 0.3,
+                "uid": "89001"
+              },
+              {
+                "baz": {
+                  "en": 89002,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghi",
+                    "ghi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 3,
+                    "duration": "0.300000000s",
+                    "frequency": 100.15,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "ghi",
+                "threshold": 0.3,
+                "uid": "89002"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "890",
+            "name": "vwx",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "def",
+              "ghi"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno",
+              "pqr": "stu"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 90100,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "BLINK"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.4,
+                "uid": "90100"
+              },
+              {
+                "baz": {
+                  "en": 90101,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "def"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "def",
+                "threshold": 0.4,
+                "uid": "90101"
+              },
+              {
+                "baz": {
+                  "en": 90102,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghi",
+                    "ghi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 4,
+                    "duration": "0.400000000s",
+                    "frequency": 100.2,
+                    "pattern": "SHIMMER"
+                  }
+                ],
+                "purpose": "ghi",
+                "threshold": 0.4,
+                "uid": "90102"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "901",
+            "name": "yz",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "def",
+              "ghi",
+              "jkl"
+            ]
+          },
+          {
+            "attributes": {
+              "abc": "def",
+              "def": "ghi",
+              "jkl": "mno",
+              "pqr": "stu",
+              "vwx": "yz"
+            },
+            "bars": [
+              {
+                "baz": {
+                  "en": 1200,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": []
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "BLINK"
+                  }
+                ],
+                "purpose": "abc",
+                "threshold": 0.5,
+                "uid": "1200"
+              },
+              {
+                "baz": {
+                  "en": 1201,
+                  "sequence": {
+                    "uvw": "DOS",
+                    "xyz": "UNO"
+                  },
+                  "thingies": [
+                    "def"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "FIREWORKS"
+                  }
+                ],
+                "purpose": "def",
+                "threshold": 0.5,
+                "uid": "1201"
+              },
+              {
+                "baz": {
+                  "en": 1202,
+                  "sequence": {
+                    "abc": "UNO",
+                    "def": "DOS"
+                  },
+                  "thingies": [
+                    "ghi",
+                    "ghi"
+                  ]
+                },
+                "bedazzles": [
+                  {
+                    "brightness": 5,
+                    "duration": "0.500000000s",
+                    "frequency": 100.25,
+                    "pattern": "SHIMMER"
+                  }
+                ],
+                "purpose": "ghi",
+                "threshold": 0.5,
+                "uid": "1202"
+              }
+            ],
+            "description": {
+              "[@error]": {},
+              "code": "FAILED_PRECONDITION",
+              "details": [],
+              "message": "description not available",
+              "path": "buf.knittest.FooService.GetFoo.results.description"
+            },
+            "id": "12",
+            "name": "123",
+            "state": "FOO_STATE_UNSET",
+            "tags": [
+              "abc",
+              "def",
+              "ghi",
+              "jkl",
+              "mno"
+            ]
+          }
+        ]
+      },
+      "schema": {
+        "name": "buf.knittest.GetFooResponse",
+        "fields": [
+          {
+            "name": "results",
+            "type": {
+              "repeated": {
+                "message": {
+                  "name": "buf.knittest.Foo",
+                  "fields": [
+                    {
+                      "name": "name",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_STRING"
+                      }
+                    },
+                    {
+                      "name": "id",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_UINT64"
+                      }
+                    },
+                    {
+                      "name": "state",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_ENUM"
+                      }
+                    },
+                    {
+                      "name": "tags",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      }
+                    },
+                    {
+                      "name": "attributes",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_STRING",
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      }
+                    },
+                    {
+                      "name": "description",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_STRING"
+                      }
+                    },
+                    {
+                      "name": "bars",
+                      "type": {
+                        "repeated": {
+                          "message": {
+                            "name": "buf.knittest.Bar",
+                            "fields": [
+                              {
+                                "name": "uid",
+                                "jsonName": "guid",
+                                "type": {
+                                  "scalar": "SCALAR_TYPE_INT64"
+                                }
+                              },
+                              {
+                                "name": "threshold",
+                                "type": {
+                                  "scalar": "SCALAR_TYPE_DOUBLE"
+                                }
+                              },
+                              {
+                                "name": "purpose",
+                                "type": {
+                                  "scalar": "SCALAR_TYPE_STRING"
+                                }
+                              },
+                              {
+                                "name": "baz",
+                                "type": {
+                                  "message": {
+                                    "name": "buf.knittest.Baz",
+                                    "fields": [
+                                      {
+                                        "name": "thingies",
+                                        "type": {
+                                          "repeated": {
+                                            "scalar": "SCALAR_TYPE_STRING"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "name": "en",
+                                        "jsonName": "cuenta",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_ENUM"
+                                        }
+                                      },
+                                      {
+                                        "name": "sequence",
+                                        "type": {
+                                          "map": {
+                                            "key": "SCALAR_TYPE_STRING",
+                                            "scalar": "SCALAR_TYPE_ENUM"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "name": "bedazzles",
+                                "type": {
+                                  "repeated": {
+                                    "message": {
+                                      "name": "buf.knittest.Bedazzle",
+                                      "fields": [
+                                        {
+                                          "name": "brightness",
+                                          "type": {
+                                            "scalar": "SCALAR_TYPE_FLOAT"
+                                          }
+                                        },
+                                        {
+                                          "name": "pattern",
+                                          "type": {
+                                            "scalar": "SCALAR_TYPE_ENUM"
+                                          }
+                                        },
+                                        {
+                                          "name": "duration",
+                                          "type": {
+                                            "message": {
+                                              "name": "google.protobuf.Duration"
+                                            }
+                                          }
+                                        },
+                                        {
+                                          "name": "frequency",
+                                          "type": {
+                                            "scalar": "SCALAR_TYPE_DOUBLE"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "method": "buf.knittest.FizzService.GetFizz",
+      "body": {
+        "result": {
+          "bars": [
+            {
+              "baz": {
+                "en": 12345,
+                "sequence": {
+                  "uvw": "DOS",
+                  "xyz": "UNO"
+                },
+                "thingies": [
+                  "be",
+                  "be",
+                  "be",
+                  "be",
+                  "be"
+                ]
+              },
+              "bedazzles": [
+                {
+                  "brightness": 99.9000015258789,
+                  "duration": "9.990000000s",
+                  "frequency": 104.995,
+                  "pattern": "FIREWORKS"
+                }
+              ],
+              "purpose": "be",
+              "threshold": 9.99,
+              "uid": "12345"
+            },
+            {
+              "baz": {
+                "en": 23456,
+                "sequence": {
+                  "abc": "UNO",
+                  "def": "DOS"
+                },
+                "thingies": [
+                  "learn",
+                  "learn",
+                  "learn",
+                  "learn",
+                  "learn",
+                  "learn"
+                ]
+              },
+              "bedazzles": [
+                {
+                  "brightness": 88.80000305175781,
+                  "duration": "8.880000000s",
+                  "frequency": 104.44,
+                  "pattern": "GLITTER"
+                },
+                {
+                  "brightness": 88.80000305175781,
+                  "duration": "8.880000000s",
+                  "frequency": 104.44,
+                  "pattern": "GLITTER"
+                }
+              ],
+              "purpose": "learn",
+              "threshold": 8.88,
+              "uid": "23456"
+            },
+            {
+              "baz": {
+                "en": 34567,
+                "sequence": {
+                  "uvw": "DOS",
+                  "xyz": "UNO"
+                },
+                "thingies": [
+                  "grow",
+                  "grow",
+                  "grow",
+                  "grow",
+                  "grow",
+                  "grow",
+                  "grow"
+                ]
+              },
+              "bedazzles": [
+                {
+                  "brightness": 77.69999694824219,
+                  "duration": "7.770000000s",
+                  "frequency": 103.885,
+                  "pattern": "SPARKLE"
+                },
+                {
+                  "brightness": 77.69999694824219,
+                  "duration": "7.770000000s",
+                  "frequency": 103.885,
+                  "pattern": "SPARKLE"
+                }
+              ],
+              "purpose": "grow",
+              "threshold": 7.77,
+              "uid": "34567"
+            }
+          ],
+          "barsByCategory": {
+            "A1": {
+              "baz": {
+                "en": 45678,
+                "sequence": {
+                  "abc": "UNO",
+                  "def": "DOS"
+                },
+                "thingies": [
+                  "live",
+                  "live",
+                  "live",
+                  "live",
+                  "live",
+                  "live",
+                  "live",
+                  "live"
+                ]
+              },
+              "bedazzles": [
+                {
+                  "brightness": 66.5999984741211,
+                  "duration": "6.660000000s",
+                  "frequency": 103.33,
+                  "pattern": "BLINK"
+                },
+                {
+                  "brightness": 66.5999984741211,
+                  "duration": "6.660000000s",
+                  "frequency": 103.33,
+                  "pattern": "BLINK"
+                }
+              ],
+              "purpose": "live",
+              "threshold": 6.66,
+              "uid": "45678"
+            },
+            "B2": {
+              "baz": {
+                "en": 56789,
+                "sequence": {
+                  "uvw": "DOS",
+                  "xyz": "UNO"
+                },
+                "thingies": [
+                  "create",
+                  "create",
+                  "create",
+                  "create",
+                  "create",
+                  "create",
+                  "create",
+                  "create",
+                  "create"
+                ]
+              },
+              "bedazzles": [
+                {
+                  "brightness": 55.5,
+                  "duration": "5.550000000s",
+                  "frequency": 102.775,
+                  "pattern": "SHIMMER"
+                },
+                {
+                  "brightness": 55.5,
+                  "duration": "5.550000000s",
+                  "frequency": 102.775,
+                  "pattern": "SHIMMER"
+                },
+                {
+                  "brightness": 55.5,
+                  "duration": "5.550000000s",
+                  "frequency": 102.775,
+                  "pattern": "SHIMMER"
+                }
+              ],
+              "purpose": "create",
+              "threshold": 5.55,
+              "uid": "56789"
+            }
+          },
+          "buzzes": {
+            "high": {
+              "clipReference": "/foo/buzz/clip.au",
+              "endAt": "4059812",
+              "startAt": "10234",
+              "volume": 9.99899959564209
+            },
+            "low": {
+              "clipReference": "/foo/bar/clip.au",
+              "startAt": "0",
+              "volume": 2.122999906539917
+            },
+            "mid": {
+              "clipReference": "/foo/baz/clip.au",
+              "startAt": "23234",
+              "volume": 3.494999885559082
+            }
+          },
+          "color": "red",
+          "density": 1.052,
+          "depth": 3
+        }
+      },
+      "schema": {
+        "name": "buf.knittest.GetFizzResponse",
+        "fields": [
+          {
+            "name": "result",
+            "type": {
+              "message": {
+                "name": "buf.knittest.Fizz",
+                "fields": [
+                  {
+                    "name": "color",
+                    "type": {
+                      "scalar": "SCALAR_TYPE_STRING"
+                    }
+                  },
+                  {
+                    "name": "density",
+                    "type": {
+                      "scalar": "SCALAR_TYPE_DOUBLE"
+                    }
+                  },
+                  {
+                    "name": "depth",
+                    "type": {
+                      "scalar": "SCALAR_TYPE_INT32"
+                    }
+                  },
+                  {
+                    "name": "bars",
+                    "type": {
+                      "repeated": {
+                        "message": {
+                          "name": "buf.knittest.Bar",
+                          "fields": [
+                            {
+                              "name": "uid",
+                              "jsonName": "guid",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_INT64"
+                              }
+                            },
+                            {
+                              "name": "threshold",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_DOUBLE"
+                              }
+                            },
+                            {
+                              "name": "purpose",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_STRING"
+                              }
+                            },
+                            {
+                              "name": "baz",
+                              "type": {
+                                "message": {
+                                  "name": "buf.knittest.Baz",
+                                  "fields": [
+                                    {
+                                      "name": "thingies",
+                                      "type": {
+                                        "repeated": {
+                                          "scalar": "SCALAR_TYPE_STRING"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "en",
+                                      "jsonName": "cuenta",
+                                      "type": {
+                                        "scalar": "SCALAR_TYPE_ENUM"
+                                      }
+                                    },
+                                    {
+                                      "name": "sequence",
+                                      "type": {
+                                        "map": {
+                                          "key": "SCALAR_TYPE_STRING",
+                                          "scalar": "SCALAR_TYPE_ENUM"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "bedazzles",
+                              "type": {
+                                "repeated": {
+                                  "message": {
+                                    "name": "buf.knittest.Bedazzle",
+                                    "fields": [
+                                      {
+                                        "name": "brightness",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_FLOAT"
+                                        }
+                                      },
+                                      {
+                                        "name": "pattern",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_ENUM"
+                                        }
+                                      },
+                                      {
+                                        "name": "duration",
+                                        "type": {
+                                          "message": {
+                                            "name": "google.protobuf.Duration"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "name": "frequency",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_DOUBLE"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "barsByCategory",
+                    "type": {
+                      "map": {
+                        "key": "SCALAR_TYPE_STRING",
+                        "message": {
+                          "name": "buf.knittest.Bar",
+                          "fields": [
+                            {
+                              "name": "uid",
+                              "jsonName": "guid",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_INT64"
+                              }
+                            },
+                            {
+                              "name": "threshold",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_DOUBLE"
+                              }
+                            },
+                            {
+                              "name": "purpose",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_STRING"
+                              }
+                            },
+                            {
+                              "name": "baz",
+                              "type": {
+                                "message": {
+                                  "name": "buf.knittest.Baz",
+                                  "fields": [
+                                    {
+                                      "name": "thingies",
+                                      "type": {
+                                        "repeated": {
+                                          "scalar": "SCALAR_TYPE_STRING"
+                                        }
+                                      }
+                                    },
+                                    {
+                                      "name": "en",
+                                      "jsonName": "cuenta",
+                                      "type": {
+                                        "scalar": "SCALAR_TYPE_ENUM"
+                                      }
+                                    },
+                                    {
+                                      "name": "sequence",
+                                      "type": {
+                                        "map": {
+                                          "key": "SCALAR_TYPE_STRING",
+                                          "scalar": "SCALAR_TYPE_ENUM"
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "name": "bedazzles",
+                              "type": {
+                                "repeated": {
+                                  "message": {
+                                    "name": "buf.knittest.Bedazzle",
+                                    "fields": [
+                                      {
+                                        "name": "brightness",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_FLOAT"
+                                        }
+                                      },
+                                      {
+                                        "name": "pattern",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_ENUM"
+                                        }
+                                      },
+                                      {
+                                        "name": "duration",
+                                        "type": {
+                                          "message": {
+                                            "name": "google.protobuf.Duration"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "name": "frequency",
+                                        "type": {
+                                          "scalar": "SCALAR_TYPE_DOUBLE"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "buzzes",
+                    "type": {
+                      "map": {
+                        "key": "SCALAR_TYPE_STRING",
+                        "message": {
+                          "name": "buf.knittest.Buzz",
+                          "fields": [
+                            {
+                              "name": "volume",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_FLOAT"
+                              }
+                            },
+                            {
+                              "name": "clipReference",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_STRING"
+                              }
+                            },
+                            {
+                              "name": "startAt",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_UINT64"
+                              }
+                            },
+                            {
+                              "name": "endAt",
+                              "type": {
+                                "scalar": "SCALAR_TYPE_UINT64"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

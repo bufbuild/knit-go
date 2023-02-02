@@ -1,0 +1,212 @@
+{
+  "name": "buf.knittest.GetFooResponse",
+  "fields": [
+    {
+      "name": "results",
+      "type": {
+        "repeated": {
+          "message": {
+            "name": "buf.knittest.Foo",
+            "fields": [
+              {
+                "name": "name",
+                "type": {
+                  "scalar": "SCALAR_TYPE_STRING"
+                }
+              },
+              {
+                "name": "id",
+                "type": {
+                  "scalar": "SCALAR_TYPE_UINT64"
+                }
+              },
+              {
+                "name": "state",
+                "type": {
+                  "scalar": "SCALAR_TYPE_ENUM"
+                }
+              },
+              {
+                "name": "tags",
+                "type": {
+                  "repeated": {
+                    "scalar": "SCALAR_TYPE_STRING"
+                  }
+                }
+              },
+              {
+                "name": "attributes",
+                "type": {
+                  "map": {
+                    "key": "SCALAR_TYPE_STRING",
+                    "scalar": "SCALAR_TYPE_STRING"
+                  }
+                }
+              },
+              {
+                "name": "stateHistory",
+                "type": {
+                  "repeated": {
+                    "scalar": "SCALAR_TYPE_ENUM"
+                  }
+                }
+              },
+              {
+                "name": "constructedWith",
+                "type": {
+                  "message": {
+                    "name": "buf.knittest.Foo.Params",
+                    "fields": [
+                      {
+                        "name": "name",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      },
+                      {
+                        "name": "id",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      },
+                      {
+                        "name": "requestAttrs",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "scalar": "SCALAR_TYPE_STRING"
+                          }
+                        }
+                      },
+                      {
+                        "name": "initState",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_ENUM"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "name": "style",
+                "type": {
+                  "scalar": "SCALAR_TYPE_STRING"
+                }
+              },
+              {
+                "name": "balanceCents",
+                "type": {
+                  "scalar": "SCALAR_TYPE_UINT64"
+                }
+              },
+              {
+                "name": "bars",
+                "type": {
+                  "repeated": {
+                    "message": {
+                      "name": "buf.knittest.Bar",
+                      "fields": [
+                        {
+                          "name": "uid",
+                          "jsonName": "guid",
+                          "type": {
+                            "scalar": "SCALAR_TYPE_INT64"
+                          }
+                        },
+                        {
+                          "name": "threshold",
+                          "type": {
+                            "scalar": "SCALAR_TYPE_DOUBLE"
+                          }
+                        },
+                        {
+                          "name": "purpose",
+                          "type": {
+                            "scalar": "SCALAR_TYPE_STRING"
+                          }
+                        },
+                        {
+                          "name": "baz",
+                          "type": {
+                            "message": {
+                              "name": "buf.knittest.Baz",
+                              "fields": [
+                                {
+                                  "name": "thingies",
+                                  "type": {
+                                    "repeated": {
+                                      "scalar": "SCALAR_TYPE_STRING"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "en",
+                                  "jsonName": "cuenta",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_ENUM"
+                                  }
+                                },
+                                {
+                                  "name": "sequence",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "scalar": "SCALAR_TYPE_ENUM"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "name": "bedazzles",
+                          "type": {
+                            "repeated": {
+                              "message": {
+                                "name": "buf.knittest.Bedazzle",
+                                "fields": [
+                                  {
+                                    "name": "brightness",
+                                    "type": {
+                                      "scalar": "SCALAR_TYPE_FLOAT"
+                                    }
+                                  },
+                                  {
+                                    "name": "pattern",
+                                    "type": {
+                                      "scalar": "SCALAR_TYPE_ENUM"
+                                    }
+                                  },
+                                  {
+                                    "name": "duration",
+                                    "type": {
+                                      "message": {
+                                        "name": "google.protobuf.Duration"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "name": "frequency",
+                                    "type": {
+                                      "scalar": "SCALAR_TYPE_DOUBLE"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

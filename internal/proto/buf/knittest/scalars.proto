@@ -1,0 +1,79 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package buf.knittest;
+
+message Scalars {
+  int32 i32 = 1;
+  repeated int32 i32_list = 2;
+  map<int32, int32> i32_map = 3;
+
+  int64 i64 = 4;
+  repeated int64 i64_list = 5;
+  map<int64, int64> i64_map = 6;
+
+  uint32 u32 = 7;
+  repeated uint32 u32_list = 8;
+  map<uint32, uint32> u32_map = 9;
+
+  uint64 u64 = 10;
+  repeated uint64 u64_list = 11;
+  map<uint64, uint64> u64_map = 12;
+
+  sint32 s32 = 13;
+  repeated sint32 s32_list = 14;
+  map<sint32, sint32> s32_map = 15;
+
+  sint64 s64 = 16;
+  repeated sint64 s64_list = 17;
+  map<sint64, sint64> s64_map = 18;
+
+  fixed32 fx32 = 19;
+  repeated fixed32 fx32_list = 20;
+  map<fixed32, fixed32> fx32_map = 21;
+
+  fixed64 fx64 = 22;
+  repeated fixed64 fx64_list = 23;
+  map<fixed64, fixed64> fx64_map = 24;
+
+  sfixed32 sfx32 = 25;
+  repeated sfixed32 sfx32_list = 26;
+  map<sfixed32, sfixed32> sfx32_map = 27;
+
+  sfixed64 sfx64 = 28;
+  repeated sfixed64 sfx64_list = 29;
+  map<sfixed64, sfixed64> sfx64_map = 30;
+
+  float f32 = 31;
+  repeated float f32_list = 32;
+  map<string, float> f32_map = 33;
+
+  double f64 = 34;
+  repeated double f64_list = 35;
+  map<string, double> f64_map = 36;
+
+  string str = 37;
+  repeated string str_list = 38;
+  map<string, string> str_map = 39;
+
+  bytes byt = 40;
+  repeated bytes byt_list = 41;
+  map<string, bytes> byt_map = 42;
+
+  bool b = 43;
+  repeated bool b_list = 44;
+  map<bool, bool> b_map = 45;
+}

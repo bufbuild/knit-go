@@ -1,0 +1,370 @@
+{
+  "name": "buf.knittest.GetFizzResponse",
+  "fields": [
+    {
+      "name": "result",
+      "type": {
+        "message": {
+          "name": "buf.knittest.Fizz",
+          "fields": [
+            {
+              "name": "scalars",
+              "type": {
+                "message": {
+                  "name": "buf.knittest.Scalars",
+                  "fields": [
+                    {
+                      "name": "i32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT32"
+                      }
+                    },
+                    {
+                      "name": "i32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "i32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT32",
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "i64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT64"
+                      }
+                    },
+                    {
+                      "name": "i64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "i64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT64",
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "u32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_UINT32"
+                      }
+                    },
+                    {
+                      "name": "u32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_UINT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "u32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_UINT32",
+                          "scalar": "SCALAR_TYPE_UINT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "u64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_UINT64"
+                      }
+                    },
+                    {
+                      "name": "u64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "u64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_UINT64",
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "s32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT32"
+                      }
+                    },
+                    {
+                      "name": "s32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "s32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT32",
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "s64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT64"
+                      }
+                    },
+                    {
+                      "name": "s64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "s64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT64",
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "fx32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_UINT32"
+                      }
+                    },
+                    {
+                      "name": "fx32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_UINT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "fx32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_UINT32",
+                          "scalar": "SCALAR_TYPE_UINT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "fx64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_UINT64"
+                      }
+                    },
+                    {
+                      "name": "fx64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "fx64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_UINT64",
+                          "scalar": "SCALAR_TYPE_UINT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "sfx32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT32"
+                      }
+                    },
+                    {
+                      "name": "sfx32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "sfx32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT32",
+                          "scalar": "SCALAR_TYPE_INT32"
+                        }
+                      }
+                    },
+                    {
+                      "name": "sfx64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_INT64"
+                      }
+                    },
+                    {
+                      "name": "sfx64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "sfx64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_INT64",
+                          "scalar": "SCALAR_TYPE_INT64"
+                        }
+                      }
+                    },
+                    {
+                      "name": "f32",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_FLOAT"
+                      }
+                    },
+                    {
+                      "name": "f32List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_FLOAT"
+                        }
+                      }
+                    },
+                    {
+                      "name": "f32Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_STRING",
+                          "scalar": "SCALAR_TYPE_FLOAT"
+                        }
+                      }
+                    },
+                    {
+                      "name": "f64",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_DOUBLE"
+                      }
+                    },
+                    {
+                      "name": "f64List",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_DOUBLE"
+                        }
+                      }
+                    },
+                    {
+                      "name": "f64Map",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_STRING",
+                          "scalar": "SCALAR_TYPE_DOUBLE"
+                        }
+                      }
+                    },
+                    {
+                      "name": "str",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_STRING"
+                      }
+                    },
+                    {
+                      "name": "strList",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      }
+                    },
+                    {
+                      "name": "strMap",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_STRING",
+                          "scalar": "SCALAR_TYPE_STRING"
+                        }
+                      }
+                    },
+                    {
+                      "name": "byt",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_BYTES"
+                      }
+                    },
+                    {
+                      "name": "bytList",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_BYTES"
+                        }
+                      }
+                    },
+                    {
+                      "name": "bytMap",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_STRING",
+                          "scalar": "SCALAR_TYPE_BYTES"
+                        }
+                      }
+                    },
+                    {
+                      "name": "b",
+                      "type": {
+                        "scalar": "SCALAR_TYPE_BOOL"
+                      }
+                    },
+                    {
+                      "name": "bList",
+                      "type": {
+                        "repeated": {
+                          "scalar": "SCALAR_TYPE_BOOL"
+                        }
+                      }
+                    },
+                    {
+                      "name": "bMap",
+                      "type": {
+                        "map": {
+                          "key": "SCALAR_TYPE_BOOL",
+                          "scalar": "SCALAR_TYPE_BOOL"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

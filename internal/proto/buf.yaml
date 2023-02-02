@@ -1,0 +1,13 @@
+version: v1
+deps:
+  - buf.build/bufbuild/knit:v0.0.1
+breaking:
+  use:
+    - FILE
+lint:
+  except:
+    - PACKAGE_VERSION_SUFFIX
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - RPC_RESPONSE_STANDARD_NAME
+    - ENUM_VALUE_PREFIX
+    - ENUM_ZERO_VALUE_SUFFIX

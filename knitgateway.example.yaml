@@ -1,0 +1,98 @@
+# This is an example configuration file that can be used with the
+# knitgateway command in this repo (in ./cmd/knitgateway).
+#
+# This configuration works with the demo server program defined in
+# github.com/bufbuild/knit-demo/go/cmd/swapi-server.
+#
+# You can try it out like so:
+#
+#    go install github.com/bufbuild/knit-go/cmd/knitgateway
+#    go install github.com/bufbuild/knit-demo/go/cmd/swapi-server
+#    swapi-server &
+#    knitgateway -conf ./knitgateway.example.yaml &
+#
+# With the above, you can point a Knit client that is configured for
+# the [Knit demo service](https://buf.build/bufbuild/knit-demo) at
+# http://localhost:30480.
+
+listen:
+  # By default, the server will only bind to the loop back interface.
+  # You can set this to 0.0.0.0 to accept requests on all network
+  # interfaces.
+  #bind_address: 127.0.0.1
+
+  # By default, the server will use an ephemeral port (configured
+  # as port zero). It will print the actual ephemeral port at
+  # startup. You can set this property to instead use a stable
+  # port that can be statically configured in clients.
+  port: 30480
+
+backends:
+# You can define any number of backends. For this example, there is
+# only one, which is the swapi-server program defined in the
+# github.com/bufbuild/knit-demo repo:
+- route_to: http://127.0.0.1:30485
+  # 30485 is the default port used by swapi-server.
+
+  # By default, the gateway will use the Connect protocol to send
+  # RPCs to the backend. It can be configured to use gRPC or
+  # gRPC-Web instead, via "grpc" or "grpcweb" values:
+  #protocol: connect
+
+  # By default, the gateway will use the Protobuf binary format to
+  # send RPCs. The other option allowed is "json":
+  #encoding: proto
+
+  # All the services that swapi-server exposes:
+  services:
+    - buf.knit.demo.swapi.film.v1.FilmService
+    - buf.knit.demo.swapi.person.v1.PersonService
+    - buf.knit.demo.swapi.planet.v1.PlanetService
+    - buf.knit.demo.swapi.species.v1.SpeciesService
+    - buf.knit.demo.swapi.starship.v1.StarshipService
+    - buf.knit.demo.swapi.vehicle.v1.VehicleService
+    # relations
+    - buf.knit.demo.swapi.relations.v1.FilmResolverService
+    - buf.knit.demo.swapi.relations.v1.PersonResolverService
+    - buf.knit.demo.swapi.relations.v1.PlanetResolverService
+    - buf.knit.demo.swapi.relations.v1.SpeciesResolverService
+    - buf.knit.demo.swapi.relations.v1.StarshipResolverService
+    - buf.knit.demo.swapi.relations.v1.VehicleResolverService
+
+  # We have to tell the gateway how to find the service
+  # definitions for all the services listed above for
+  # this backend. If the server supports reflection,
+  # that's the "easy button" for this step.
+  descriptors:
+    grpc_reflection: true
+
+  # These particular services are also available in the
+  # BSR. So the following configuration also works:
+  #
+  #   descriptors:
+  #     buf_module: buf.build/bufbuild/knit-demo
+  #
+  # Note that this requires a BUF_TOKEN environment variable
+  # for authenticating with the BSR.
+
+  # If your servers do not support gRPC reflection and
+  # your schema is not in the BSR, you can also provide
+  # them via file descriptor sets. These can be produced
+  # with the Buf CLI using the "build" command:
+  #    buf build buf.build/bufbuild/knit-demo -o swapi.protoset
+  # They can also be produced by "protoc" using a '-o'
+  # flag. Don't forget to use '--include_imports' so that
+  # the file is self-contained:
+  #    protoc --include_imports -o swapi.protoset ...
+  #
+  # Once you have a file, you can use configuration like so:
+  #
+  #   descriptors:
+  #     descriptor_set_file: path/to/swapi.protoset
+  #
+
+  # Since gRPC reflection uses a full-duplex bidi stream, we must
+  # use h2c to use it with a plain-text server. H2C simply means
+  # HTTP/2 over plain-text. (Note that not all HTTP servers support
+  # this! It usually requires special server configuration.)
+  h2c: true

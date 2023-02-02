@@ -1,0 +1,102 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package buf.knittest;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+message WellKnownTypes {
+  repeated WellKnownTypes nested_in_list = 1;
+  map<int32, WellKnownTypes> nested_in_map = 2;
+
+  google.protobuf.Any any = 3;
+  repeated google.protobuf.Any any_list = 4;
+  map<string, google.protobuf.Any> any_map = 5;
+
+  google.protobuf.Duration duration = 6;
+  repeated google.protobuf.Duration duration_list = 7;
+  map<int64, google.protobuf.Duration> duration_map = 8;
+
+  google.protobuf.Empty empty = 9;
+  repeated google.protobuf.Empty empty_list = 10;
+  map<string, google.protobuf.Empty> empty_map = 11;
+
+  google.protobuf.FieldMask field_mask = 12;
+  repeated google.protobuf.FieldMask field_mask_list = 13;
+  map<uint32, google.protobuf.FieldMask> field_mask_map = 14;
+
+  google.protobuf.Value value = 15;
+  repeated google.protobuf.Value value_list = 16;
+  map<string, google.protobuf.Value> value_map = 17;
+
+  google.protobuf.ListValue list_value = 18;
+  repeated google.protobuf.ListValue list_value_list = 19;
+  map<uint64, google.protobuf.ListValue> list_value_map = 20;
+
+  google.protobuf.Struct struct = 21;
+  repeated google.protobuf.Struct struct_list = 22;
+  map<string, google.protobuf.Struct> struct_map = 23;
+
+  google.protobuf.NullValue null_value = 24;
+  repeated google.protobuf.NullValue null_value_list = 25;
+  map<bool, google.protobuf.NullValue> null_value_map = 26;
+
+  google.protobuf.Timestamp timestamp = 27;
+  repeated google.protobuf.Timestamp timestamp_list = 28;
+  map<string, google.protobuf.Timestamp> timestamp_map = 29;
+
+  google.protobuf.Int32Value int32_value = 30;
+  repeated google.protobuf.Int32Value int32_value_list = 31;
+  map<sint32, google.protobuf.Int32Value> int32_value_map = 32;
+
+  google.protobuf.Int64Value int64_value = 33;
+  repeated google.protobuf.Int64Value int64_value_list = 34;
+  map<sint64, google.protobuf.Int64Value> int64_value_map = 35;
+
+  google.protobuf.UInt32Value uint32_value = 36;
+  repeated google.protobuf.UInt32Value uint32_value_list = 37;
+  map<fixed32, google.protobuf.UInt32Value> uint32_value_map = 38;
+
+  google.protobuf.UInt64Value uint64_value = 39;
+  repeated google.protobuf.UInt64Value uint64_value_list = 40;
+  map<fixed64, google.protobuf.UInt64Value> uint64_value_map = 41;
+
+  google.protobuf.FloatValue float_value = 42;
+  repeated google.protobuf.FloatValue float_value_list = 43;
+  map<sfixed32, google.protobuf.FloatValue> float_value_map = 44;
+
+  google.protobuf.DoubleValue double_value = 45;
+  repeated google.protobuf.DoubleValue double_value_list = 46;
+  map<sfixed64, google.protobuf.DoubleValue> double_value_map = 47;
+
+  google.protobuf.BoolValue bool_value = 48;
+  repeated google.protobuf.BoolValue bool_value_list = 49;
+  map<bool, google.protobuf.BoolValue> bool_value_map = 50;
+
+  google.protobuf.StringValue string_value = 51;
+  repeated google.protobuf.StringValue string_value_list = 52;
+  map<string, google.protobuf.StringValue> string_value_map = 53;
+
+  google.protobuf.BytesValue bytes_value = 54;
+  repeated google.protobuf.BytesValue bytes_value_list = 55;
+  map<string, google.protobuf.BytesValue> bytes_value_map = 56;
+}

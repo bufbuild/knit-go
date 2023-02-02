@@ -1,0 +1,134 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package buf.knittest;
+
+import "buf/knit/v1alpha1/options.proto";
+import "buf/knittest/model.proto";
+
+service RelationsService {
+  rpc GetFooStyle(GetFooStyleRequest) returns (GetFooStyleResponse) {
+    option (buf.knit.v1alpha1.relation).name = "style";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetFooBalanceCents(GetFooBalanceCentsRequest) returns (GetFooBalanceCentsResponse) {
+    option (buf.knit.v1alpha1.relation).name = "balance_cents";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetFooBars(GetFooBarsRequest) returns (GetFooBarsResponse) {
+    option (buf.knit.v1alpha1.relation).name = "bars";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetFooDescription(GetFooDescriptionRequest) returns (GetFooDescriptionResponse) {
+    option (buf.knit.v1alpha1.relation).name = "description";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetBarBaz(GetBarBazRequest) returns (GetBarBazResponse) {
+    option (buf.knit.v1alpha1.relation).name = "baz";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetBarBedazzles(GetBarBedazzlesRequest) returns (GetBarBedazzlesResponse) {
+    option (buf.knit.v1alpha1.relation).name = "bedazzles";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc GetFizzBuzzes(GetFizzBuzzesRequest) returns (GetFizzBuzzesResponse) {
+    option (buf.knit.v1alpha1.relation).name = "buzzes";
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+}
+
+message GetFooStyleRequest {
+  repeated Foo bases = 1;
+}
+
+message GetFooStyleResponse {
+  repeated FooResult values = 1;
+  message FooResult {
+    optional string style = 1;
+  }
+}
+
+message GetFooBalanceCentsRequest {
+  repeated Foo bases = 1;
+}
+
+message GetFooBalanceCentsResponse {
+  repeated FooResult values = 1;
+  message FooResult {
+    fixed64 balance_cents = 1;
+  }
+}
+
+message GetFooBarsRequest {
+  repeated Foo bases = 1;
+
+  double up_to_threshold = 3;
+  string purpose = 4;
+  int32 limit = 5;
+}
+
+message GetFooBarsResponse {
+  repeated FooResult values = 1;
+  message FooResult {
+    repeated Bar bars = 1;
+  }
+}
+
+message GetFooDescriptionRequest {
+  repeated Foo bases = 1;
+}
+
+message GetFooDescriptionResponse {
+  repeated FooResult values = 1;
+  message FooResult {
+    string description = 1;
+  }
+}
+
+message GetBarBazRequest {
+  repeated Bar bases = 1;
+}
+
+message GetBarBazResponse {
+  repeated BarResult values = 1;
+  message BarResult {
+    Baz baz = 1;
+  }
+}
+
+message GetBarBedazzlesRequest {
+  repeated Bar bases = 1;
+  int32 limit = 2;
+  Bedazzle.Pattern pattern = 3;
+}
+
+message GetBarBedazzlesResponse {
+  repeated BarResult values = 1;
+  message BarResult {
+    repeated Bedazzle bedazzles = 1;
+  }
+}
+
+message GetFizzBuzzesRequest {
+  repeated Fizz bases = 1;
+}
+
+message GetFizzBuzzesResponse {
+  repeated FizzResult values = 1;
+  message FizzResult {
+    map<string, Buzz> buzzes = 1;
+  }
+}

@@ -1,0 +1,102 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package buf.knittest;
+
+import "google/protobuf/duration.proto";
+import "buf/knittest/scalars.proto";
+import "buf/knittest/wkts.proto";
+
+message Foo {
+  string name = 1;
+  uint64 id = 2;
+  FooState state = 3;
+
+  repeated string tags = 4;
+  map<string, string> attributes = 5;
+  repeated FooState state_history = 6;
+
+  message Params {
+    oneof init_from {
+      string name = 1;
+      uint64 id = 2;
+    }
+    map<string, string> request_attrs = 3;
+    FooState init_state = 4;
+  }
+  Params constructed_with = 7;
+
+  WellKnownTypes wkts = 8;
+}
+
+enum FooState {
+  FOO_STATE_UNSET = 0;
+  FOO_STATE_INIT = 1;
+  FOO_STATE_READY = 2;
+  FOO_STATE_ERROR = 3;
+  FOO_STATE_FINISHED = 4;
+}
+
+message Bar {
+  int64 uid = 1 [json_name="guid"];
+  double threshold = 2;
+  string purpose = 3;
+}
+
+message Baz {
+  repeated string thingies = 1;
+  enum Enum {
+    ZERO = 0;
+    UNO = 1;
+    DOS = 2;
+  }
+  Enum en = 2 [json_name="cuenta"];
+  map<string, Enum> sequence = 3;
+}
+
+message Bedazzle {
+  float brightness = 1;
+  enum Pattern {
+    UNSET = 0;
+    SPARKLE = 1;
+    FLASH = 2;
+    BLINK = 3;
+    FIREWORKS = 4;
+    SHIMMER = 5;
+    GLITTER = 6;
+  }
+  Pattern pattern = 2;
+  google.protobuf.Duration duration = 3;
+  double frequency = 4;
+}
+
+message Fizz {
+  string color = 1;
+  double density = 2;
+  optional int32 depth = 3;
+
+  Scalars scalars = 4;
+
+  repeated Bar bars = 5;
+  map<string, Bar> bars_by_category = 6;
+}
+
+message Buzz {
+  float volume = 1;
+  string clip_reference = 2;
+  uint64 start_at = 3;
+  optional uint64 end_at = 4;
+}

@@ -1,0 +1,1600 @@
+{
+  "name": "buf.knittest.GetFooResponse",
+  "fields": [
+    {
+      "name": "results",
+      "type": {
+        "repeated": {
+          "message": {
+            "name": "buf.knittest.Foo",
+            "fields": [
+              {
+                "name": "wkts",
+                "type": {
+                  "message": {
+                    "name": "buf.knittest.WellKnownTypes",
+                    "fields": [
+                      {
+                        "name": "any",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Any"
+                          }
+                        }
+                      },
+                      {
+                        "name": "anyList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Any"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "anyMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.Any"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "duration",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Duration"
+                          }
+                        }
+                      },
+                      {
+                        "name": "durationList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Duration"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "durationMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT64",
+                            "message": {
+                              "name": "google.protobuf.Duration"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "empty",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Empty"
+                          }
+                        }
+                      },
+                      {
+                        "name": "emptyList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Empty"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "emptyMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.Empty"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "fieldMask",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.FieldMask"
+                          }
+                        }
+                      },
+                      {
+                        "name": "fieldMaskList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.FieldMask"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "fieldMaskMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_UINT32",
+                            "message": {
+                              "name": "google.protobuf.FieldMask"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "value",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Value"
+                          }
+                        }
+                      },
+                      {
+                        "name": "valueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "valueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "listValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.ListValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "listValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.ListValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "listValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_UINT64",
+                            "message": {
+                              "name": "google.protobuf.ListValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "struct",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Struct"
+                          }
+                        }
+                      },
+                      {
+                        "name": "structList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Struct"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "structMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.Struct"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "nullValue",
+                        "type": {
+                          "scalar": "SCALAR_TYPE_NULL"
+                        }
+                      },
+                      {
+                        "name": "nullValueList",
+                        "type": {
+                          "repeated": {
+                            "scalar": "SCALAR_TYPE_NULL"
+                          }
+                        }
+                      },
+                      {
+                        "name": "nullValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_BOOL",
+                            "scalar": "SCALAR_TYPE_NULL"
+                          }
+                        }
+                      },
+                      {
+                        "name": "timestamp",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Timestamp"
+                          }
+                        }
+                      },
+                      {
+                        "name": "timestampList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Timestamp"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "timestampMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.Timestamp"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "int32Value",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Int32Value"
+                          }
+                        }
+                      },
+                      {
+                        "name": "int32ValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Int32Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "int32ValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT32",
+                            "message": {
+                              "name": "google.protobuf.Int32Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "int64Value",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.Int64Value"
+                          }
+                        }
+                      },
+                      {
+                        "name": "int64ValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.Int64Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "int64ValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT64",
+                            "message": {
+                              "name": "google.protobuf.Int64Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint32Value",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.UInt32Value"
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint32ValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.UInt32Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint32ValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_UINT32",
+                            "message": {
+                              "name": "google.protobuf.UInt32Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint64Value",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.UInt64Value"
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint64ValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.UInt64Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "uint64ValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_UINT64",
+                            "message": {
+                              "name": "google.protobuf.UInt64Value"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "floatValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.FloatValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "floatValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.FloatValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "floatValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT32",
+                            "message": {
+                              "name": "google.protobuf.FloatValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "doubleValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.DoubleValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "doubleValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.DoubleValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "doubleValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT64",
+                            "message": {
+                              "name": "google.protobuf.DoubleValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "boolValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.BoolValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "boolValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.BoolValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "boolValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_BOOL",
+                            "message": {
+                              "name": "google.protobuf.BoolValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "stringValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.StringValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "stringValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.StringValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "stringValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.StringValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "bytesValue",
+                        "type": {
+                          "message": {
+                            "name": "google.protobuf.BytesValue"
+                          }
+                        }
+                      },
+                      {
+                        "name": "bytesValueList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "google.protobuf.BytesValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "bytesValueMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_STRING",
+                            "message": {
+                              "name": "google.protobuf.BytesValue"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "nestedInList",
+                        "type": {
+                          "repeated": {
+                            "message": {
+                              "name": "buf.knittest.WellKnownTypes",
+                              "fields": [
+                                {
+                                  "name": "any",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Any"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "anyList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Any"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "anyMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Any"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "duration",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Duration"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "durationList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Duration"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "durationMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.Duration"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "empty",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Empty"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "emptyList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Empty"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "emptyMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Empty"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMask",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.FieldMask"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMaskList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.FieldMask"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMaskMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT32",
+                                      "message": {
+                                        "name": "google.protobuf.FieldMask"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "valueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "valueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.ListValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.ListValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT64",
+                                      "message": {
+                                        "name": "google.protobuf.ListValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "struct",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Struct"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "structList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Struct"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "structMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Struct"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "nullValue",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_NULL"
+                                  }
+                                },
+                                {
+                                  "name": "nullValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "scalar": "SCALAR_TYPE_NULL"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "nullValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_BOOL",
+                                      "scalar": "SCALAR_TYPE_NULL"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestamp",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Timestamp"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestampList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Timestamp"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestampMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Timestamp"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Int32Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Int32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT32",
+                                      "message": {
+                                        "name": "google.protobuf.Int32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Int64Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Int64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.Int64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.UInt32Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.UInt32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT32",
+                                      "message": {
+                                        "name": "google.protobuf.UInt32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.UInt64Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.UInt64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT64",
+                                      "message": {
+                                        "name": "google.protobuf.UInt64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.FloatValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.FloatValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT32",
+                                      "message": {
+                                        "name": "google.protobuf.FloatValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.DoubleValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.DoubleValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.DoubleValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.BoolValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.BoolValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_BOOL",
+                                      "message": {
+                                        "name": "google.protobuf.BoolValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.StringValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.StringValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.StringValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.BytesValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.BytesValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.BytesValue"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "nestedInMap",
+                        "type": {
+                          "map": {
+                            "key": "SCALAR_TYPE_INT32",
+                            "message": {
+                              "name": "buf.knittest.WellKnownTypes",
+                              "fields": [
+                                {
+                                  "name": "any",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Any"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "anyList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Any"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "anyMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Any"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "duration",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Duration"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "durationList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Duration"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "durationMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.Duration"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "empty",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Empty"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "emptyList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Empty"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "emptyMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Empty"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMask",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.FieldMask"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMaskList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.FieldMask"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "fieldMaskMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT32",
+                                      "message": {
+                                        "name": "google.protobuf.FieldMask"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "valueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "valueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.ListValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.ListValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "listValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT64",
+                                      "message": {
+                                        "name": "google.protobuf.ListValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "struct",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Struct"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "structList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Struct"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "structMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Struct"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "nullValue",
+                                  "type": {
+                                    "scalar": "SCALAR_TYPE_NULL"
+                                  }
+                                },
+                                {
+                                  "name": "nullValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "scalar": "SCALAR_TYPE_NULL"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "nullValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_BOOL",
+                                      "scalar": "SCALAR_TYPE_NULL"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestamp",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Timestamp"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestampList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Timestamp"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "timestampMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.Timestamp"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Int32Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Int32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int32ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT32",
+                                      "message": {
+                                        "name": "google.protobuf.Int32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.Int64Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.Int64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "int64ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.Int64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.UInt32Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.UInt32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint32ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT32",
+                                      "message": {
+                                        "name": "google.protobuf.UInt32Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64Value",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.UInt64Value"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64ValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.UInt64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "uint64ValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_UINT64",
+                                      "message": {
+                                        "name": "google.protobuf.UInt64Value"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.FloatValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.FloatValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "floatValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT32",
+                                      "message": {
+                                        "name": "google.protobuf.FloatValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.DoubleValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.DoubleValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "doubleValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_INT64",
+                                      "message": {
+                                        "name": "google.protobuf.DoubleValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.BoolValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.BoolValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "boolValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_BOOL",
+                                      "message": {
+                                        "name": "google.protobuf.BoolValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.StringValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.StringValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "stringValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.StringValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValue",
+                                  "type": {
+                                    "message": {
+                                      "name": "google.protobuf.BytesValue"
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValueList",
+                                  "type": {
+                                    "repeated": {
+                                      "message": {
+                                        "name": "google.protobuf.BytesValue"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "name": "bytesValueMap",
+                                  "type": {
+                                    "map": {
+                                      "key": "SCALAR_TYPE_STRING",
+                                      "message": {
+                                        "name": "google.protobuf.BytesValue"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
