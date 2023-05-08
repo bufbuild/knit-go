@@ -118,18 +118,18 @@ The `listen` property of the YAML config file defines how the demo server's
 network listener is configured. This property is a YAML map with the following
 keys:
 
-* `bindAddress`: The address on which to listen. This defaults to 127.0.0.1, so
+* **`bindAddress`**: The address on which to listen. This defaults to 127.0.0.1, so
   that it only accepts requests on the loopback interface. You can use 0.0.0.0
   to instead listen on all network interfaces (making the server available from
   other hosts).
-* `port`: The port number on which to listen. This defaults to 0, which means
+* **`port`**: The port number on which to listen. This defaults to 0, which means
   an ephemeral port will be chosen. The actual ephemeral port used will be
   printed when the server starts, so you can point clients to that port.
 
 This property is optional with defaults as described above if absent.
 
-Note that TLS is not currently supported for the dev server, only plaintext
-HTTP and HTTP/2.
+Note that TLS is not yet supported by the standalone server, only plaintext
+HTTP and HTTP/2. TLS is coming soon.
 
 ### Backends Config
 
@@ -171,11 +171,8 @@ slice has the following keys:
     the module's descriptors.
   * **`grpcReflection`**: The value for this key is a boolean. If true, then
     the [gRPC Server Reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
-    reflection protocol will be used to download the descriptors from the
+    protocol will be used to download the descriptors from the
     backend server itself.
-
-If using the `descriptorSetFile` option for the `descriptors` key, you can
-use `buf` or `protoc` to generate a file in the correct format.
 
 ### Descriptor Set Examples
 If using the `descriptorSetFile` option for the `descriptors` key, you can
@@ -204,7 +201,7 @@ its imports are defined in a `../../others/proto` directory.
 Here too, the `-o` flag indicates the path to the output file that will
 contain the descriptors. Most importantly, you must also include the
 `--include_imports` flag, or else the resulting file may be incomplete
-and unusable by the Knit dev server.
+and unusable by the Knit gateway.
 
 ```shell
 protoc -I ../../others/proto foo/bar/services.proto \
