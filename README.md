@@ -278,7 +278,8 @@ You can customize the above behavior by setting various fields on the gateway:
   extensions or `google.protobuf.Any` messages.
 
 > NOTE: If you want to configure a custom codec for outbound RPCs, to customize
-> content encoding, you must use `knit.WithCodec` **instead of** > `connect.WithCodec` when creating the Connect client option.
+> content encoding, you must use `knit.WithCodec` **instead of**
+> `connect.WithCodec` when creating the Connect client option.
 
 ### Configuring Entry-Point Services
 
