@@ -132,8 +132,8 @@ keys:
 
 This property is optional with defaults as described above if absent.
 
-Note that TLS is not currently supported for the dev server, only plaintext
-HTTP and HTTP/2.
+Note that TLS is not yet supported by the standalone server, only plaintext
+HTTP and HTTP/2. TLS is coming soon.
 
 ### Backends Config
 
@@ -175,15 +175,12 @@ slice has the following keys:
     the module's descriptors.
   - **`grpc_reflection`**: The value for this key is a boolean. If true, then
     the [gRPC Server Reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
-    reflection protocol will be used to download the descriptors from the
+    protocol will be used to download the descriptors from the
     backend server itself.
-
-If using the `descriptor_set_file` option for the `descriptors` key, you can
-use `buf` or `protoc` to generate a file in the correct format.
 
 ### Descriptor Set Examples
 
-If using the `descriptorSetFile` option for the `descriptors` key, you can
+If using the `descriptor_set_file` option for the `descriptors` key, you can
 use `buf` or `protoc` to generate a file in the correct format.
 
 The following example uses `buf` to build proto sources in the current
@@ -210,7 +207,7 @@ its imports are defined in a `../../others/proto` directory.
 Here too, the `-o` flag indicates the path to the output file that will
 contain the descriptors. Most importantly, you must also include the
 `--include_imports` flag, or else the resulting file may be incomplete
-and unusable by the Knit dev server.
+and unusable by the Knit gateway.
 
 ```shell
 protoc -I ../../others/proto foo/bar/services.proto \
