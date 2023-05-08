@@ -6,7 +6,6 @@
 [![Report Card](https://goreportcard.com/badge/github.com/bufbuild/knit-go)](https://goreportcard.com/report/github.com/bufbuild/knit-go)
 [![GoDoc](https://pkg.go.dev/badge/github.com/bufbuild/knit-go.svg)](https://pkg.go.dev/github.com/bufbuild/knit-go)
 
-
 **Knit brings GraphQL-like capabilities to RPCs. Knit has type-safe and
 declarative queries that shape the response, batching support to eliminate
 the N+1 problem, and first-class support for error handling with partial
@@ -16,6 +15,7 @@ responses. It is built on top of Protobuf and Connect.**
 about it at the [Knit] repo, and learn how to use it with the [Tutorial].**
 
 ---
+
 This repo is an implementation in Go of the server-side of the Knit protocol. The result is a
 gateway that processes these declarative queries, dispatches the relevant RPCs, and then merges
 the results together. The actual service interface is defined in the BSR:
@@ -25,15 +25,17 @@ For more information on the core concepts of Knit, read the documentation in the
 defines the protocol](https://github.com/bufbuild/knit).
 
 This repo contains two key components:
+
 1. The runtime library used by a Knit gateway: Go package `"github.com/bufbuild/knit-go"`.
 2. A standalone server program that can be used as a Knit gateway and configured via YAML file:
    `"github.com/bufbuild/knit-go/cmd/knitgateway`.
 
 ## Knit Gateway
 
-The Knit gateway is a Go server that implements the [Knit service](https://buf.build/bufbuild/knit/docs/main:buf.knit#buf.knit.KnitService).
+The Knit gateway is a Go server that implements the [Knit service](https://buf.build/bufbuild/knit/docs/main:buf.knit.gateway.v1alpha1#buf.knit.gateway.v1alpha1.KnitService).
 
 The process of handling a Knit query consists of the following steps:
+
 1. **Request Validation and Schema Computation**
 
    The first step is to validate each requested entry point method and its associated mask.
@@ -94,9 +96,11 @@ from the [_Releases_](https://github.com/bufbuild/knit-go/releases) page
 for this repo.
 
 You can also use the Go tool to build and install the server from source:
+
 ```bash
 go install github.com/bufbuild/knit-go/cmd/knitgateway@latest
 ```
+
 This builds a binary named `knitgateway` from the latest release.
 
 Running the binary will start the server, which will by default expect a
@@ -104,7 +108,7 @@ config file named `knitgateway.yaml` to exist in the current working directory.
 
 In order to configure the server, you need to provide a YAML config file. There
 is a an example in the `cmd/knitgateway` folder of this repo named
-[`knitgateway.example.yaml`](https://github.com/bufbuild/knit-go/blob/main/cmd/knitgateway/knitgateway.example.yaml).
+[`knitgateway.example.yaml`](/knitgateway.example.yaml).
 The example file shows all the properties that can be configured. The example
 also is a working example if you also run the [`swapi-server`](https://github.com/bufbuild/knit-demo/blob/main/go/cmd/swapi-server/)
 demo server as the backend.
@@ -118,11 +122,11 @@ The `listen` property of the YAML config file defines how the demo server's
 network listener is configured. This property is a YAML map with the following
 keys:
 
-* **`bindAddress`**: The address on which to listen. This defaults to 127.0.0.1, so
+- **`bind_address`**: The address on which to listen. This defaults to 127.0.0.1, so
   that it only accepts requests on the loopback interface. You can use 0.0.0.0
   to instead listen on all network interfaces (making the server available from
   other hosts).
-* **`port`**: The port number on which to listen. This defaults to 0, which means
+- **`port`**: The port number on which to listen. This defaults to 0, which means
   an ephemeral port will be chosen. The actual ephemeral port used will be
   printed when the server starts, so you can point clients to that port.
 
@@ -140,42 +144,43 @@ servers.
 The property value is a list of backend configuration maps. Each map in the
 slice has the following keys:
 
-* **`routeTo`**: The base URL for this backend. This key must be provided.
+- **`route_to`**: The base URL for this backend. This key must be provided.
   The URL may use either "http" or "https" scheme. Note that no custom
   TLS properties (such as custom root CA certificate or client certificates)
   are currently supported for use with "https" URLs.
-* **`h2c`**: If the `routeTo` property uses a plaintext "http" scheme, but
+- **`h2c`**: If the `routeTo` property uses a plaintext "http" scheme, but
   HTTP/2 should be used, set this property to true. It defaults to false.
-* **`protcol`**: This configured the protocol that will be used to communicate
+- **`protocol`**: This configured the protocol that will be used to communicate
   with this backend. The default protocol is "connect". Other allowed options
   are "grpc" or "grpcweb".
-* **`encoding`**: This configures the message encoding for sending requests to
+- **`encoding`**: This configures the message encoding for sending requests to
   this backend. The default is "proto", which uses the Protobuf binary format.
   The other allowed option is "json".
-* **`services`**: This key is required. The value is a list of fully-qualified
+- **`services`**: This key is required. The value is a list of fully-qualified
   service names that will be routed to this backend. If these services contain
   methods that can resolve relations, then those relations are automatically
   supported by the server.
-* **`descriptors`**: This key is required. This configuration indicates how
+- **`descriptors`**: This key is required. This configuration indicates how
   the gateway will find descriptors for the above named services. The value is
   a map with the following keys, of which _only one may be set_:
-  * **`descriptorSetFile`**: The value for this key is the path to a file
+  - **`descriptor_set_file`**: The value for this key is the path to a file
     that is an encoded [file descriptor set](https://github.com/protocolbuffers/protobuf/blob/v22.0/src/google/protobuf/descriptor.proto#L54-L58).
     Both `buf` and `protoc` can produce such files. (See more below.)
-  * **`bufModule`**: The value for this key is the name of a module that has
+  - **`buf_module`**: The value for this key is the name of a module that has
     been pushed to a Buf Schema Registry (BSR). The module name must be in the
     format "&lt;remote>/&lt;owner>/&lt;repo>". The first part defines the host name for
     the BSR, for example `buf.build`. When using this option, you must provide
     an environment variable named [`BUF_TOKEN`](https://docs.buf.build/bsr/authentication#buf_token)
     that the gateway will use to authenticate with the BSR in order to download
     the module's descriptors.
-  * **`grpcReflection`**: The value for this key is a boolean. If true, then
+  - **`grpc_reflection`**: The value for this key is a boolean. If true, then
     the [gRPC Server Reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
     protocol will be used to download the descriptors from the
     backend server itself.
 
 ### Descriptor Set Examples
-If using the `descriptorSetFile` option for the `descriptors` key, you can
+
+If using the `descriptor_set_file` option for the `descriptors` key, you can
 use `buf` or `protoc` to generate a file in the correct format.
 
 The following example uses `buf` to build proto sources in the current
@@ -189,7 +194,8 @@ buf build . -o ../my-services.protoset
 Here's another example using `buf`, this time to build the
 [buf.build/bufbuild/knit-demo](https://buf.build/bufbuild/knit-demo) module.
 This module contains service definitions that describe the
-_Star Wars API_ (https://swapi.dev/).
+_Star Wars API_ ([swapi.dev](https://swapi.dev/)).
+
 ```shell
 buf build buf.build/bufbuild/knit-demo -o swapi.protoset
 ```
@@ -236,6 +242,7 @@ gateway := &knit.Gateway{}
 ```
 
 This returns a gateway that will:
+
 1. Use `http.DefaultClient` as the transport for outbound RPCs.
 2. Use Connect as the protocol (vs. gRPC or gRPC-Web) and use the Protobuf
    binary format as the message encoding.
@@ -246,22 +253,23 @@ This returns a gateway that will:
    knows where to send outbound RPCs).
 
 You can customize the above behavior by setting various fields on the gateway:
-* `Client`: The transport to use for outbound RPCs. (This can also be overridden
+
+- `Client`: The transport to use for outbound RPCs. (This can also be overridden
   on a per-service basis, if some services require different middleware, such as
   auth, than others).
-* `ClientOptions`: The Connect client options to use for outbound RPCs. This
+- `ClientOptions`: The Connect client options to use for outbound RPCs. This
   allows customizing things like interceptors and protocols. If some backends
   only support gRPC, you can configure that with a client option.
-* `MaxParallelismPerRequest`: The concurrency limit for handling a single Knit
+- `MaxParallelismPerRequest`: The concurrency limit for handling a single Knit
   request. Note that this controls the parallelism of issuing entry-point RPCs
   and the parallelism of invoking resolvers. This setting cannot be enforced
   inside of resolver implementations: if a resolver implementation starts other
   goroutines to operate with additional parallelism, this limit may be exceeded.
-* `Route`: This is a default route. If you have one application that will
-  receive most (or all) of the Connect/gRPC traffic, configure it here. Then you 
+- `Route`: This is a default route. If you have one application that will
+  receive most (or all) of the Connect/gRPC traffic, configure it here. Then you
   only need to include routing information when registering services that should
   be routed elsewhere.
-* `TypeResolver`: This is an advanced option that is usually only useful or
+- `TypeResolver`: This is an advanced option that is usually only useful or
   necessary when using dynamic RPC schemas. This resolver provides descriptors
   for extensions and messages, in case any requests or responses include
   extensions or `google.protobuf.Any` messages.
@@ -334,6 +342,7 @@ the Connect framework, like any other such service.
 
 So now that our gateway is fully configured, we just wire it up as an HTTP
 handler:
+
 ```go
 package main
 
