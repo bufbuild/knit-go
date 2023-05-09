@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"buf.build/gen/go/bufbuild/knit/bufbuild/connect-go/buf/knit/gateway/v1alpha1/gatewayv1alpha1connect"
-	"buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/v1alpha1"
+	knitv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/v1alpha1"
 	"github.com/bufbuild/connect-go"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -86,6 +86,14 @@ type Gateway struct {
 //	mux.Handle(gateway.AsHandler())
 func (g *Gateway) AsHandler() (path string, h http.Handler) {
 	return gatewayv1alpha1connect.NewKnitServiceHandler(&handler{gateway: g})
+}
+
+// AsServiceHandler returns a [KnitServiceHandler] for g. This can be used
+// to register the gateway similar to other Connect services:
+//
+//	mux.Handle(gatewayv1alpha1connect.NewKnitServiceHandler(gateway.AsServiceHandler(), handlerOptions...))
+func (g *Gateway) AsServiceHandler() gatewayv1alpha1connect.KnitServiceHandler {
+	return &handler{gateway: g}
 }
 
 // AddService adds the given service's methods as available outbound RPCs.
