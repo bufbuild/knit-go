@@ -101,6 +101,7 @@ func main() {
 	svr := http.Server{
 		Handler:           h2c.NewHandler(loggingHandler, &http2.Server{}),
 		ReadHeaderTimeout: 30 * time.Second,
+		TLSConfig:         config.TLSConfig,
 	}
 	group, grpCtx := errgroup.WithContext(ctx)
 	shutdownComplete := make(chan struct{})
@@ -113,14 +114,23 @@ func main() {
 			logger.Sugar().Errorf("could not complete shutdown: %w", err)
 		}
 	}()
+	scheme := "HTTP"
+	serveFunc := svr.Serve
+	if config.TLSConfig != nil {
+		scheme = "HTTPS"
+		serveFunc = func(l net.Listener) error {
+			return svr.ServeTLS(l, "", "")
+		}
+	}
 	if config.ListenAddress != "" {
 		group.Go(func() error {
 			l, err := net.Listen("tcp", config.ListenAddress)
 			if err != nil {
 				return fmt.Errorf("failed to listen on bind address %s: %w", config.ListenAddress, err)
 			}
-			logger.Sugar().Infof("Listening on %s for HTTP requests...", l.Addr().String())
-			if err := svr.Serve(l); err != nil && err != http.ErrServerClosed {
+
+			logger.Sugar().Infof("Listening on %s for %s requests...", l.Addr().String(), scheme)
+			if err := serveFunc(l); err != nil && err != http.ErrServerClosed {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}
 			return nil
@@ -132,8 +142,8 @@ func main() {
 			if err != nil {
 				return fmt.Errorf("failed to listen on unix socket %s: %w", config.UnixSocket, err)
 			}
-			logger.Sugar().Infof("Listening on @%s for HTTP requests...", config.UnixSocket)
-			if err := svr.Serve(l); err != nil && err != http.ErrServerClosed {
+			logger.Sugar().Infof("Listening on unix::%s for %s requests...", config.UnixSocket, scheme)
+			if err := serveFunc(l); err != nil && err != http.ErrServerClosed {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}
 			return nil

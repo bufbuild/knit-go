@@ -60,6 +60,17 @@ type deferredMessage struct {
 }
 
 func (dm *deferredMessage) unmarshal(a any) error {
+	if dm.codec == nil {
+		// This can happen when the message size is zero: the Connect
+		// framework doesn't bother calling codec.Unmarshal, so this
+		// deferred message never sees the codec.
+		// We'll just double-check that the size is zero and, if so,
+		// don't need to do anything.
+		if len(dm.bytes) == 0 {
+			return nil
+		}
+		return fmt.Errorf("internal: %d bytes, but codec to unmarshal is nil", len(dm.bytes))
+	}
 	return dm.codec.Unmarshal(dm.bytes, a)
 }
 

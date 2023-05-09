@@ -136,6 +136,12 @@ func configureServerTLS(conf *externalServerTLSConfig) (*tls.Config, error) {
 
 func configureClientTLS(conf *externalClientTLSConfig) (*tls.Config, error) {
 	var tlsConf tls.Config
+	if conf == nil {
+		tlsConf.MinVersion = defaultClientMinTLSVersion
+		tlsConf.CipherSuites = defaultCipherSuites
+		return &tlsConf, nil
+	}
+
 	if (conf.Cert == nil) != (conf.Key == nil) {
 		return nil, fmt.Errorf("if either 'cert' and 'key' is specified then both must be specified")
 	}
@@ -209,6 +215,7 @@ func mergeClientTLSConfig(conf, defaults *externalClientTLSConfig) *externalClie
 	if merged.Key == nil {
 		merged.Key = defaults.Key
 	}
+	// ServerName property intentionally skipped since defaults should not include it
 
 	return &merged
 }

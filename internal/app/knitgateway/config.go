@@ -111,6 +111,9 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 	if err != nil {
 		return nil, fmt.Errorf("default_tls: invalid configuration: %w", err)
 	}
+	if extConf.DefaultTLS != nil && extConf.DefaultTLS.ServerName != "" {
+		return nil, fmt.Errorf("default_tls: invalid configuration: server_name property cannot be used in default settings, only in per-backend config")
+	}
 
 	for i, backendConf := range extConf.Backends {
 		if backendConf.RouteTo == "" {
@@ -163,11 +166,11 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 				return nil, fmt.Errorf("backend config #%d: tls stanza present but URL scheme is not https", i+1)
 			}
 		} else {
-			clientTLS, err = configureClientTLS(mergeClientTLSConfig(&backendConf.TLS.externalClientTLSConfig, extConf.DefaultTLS))
+			clientTLS, err = configureClientTLS(mergeClientTLSConfig(backendConf.TLS, extConf.DefaultTLS))
 			if err != nil {
 				return nil, fmt.Errorf("backend config #%d: tls: invalid configuration: %w", i+1, err)
 			}
-			if clientTLS != nil && backendConf.TLS.ServerName != "" {
+			if clientTLS != nil && backendConf.TLS != nil && backendConf.TLS.ServerName != "" {
 				clientTLS.ServerName = backendConf.TLS.ServerName
 			}
 		}
@@ -203,7 +206,7 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 
 	var listenAddress string
 	if extConf.Listen.Port != nil {
-		listenAddress = fmt.Sprintf("%s:%d", extConf.Listen.BindAddress, extConf.Listen.Port)
+		listenAddress = fmt.Sprintf("%s:%d", extConf.Listen.BindAddress, *extConf.Listen.Port)
 	}
 
 	return &GatewayConfig{
@@ -267,19 +270,13 @@ type externalBackendConfig struct {
 	// required if client certs are to be used, if a custom CA is needed for
 	// verifying backend cert, a custom server-name is needed (for SNI), or if
 	// top-level 'default_tls' config needs to be overridden.
-	TLS *externalBackendClientTLSConfig `yaml:"tls"`
+	TLS *externalClientTLSConfig `yaml:"tls"`
 
 	H2C         *bool                    `yaml:"h2c"`
 	Protocol    string                   `yaml:"protocol"`
 	Encoding    string                   `yaml:"encoding"`
 	Descriptors externalDescriptorConfig `yaml:"descriptors"`
 	Services    []string                 `yaml:"services"`
-}
-
-type externalBackendClientTLSConfig struct {
-	externalClientTLSConfig
-	// Override server name, for SNI.
-	ServerName string `yaml:"server_name"`
 }
 
 type externalClientTLSConfig struct {
@@ -298,7 +295,10 @@ type externalClientTLSConfig struct {
 	// they will be used as the client certificated presented to the backend server
 	// during TLS handshake.
 	Cert *string `yaml:"cert"`
-	Key  *string `yaml:"ley"`
+	Key  *string `yaml:"key"`
+
+	// Override server name, for SNI.
+	ServerName string `yaml:"server_name"`
 
 	// !!NOTE: If any other fields are added, also update mergeClientTLSConfig in tls.go!!!
 }
