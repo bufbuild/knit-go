@@ -88,7 +88,7 @@ func (g *Gateway) AsHandler() (path string, h http.Handler) {
 	return gatewayv1alpha1connect.NewKnitServiceHandler(&handler{gateway: g})
 }
 
-// AsServiceHandler returns a [KnitServiceHandler] for g. This can be used
+// AsServiceHandler returns a [gatewayv1alpha1connect.KnitServiceHandle] for g. This can be used
 // to register the gateway similar to other Connect services:
 //
 //	mux.Handle(gatewayv1alpha1connect.NewKnitServiceHandler(gateway.AsServiceHandler(), handlerOptions...))
