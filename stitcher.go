@@ -94,6 +94,10 @@ func (s *stitcher) stitch(ctx context.Context, patches [][]*patch, fallbackCatch
 				params[key] = msg.Interface()
 				continue
 			}
+			// TODO: We should move the calls to parseMessage to the start of handling, when validating the query.
+			// Currently, we could end up doing some work (top-level method names) even though the request is bad
+			// and doomed to fail. Also, its currently possible that we might re-parse this message even though
+			// we only need to do so once.
 			if err := parseMessage(key.params, msg.Interface(), s.gateway.TypeResolver); err != nil {
 				return fmt.Errorf("could not unmarshal request type %q for relation %q of type %q: %w",
 					msg.Descriptor().FullName(), patchGroup[0].mask.Name, patchGroup[0].target.ProtoReflect().Descriptor().FullName(), err,

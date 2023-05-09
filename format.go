@@ -129,7 +129,10 @@ func parseMessage(value *structpb.Value, msg proto.Message, res TypeResolver) er
 	if err != nil {
 		return err
 	}
-	return protojson.UnmarshalOptions{Resolver: res}.Unmarshal(data, msg)
+	if err := (protojson.UnmarshalOptions{Resolver: res}).Unmarshal(data, msg); err != nil {
+		return connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	return nil
 }
 
 //nolint:gocyclo
