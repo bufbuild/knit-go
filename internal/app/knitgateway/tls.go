@@ -1,6 +1,7 @@
 package knitgateway
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -63,6 +64,20 @@ var (
 		"TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256":   tls.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,
 	}
 )
+
+// ContextWithClientCert stores the given client certificate in the given context. This is set
+// when handling an incoming request, allowing the client's identity to be sent to backends
+// in request headers.
+func ContextWithClientCert(ctx context.Context, clientCert *x509.Certificate) context.Context {
+	return context.WithValue(ctx, clientCertContextKey{}, clientCert)
+}
+
+func clientCertFromContext(ctx context.Context) *x509.Certificate {
+	cert, _ := ctx.Value(clientCertContextKey{}).(*x509.Certificate)
+	return cert
+}
+
+type clientCertContextKey struct{}
 
 func configureServerTLS(conf *externalServerTLSConfig) (*tls.Config, error) {
 	if conf == nil {

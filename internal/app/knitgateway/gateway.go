@@ -28,6 +28,10 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+const (
+	clientIdentityHeader = "Knit-Client-Subject"
+)
+
 var (
 	// defaultH2CClient is like http.DefaultClient except that it will use HTTP/2 over plaintext
 	// (aka "H2C") to send requests to servers.
@@ -67,11 +71,12 @@ func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
 		if !ok {
 			return nil, fmt.Errorf("%s is a %s, not a service", svcName, descriptorKind(desc))
 		}
+		opts := append(svcConf.ConnectOpts, connect.WithInterceptors(&certForwardingInterceptor{}))
 		err = gateway.AddService(
 			svc,
 			knit.WithRoute(svcConf.BaseURL),
 			knit.WithClient(httpClient),
-			knit.WithClientOptions(svcConf.ConnectOpts...),
+			knit.WithClientOptions(opts...),
 			knit.WithTypeResolver(typeResolver{DescriptorSource: descSource}),
 		)
 		if err != nil {
@@ -79,6 +84,32 @@ func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
 		}
 	}
 	return gateway, nil
+}
+
+type certForwardingInterceptor struct{}
+
+func (c *certForwardingInterceptor) WrapUnary(unaryFunc connect.UnaryFunc) connect.UnaryFunc {
+	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+		if cert := clientCertFromContext(ctx); cert != nil {
+			req.Header().Set(clientIdentityHeader, cert.Subject.String())
+		}
+		return unaryFunc(ctx, req)
+	}
+}
+
+func (c *certForwardingInterceptor) WrapStreamingClient(clientFunc connect.StreamingClientFunc) connect.StreamingClientFunc {
+	return func(ctx context.Context, spec connect.Spec) connect.StreamingClientConn {
+		stream := clientFunc(ctx, spec)
+		if cert := clientCertFromContext(ctx); cert != nil {
+			stream.RequestHeader().Set(clientIdentityHeader, cert.Subject.String())
+		}
+		return stream
+	}
+}
+
+func (c *certForwardingInterceptor) WrapStreamingHandler(handlerFunc connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+	// should never be called
+	return handlerFunc
 }
 
 func makeHTTPClient(config ServiceConfig) (connect.HTTPClient, error) {

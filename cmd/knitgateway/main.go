@@ -89,7 +89,14 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle(gateway.AsHandler())
-	corsHandler := cors.AllowAll().Handler(mux)
+	certCapturingHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.TLS != nil && len(r.TLS.PeerCertificates) > 0 {
+			r = r.WithContext(knitgateway.ContextWithClientCert(r.Context(), r.TLS.PeerCertificates[0]))
+		}
+		mux.ServeHTTP(w, r)
+	})
+	// TODO: CORS should not be so lenient unless configured to be so
+	corsHandler := cors.AllowAll().Handler(certCapturingHandler)
 	loggingHandler := knitgateway.NewLoggingHandler(corsHandler, logger)
 	svr := http.Server{
 		Handler:           h2c.NewHandler(loggingHandler, &http2.Server{}),
