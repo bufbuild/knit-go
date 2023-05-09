@@ -84,16 +84,8 @@ type Gateway struct {
 // an [*http.ServeMux]'s Handle method:
 //
 //	mux.Handle(gateway.AsHandler())
-func (g *Gateway) AsHandler() (path string, h http.Handler) {
-	return gatewayv1alpha1connect.NewKnitServiceHandler(&handler{gateway: g})
-}
-
-// AsServiceHandler returns a [gatewayv1alpha1connect.KnitServiceHandle] for g. This can be used
-// to register the gateway similar to other Connect services:
-//
-//	mux.Handle(gatewayv1alpha1connect.NewKnitServiceHandler(gateway.AsServiceHandler(), handlerOptions...))
-func (g *Gateway) AsServiceHandler() gatewayv1alpha1connect.KnitServiceHandler {
-	return &handler{gateway: g}
+func (g *Gateway) AsHandler(handlerOptions ...connect.HandlerOption) (path string, h http.Handler) {
+	return gatewayv1alpha1connect.NewKnitServiceHandler(&handler{gateway: g}, handlerOptions...)
 }
 
 // AddService adds the given service's methods as available outbound RPCs.
