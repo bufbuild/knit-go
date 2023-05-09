@@ -16,6 +16,7 @@ package knitgateway
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -43,20 +44,30 @@ const (
 
 	protoEncoding = "proto"
 	jsonEncoding  = "json"
+
+	tlsVersion10 = "1.0"
+	tlsVersion11 = "1.1"
+	tlsVersion12 = "1.2"
+	tlsVersion13 = "1.3"
 )
 
 // GatewayConfig is the configuration for a Knit gateway.
 type GatewayConfig struct {
 	ListenAddress string
+	UnixSocket    string
+	TLSConfig     *tls.Config
 	Services      map[string]ServiceConfig
 }
 
 // ServiceConfig is the configuration for a single RPC service.
 type ServiceConfig struct {
 	BaseURL     *url.URL
+	UnixSocket  string
+	TLSConfig   *tls.Config
 	ConnectOpts []connect.ClientOption
 	H2C         bool
 	Descriptors DescriptorSource
+	Index       int
 }
 
 // LoadConfig reads the config file at the given path and returns the resulting
@@ -81,12 +92,25 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 	}
 
 	if extConf.Listen.BindAddress == "" {
-		extConf.Listen.BindAddress = "127.0.0.1"
+		extConf.Listen.BindAddress = "0.0.0.0"
+	}
+	if extConf.Listen.Port == nil && extConf.Listen.UnixSocket == "" {
+		return nil, errors.New("listen config must include at least one of 'port' or 'unix_socket'")
 	}
 
 	descriptorSources := map[externalDescriptorConfig]DescriptorSource{}
 	backendConfigIndexByService := map[string]int{}
 	services := map[string]ServiceConfig{}
+
+	serverTLS, err := configureServerTLS(extConf.Listen.TLS)
+	if err != nil {
+		return nil, fmt.Errorf("listen.tls: invalid configuration: %w", err)
+	}
+	// we use this to validate the default_tls config (and can discard the result)
+	_, err = configureClientTLS(extConf.DefaultTLS)
+	if err != nil {
+		return nil, fmt.Errorf("default_tls: invalid configuration: %w", err)
+	}
 
 	for i, backendConf := range extConf.Backends {
 		if backendConf.RouteTo == "" {
@@ -111,6 +135,9 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 				i+1, backendConf.Encoding, protoEncoding, jsonEncoding)
 		}
 		h2c := backendConf.H2C != nil && *backendConf.H2C
+		if h2c && routeURL.Scheme == httpsScheme {
+			return nil, fmt.Errorf("backend config #%d: 'h2c' is enabled, but URL scheme is %q; H2C is for plaintext connections", i+1, routeURL.Scheme)
+		}
 		switch backendConf.Protocol {
 		case "", connectProtocol:
 			// nothing to do; this is the default
@@ -130,11 +157,28 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 			return nil, fmt.Errorf("backend config #%d: %q is not a valid protocol; should be '%s', '%s', or '%s'",
 				i+1, backendConf.Protocol, connectProtocol, grpcProtocol, grpcWebProtocol)
 		}
+		var clientTLS *tls.Config
+		if routeURL.Scheme != httpsScheme {
+			if backendConf.TLS != nil {
+				return nil, fmt.Errorf("backend config #%d: tls stanza present but URL scheme is not https", i+1)
+			}
+		} else {
+			clientTLS, err = configureClientTLS(mergeClientTLSConfig(&backendConf.TLS.externalClientTLSConfig, extConf.DefaultTLS))
+			if err != nil {
+				return nil, fmt.Errorf("backend config #%d: tls: invalid configuration: %w", i+1, err)
+			}
+			if clientTLS != nil && backendConf.TLS.ServerName != "" {
+				clientTLS.ServerName = backendConf.TLS.ServerName
+			}
+		}
 
 		svcConf := ServiceConfig{
 			BaseURL:     routeURL,
+			UnixSocket:  backendConf.UnixSocket,
+			TLSConfig:   clientTLS,
 			ConnectOpts: options,
 			H2C:         h2c,
+			Index:       i,
 		}
 		if !backendConf.Descriptors.GRPCReflection {
 			svcConf.Descriptors = descriptorSources[backendConf.Descriptors]
@@ -157,31 +201,106 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
 		}
 	}
 
+	var listenAddress string
+	if extConf.Listen.Port != nil {
+		listenAddress = fmt.Sprintf("%s:%d", extConf.Listen.BindAddress, extConf.Listen.Port)
+	}
+
 	return &GatewayConfig{
-		ListenAddress: fmt.Sprintf("%s:%d", extConf.Listen.BindAddress, extConf.Listen.Port),
+		ListenAddress: listenAddress,
+		UnixSocket:    extConf.Listen.UnixSocket,
+		TLSConfig:     serverTLS,
 		Services:      services,
 	}, nil
 }
 
 type externalGatewayConfig struct {
-	Listen   externalListenConfig    `yaml:"listen"`
-	Backends []externalBackendConfig `yaml:"backends"`
+	Listen     externalListenConfig     `yaml:"listen"`
+	Backends   []externalBackendConfig  `yaml:"backends"`
+	DefaultTLS *externalClientTLSConfig `yaml:"default_tls"`
 }
 
 type externalListenConfig struct {
 	BindAddress string `yaml:"bind_address"`
-	Port        int    `yaml:"port"`
-	// TODO: support TLS config? unix sockets?
+	Port        *int   `yaml:"port"`
+	// If present, gateway will listen for requests on unix domain socket with given path.
+	// This is in addition to TCP listener (unless port is missing, in which case only the
+	// unix socket listener is used).
+	UnixSocket string `yaml:"unix_socket"`
+	// If 'tls' section is present, clients must use TLS when connecting.
+	TLS *externalServerTLSConfig `yaml:"tls"`
+}
+
+type externalServerTLSConfig struct {
+	// Cert and Key are both required.
+	Cert string `yaml:"cert"`
+	Key  string `yaml:"key"`
+	// If absent, defaults to "1.0". Allowed values are "1.0", "1.1", "1.2", and "1.3".
+	MinVersion string `yaml:"min_version"`
+	// If absent, a default set of secure cipher suites is used.
+	Ciphers *externalCiphersConfig `yaml:"ciphers"`
+	// If 'client_certs' key is absent, client TLS certs will be ignored and not validated.
+	ClientCerts *externalClientCertsConfig `yaml:"client_certs"`
+}
+
+type externalCiphersConfig struct {
+	// Exactly one of the following fields may be used, not both.
+
+	// Enumerates the allowed cipher suite names.
+	Allow []string `yaml:"allow"`
+	// Enumerates the disallowed cipher suite names. The default cipher suites will be used
+	// but items named here will be excluded.
+	Disallow []string `yaml:"disallow"`
+}
+
+type externalClientCertsConfig struct {
+	Require bool   `yaml:"require"`
+	CACert  string `yaml:"cacert"`
 }
 
 type externalBackendConfig struct {
 	RouteTo string `yaml:"route_to"`
-	// TODO: support TLS client config? unix sockets?
+
+	// If present, requests will be sent via unix socket instead of TCP connection.
+	UnixSocket string `yaml:"unix_socket"`
+	// Should not be present unless 'route_to' indicates "https" scheme. Only
+	// required if client certs are to be used, if a custom CA is needed for
+	// verifying backend cert, a custom server-name is needed (for SNI), or if
+	// top-level 'default_tls' config needs to be overridden.
+	TLS *externalBackendClientTLSConfig `yaml:"tls"`
+
 	H2C         *bool                    `yaml:"h2c"`
 	Protocol    string                   `yaml:"protocol"`
 	Encoding    string                   `yaml:"encoding"`
 	Descriptors externalDescriptorConfig `yaml:"descriptors"`
 	Services    []string                 `yaml:"services"`
+}
+
+type externalBackendClientTLSConfig struct {
+	externalClientTLSConfig
+	// Override server name, for SNI.
+	ServerName string `yaml:"server_name"`
+}
+
+type externalClientTLSConfig struct {
+	// If absent, defaults to "1.2". Allowed values are "1.0", "1.1", "1.2", and "1.3".
+	MinVersion *string `yaml:"min_version"`
+	// If absent, a default set of secure cipher suites is used.
+	Ciphers *externalCiphersConfig `yaml:"ciphers"`
+
+	CACert *string `yaml:"cacert"`
+	// If true, the backend's certificate is not verified. For testing only.
+	// It is STRONGLY discouraged to use this flag in real production environments.
+	// If present, any value for 'cacert' is ignored.
+	SkipVerify *bool `yaml:"skip_verify"`
+
+	// If one of the following is present, then both must be present. When present,
+	// they will be used as the client certificated presented to the backend server
+	// during TLS handshake.
+	Cert *string `yaml:"cert"`
+	Key  *string `yaml:"ley"`
+
+	// !!NOTE: If any other fields are added, also update mergeClientTLSConfig in tls.go!!!
 }
 
 type externalDescriptorConfig struct {
@@ -252,11 +371,11 @@ func newDescriptorSource(ctx context.Context, svcConf *ServiceConfig, config ext
 		if svcConf.BaseURL.Scheme == httpScheme && !svcConf.H2C {
 			return nil, fmt.Errorf("cannot use grpc reflection with http scheme without H2C")
 		}
-		httpClient := http.DefaultClient
-		if svcConf.H2C {
-			httpClient = DefaultH2CClient
-		}
-		return newGRPCDescriptorSource(ctx, httpClient, svcConf.ConnectOpts, svcConf.BaseURL.String()), nil
+		return &deferredGRPCDescriptorSource{
+			ctx:     ctx,
+			opts:    svcConf.ConnectOpts,
+			baseURL: svcConf.BaseURL.String(),
+		}, nil
 
 	default:
 		return nil, fmt.Errorf("descriptor config is empty")

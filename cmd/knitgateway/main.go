@@ -29,6 +29,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -39,8 +40,8 @@ const (
 func main() {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	conf := flagSet.String("conf", "knitgateway.yaml", "The path to a YAML config file.")
-	help := flagSet.Bool("help", false, "Show usage information.")
 	logFormat := flagSet.String("log-format", logFormatConsole, fmt.Sprintf("Can be %q or %q.", logFormatConsole, logFormatJSON))
+	help := flagSet.Bool("help", false, "Show usage information.")
 	flagSet.Usage = func() { printUsage(flagSet) }
 	_ = flagSet.Parse(os.Args[1:])
 
@@ -94,13 +95,47 @@ func main() {
 		Handler:           h2c.NewHandler(loggingHandler, &http2.Server{}),
 		ReadHeaderTimeout: 30 * time.Second,
 	}
-	l, err := net.Listen("tcp", config.ListenAddress)
-	if err != nil {
-		fatalf("failed to listen on bind address %s: %v\n", config.ListenAddress, err)
+	group, grpCtx := errgroup.WithContext(ctx)
+	shutdownComplete := make(chan struct{})
+	go func() {
+		defer close(shutdownComplete)
+		<-grpCtx.Done()
+		timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		if err := svr.Shutdown(timeoutCtx); err != nil {
+			logger.Sugar().Errorf("could not complete shutdown: %w", err)
+		}
+	}()
+	if config.ListenAddress != "" {
+		group.Go(func() error {
+			l, err := net.Listen("tcp", config.ListenAddress)
+			if err != nil {
+				return fmt.Errorf("failed to listen on bind address %s: %w", config.ListenAddress, err)
+			}
+			logger.Sugar().Infof("Listening on %s for HTTP requests...", l.Addr().String())
+			if err := svr.Serve(l); err != nil && err != http.ErrServerClosed {
+				return fmt.Errorf("HTTP server failed: %w", err)
+			}
+			return nil
+		})
 	}
-	logger.Sugar().Infof("Listening on %s for HTTP requests...", l.Addr().String())
-	if err := svr.Serve(l); err != nil {
-		fatalf("HTTP server failed: %v", err)
+	if config.UnixSocket != "" {
+		group.Go(func() error {
+			l, err := net.Listen("unix", config.UnixSocket)
+			if err != nil {
+				return fmt.Errorf("failed to listen on unix socket %s: %w", config.UnixSocket, err)
+			}
+			logger.Sugar().Infof("Listening on @%s for HTTP requests...", config.UnixSocket)
+			if err := svr.Serve(l); err != nil && err != http.ErrServerClosed {
+				return fmt.Errorf("HTTP server failed: %w", err)
+			}
+			return nil
+		})
+	}
+	err = group.Wait()
+	<-shutdownComplete
+	if err != nil {
+		fatalf("%v", err)
 	}
 }
 

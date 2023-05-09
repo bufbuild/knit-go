@@ -16,16 +16,89 @@
 # http://localhost:30480.
 
 listen:
-  # By default, the server will only bind to the loop back interface.
-  # You can set this to 0.0.0.0 to accept requests on all network
-  # interfaces.
-  #bind_address: 127.0.0.1
+  # By default, the server binds to all interfaces. You can set
+  # this to 127.0.0.1 to accept requests only on the loopback
+  # interface.
+  #bind_address: 0.0.0.0
 
-  # By default, the server will use an ephemeral port (configured
-  # as port zero). It will print the actual ephemeral port at
-  # startup. You can set this property to instead use a stable
-  # port that can be statically configured in clients.
+  # A port is required in order to listen on TCP socket. If not
+  # specified then a unix_socket must be specified.
   port: 30480
+
+  # If specified, the server will listen on a unix domain socket.
+  # This is in addition to listening on TCP socket if port is also
+  # specified.
+  #unix_socket: /path/to/domain/socket
+
+  # If the "tls" section is present, clients must use TLS (aka SSL)
+  # to connect to the server.
+  #tls:
+    # These are paths to certificate and key files. The files must be
+    # PEM-encoded X509 files. Both of these properties must be
+    # specified.
+    #cert: /path/to/cert
+    #key: /path/to/private-key
+
+    # This minimum version of TLS to accept. Defaults to 1.0. Other
+    # allowed values are 1.1, 1.2, and 1.3.
+    #min_version: 1.0
+
+    # The ciphers to allow or disallow for TLS 1.2 and below. *
+    # Below are the supported cipher suites and which ones are allowed
+    # by default.
+    #
+    #   Allowed     TLS_RSA_WITH_AES_128_CBC_SHA
+    #   Allowed     TLS_RSA_WITH_AES_256_CBC_SHA
+    #   Allowed     TLS_RSA_WITH_AES_128_GCM_SHA256                (TLS 1.2 only)
+    #   Allowed     TLS_RSA_WITH_AES_256_GCM_SHA384                (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+    #   Allowed     TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA
+    #   Allowed     TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+    #   Allowed     TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+    #   Allowed     TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256        (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384        (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256          (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384          (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256    (TLS 1.2 only)
+    #   Allowed     TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256  (TLS 1.2 only)
+    #   Disallowed  TLS_RSA_WITH_RC4_128_SHA
+    #   Disallowed  TLS_RSA_WITH_3DES_EDE_CBC_SHA
+    #   Disallowed  TLS_RSA_WITH_AES_128_CBC_SHA256                (TLS 1.2 only)
+    #   Disallowed  TLS_ECDHE_ECDSA_WITH_RC4_128_SHA
+    #   Disallowed  TLS_ECDHE_RSA_WITH_RC4_128_SHA
+    #   Disallowed  TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA
+    #   Disallowed  TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256        (TLS 1.2 only)
+    #   Disallowed  TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256          (TLS 1.2 only)
+    #
+    # * For TLS 1.3, supported cipher suites are the following and are not configurable:
+    #     TLS_AES_128_GCM_SHA256, TLS_AES_256_GCM_SHA384, TLS_CHACHA20_POLY1305_SHA256
+    #
+    #ciphers:
+      # Only one of the following may be present. If 'allow' is present,
+      # it enumerates ALL allowed cipher suites. Any cipher not named is
+      # not allowed.
+      #allow: []
+      # If 'disallow' is present, it enumerates ALL disallowed cipher
+      # suites. Any cipher not named but present in the table above is
+      # allowed.
+      #disallow: []
+
+    # If the 'client_certs' section is present, TLS certificates will
+    # be requested from clients during the handshake.
+    #client_certs:
+      # If false or absent, client certs are verified if given, but are
+      # not required. If true, connections will be terminated if the
+      # client does not provide a valid cert.
+      #
+      # When a client cert is present and valid, the authenticated
+      # identity ("subject" field of the cert) will be added to HTTP
+      # headers for all requests to backends.
+      #require: true
+
+      # This is the path to PEM-encoded X509 certificate pool file that
+      # contains certs for CAs (certificate authorities/issuers). These
+      # are used to verify client certs.
+      #cacert: /path/to/ca-cert
 
 backends:
 # You can define any number of backends. For this example, there is
@@ -33,6 +106,47 @@ backends:
 # github.com/bufbuild/knit-demo repo:
 - route_to: http://127.0.0.1:30485
   # 30485 is the default port used by swapi-server.
+
+  # If specified, the gateway will use the named unix domain socket
+  # to connect to the backend.
+  #unix_socket: /path/to/domain/socket
+
+  # A 'tls' section may be present (but is not required) for
+  # backends that use "https". Any property that is NOT present
+  # will use the value present in the 'default_tls' top-level
+  # config stanza, if present. If that top-level stanza is not
+  # present, then the defaults described below apply.
+  #tls:
+    # This minimum version of TLS to accept. Defaults to 1.2. Other
+    # allowed values are 1.1, 1.2, and 1.3.
+    # NOTE: this is a different default than for the listener config.
+    # This listener default is more lenient, to support external
+    # clients that use older browser or mobile OS software.
+    #min_version: 1.2
+
+    # The ciphers to allow or disallow for TLS 1.2 and below. See the
+    # info above (under 'listener.tls' config) for more details on
+    # configuring cipher suites.
+    #ciphers:
+      #allow: []
+      #disallow: []
+
+    # This is the path to PEM-encoded X509 certificate pool file that
+    # contains certs for CAs (certificate authorities/issuers). These
+    # are used to verify server certs of the backend.
+    #cacert: /path/to/ca-cert
+    # This flag DISABLES verification of server certs. Its use is
+    # strongly discouraged. It is present primarily to aid with
+    # testing.
+    #skip_verify: false
+
+    # These are paths to certificate and key files to use as a client
+    # cert, when connecting to the backend. The files must be
+    # PEM-encoded X509 files. Both must be present together, to enable
+    # client certs, or both must be absent, to connect to the backend
+    # without a client cert.
+    #cert: /path/to/cert
+    #key: /path/to/private-key
 
   # By default, the gateway will use the Connect protocol to send
   # RPCs to the backend. It can be configured to use gRPC or
@@ -51,7 +165,7 @@ backends:
     - buf.knit.demo.swapi.species.v1.SpeciesService
     - buf.knit.demo.swapi.starship.v1.StarshipService
     - buf.knit.demo.swapi.vehicle.v1.VehicleService
-    # relations
+    # These services define relation resolvers:
     - buf.knit.demo.swapi.relations.v1.FilmResolverService
     - buf.knit.demo.swapi.relations.v1.PersonResolverService
     - buf.knit.demo.swapi.relations.v1.PlanetResolverService
@@ -92,7 +206,29 @@ backends:
   #
 
   # Since gRPC reflection uses a full-duplex bidi stream, we must
-  # use h2c to use it with a plain-text server. H2C simply means
-  # HTTP/2 over plain-text. (Note that not all HTTP servers support
-  # this! It usually requires special server configuration.)
+  # use HTTP/2. Usually, HTTP/2 is negotiated during the TLS
+  # handshake. But since we are using plaintext to talk to the
+  # server (i.e. the scheme in 'route_to' above is "http", not
+  # "https"), we must enable H2C. H2C simply means HTTP/2 over
+  # plain-text.
+  #
+  # NOTE: NOT all HTTP servers support this! It usually requires
+  # special server configuration. For this case, swapi-server DOES
+  # support it, so this setting will work.
   h2c: true
+
+# If many or all backends use the same TLS configuration, then
+# specify it here instead of repeating it in the 'tls' stanza for
+# each backend.
+#default_tls:
+  # This section supports all of the same properties as the 'tls'
+  # section under 'backends' above, EXCEPT for 'server_name'. That
+  # property must be provided on a per-backend basis.
+  #min_version: 1.2
+  #ciphers:
+    #allow: []
+    #disallow: []
+  #cacert: /path/to/ca-cert
+  #skip_verify: false
+  #cert: /path/to/cert
+  #key: /path/to/private-key

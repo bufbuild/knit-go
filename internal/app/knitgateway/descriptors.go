@@ -64,8 +64,23 @@ func (f *fileDescriptorSetSource) FindExtensionByNumber(message protoreflect.Ful
 	return f.types.FindExtensionByNumber(message, field)
 }
 
-// The following code was copied from buf curl's implementation.
-// See github.com/bufbuild/buf/private/buf/bufcurl.NewServerReflectionResolver
+type deferredGRPCDescriptorSource struct {
+	ctx     context.Context //nolint:containedctx
+	opts    []connect.ClientOption
+	baseURL string
+}
+
+func (d *deferredGRPCDescriptorSource) FindDescriptorByName(protoreflect.FullName) (protoreflect.Descriptor, error) {
+	return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+}
+
+func (d *deferredGRPCDescriptorSource) FindExtensionByNumber(protoreflect.FullName, protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
+	return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+}
+
+func (d *deferredGRPCDescriptorSource) WithHTTPClient(client connect.HTTPClient) DescriptorSource {
+	return newGRPCDescriptorSource(d.ctx, client, d.opts, d.baseURL)
+}
 
 type grpcDescriptorSource struct {
 	ctx    context.Context //nolint:containedctx
