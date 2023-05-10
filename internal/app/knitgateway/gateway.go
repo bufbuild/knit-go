@@ -32,10 +32,11 @@ const (
 	clientIdentityHeader = "Knit-Client-Subject"
 )
 
+//nolint:gochecknoglobals
 var (
 	// defaultH2CClient is like http.DefaultClient except that it will use HTTP/2 over plaintext
 	// (aka "H2C") to send requests to servers.
-	defaultH2CClient = &http.Client{ //nolint:gochecknoglobals
+	defaultH2CClient = &http.Client{
 		Transport: &http2.Transport{
 			AllowHTTP: true,
 			DialTLSContext: func(ctx context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
@@ -71,7 +72,7 @@ func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
 		if !ok {
 			return nil, fmt.Errorf("%s is a %s, not a service", svcName, descriptorKind(desc))
 		}
-		opts := append(svcConf.ConnectOpts, connect.WithInterceptors(&certForwardingInterceptor{}))
+		opts := append(svcConf.ConnectOpts, connect.WithInterceptors(&certForwardingInterceptor{})) //nolint:gocritic
 		err = gateway.AddService(
 			svc,
 			knit.WithRoute(svcConf.BaseURL),
@@ -126,7 +127,7 @@ func makeHTTPClient(config ServiceConfig) (connect.HTTPClient, error) {
 		if err := checkUnixSocket(config.UnixSocket); err != nil {
 			return nil, errorHasFilename(err, config.UnixSocket)
 		}
-		dial = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		dial = func(ctx context.Context, _, _ string) (net.Conn, error) {
 			return defaultDialer.DialContext(ctx, "unix", config.UnixSocket)
 		}
 	}

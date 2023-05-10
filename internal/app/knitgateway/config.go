@@ -72,7 +72,7 @@ type ServiceConfig struct {
 
 // LoadConfig reads the config file at the given path and returns the resulting
 // GatewayConfig on success.
-func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) {
+func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //nolint:gocyclo
 	configInput, err := os.Open(path)
 	if err != nil {
 		return nil, err

@@ -1,3 +1,17 @@
+// Copyright 2023 Buf Technologies, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package knitgateway
 
 import (
@@ -19,6 +33,7 @@ const (
 	defaultClientMinTLSVersion = tls.VersionTLS12
 )
 
+//nolint:gochecknoglobals
 var (
 	defaultCipherSuites = []uint16{
 		tls.TLS_RSA_WITH_AES_128_CBC_SHA,
@@ -82,7 +97,7 @@ type clientCertContextKey struct{}
 func configureServerTLS(conf *externalServerTLSConfig) (*tls.Config, error) {
 	if conf == nil {
 		// not using TLS if no 'listen.tls' stanza provided
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 	var tlsConf tls.Config
 	if conf.Cert == "" || conf.Key == "" {
@@ -176,7 +191,7 @@ func configureClientTLS(conf *externalClientTLSConfig) (*tls.Config, error) {
 	}
 
 	if conf.SkipVerify != nil && *conf.SkipVerify {
-		tlsConf.InsecureSkipVerify = true
+		tlsConf.InsecureSkipVerify = true //nolint:gosec
 	} else if conf.CACert != nil {
 		var err error
 		tlsConf.RootCAs, err = loadCertificatePool(*conf.CACert)
@@ -220,8 +235,8 @@ func mergeClientTLSConfig(conf, defaults *externalClientTLSConfig) *externalClie
 	return &merged
 }
 
-func parseTLSVersion(v string) (uint16, error) {
-	switch v {
+func parseTLSVersion(version string) (uint16, error) {
+	switch version {
 	case tlsVersion10:
 		return tls.VersionTLS10, nil
 	case tlsVersion11:
@@ -232,7 +247,7 @@ func parseTLSVersion(v string) (uint16, error) {
 		return tls.VersionTLS13, nil
 	default:
 		return 0, fmt.Errorf("%q is not a valid TLS version; instead use %q, %q, %q, or %q",
-			v, tlsVersion10, tlsVersion11, tlsVersion12, tlsVersion13)
+			version, tlsVersion10, tlsVersion11, tlsVersion12, tlsVersion13)
 	}
 }
 

@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net"
@@ -124,13 +125,13 @@ func main() {
 	}
 	if config.ListenAddress != "" {
 		group.Go(func() error {
-			l, err := net.Listen("tcp", config.ListenAddress)
+			tcpListener, err := net.Listen("tcp", config.ListenAddress)
 			if err != nil {
 				return fmt.Errorf("failed to listen on bind address %s: %w", config.ListenAddress, err)
 			}
 
-			logger.Sugar().Infof("Listening on %s for %s requests...", l.Addr().String(), scheme)
-			if err := serveFunc(l); err != nil && err != http.ErrServerClosed {
+			logger.Sugar().Infof("Listening on %s for %s requests...", tcpListener.Addr().String(), scheme)
+			if err := serveFunc(tcpListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}
 			return nil
@@ -138,12 +139,12 @@ func main() {
 	}
 	if config.UnixSocket != "" {
 		group.Go(func() error {
-			l, err := net.Listen("unix", config.UnixSocket)
+			unixListener, err := net.Listen("unix", config.UnixSocket)
 			if err != nil {
 				return fmt.Errorf("failed to listen on unix socket %s: %w", config.UnixSocket, err)
 			}
-			logger.Sugar().Infof("Listening on unix::%s for %s requests...", config.UnixSocket, scheme)
-			if err := serveFunc(l); err != nil && err != http.ErrServerClosed {
+			logger.Sugar().Infof("Listening on unix socket %s for %s requests...", config.UnixSocket, scheme)
+			if err := serveFunc(unixListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}
 			return nil
