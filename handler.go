@@ -32,14 +32,19 @@ import (
 //
 //nolint:gochecknoglobals
 var forbiddenHeaders = map[string]struct{}{
+	"accept":            {},
 	"connect":           {},
+	"connection":        {},
 	"expect":            {},
 	"host":              {},
+	"http2-settings":    {},
 	"keep-alive":        {},
 	"origin":            {},
+	"proxy-connection":  {},
 	"te":                {},
 	"trailer":           {},
 	"transfer-encoding": {},
+	"upgrade":           {},
 }
 
 type handler struct {
@@ -270,6 +275,7 @@ func propagateHeaders(src http.Header, dest http.Header) {
 			strings.HasPrefix(lowerName, "accept-"),
 			strings.HasPrefix(lowerName, "connect-"),
 			strings.HasPrefix(lowerName, "content-"),
+			strings.HasPrefix(lowerName, "grpc-"),
 			strings.HasPrefix(lowerName, "if-"):
 			// skip these, too
 			continue
