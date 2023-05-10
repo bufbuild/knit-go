@@ -34,20 +34,20 @@ const (
 
 //nolint:gochecknoglobals
 var (
+	defaultDialer = &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+
 	// defaultH2CClient is like http.DefaultClient except that it will use HTTP/2 over plaintext
 	// (aka "H2C") to send requests to servers.
 	defaultH2CClient = &http.Client{
 		Transport: &http2.Transport{
 			AllowHTTP: true,
 			DialTLSContext: func(ctx context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
-				return (&net.Dialer{}).DialContext(ctx, network, addr)
+				return defaultDialer.DialContext(ctx, network, addr)
 			},
 		},
-	}
-
-	defaultDialer = &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
 	}
 )
 
