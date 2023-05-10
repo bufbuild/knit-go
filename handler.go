@@ -33,6 +33,8 @@ import (
 //nolint:gochecknoglobals
 var forbiddenHeaders = map[string]struct{}{
 	"connect":           {},
+	"accept":            {},
+	"connection":        {},
 	"expect":            {},
 	"host":              {},
 	"keep-alive":        {},
