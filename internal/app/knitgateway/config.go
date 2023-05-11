@@ -53,10 +53,11 @@ const (
 
 // GatewayConfig is the configuration for a Knit gateway.
 type GatewayConfig struct {
-	ListenAddress string
-	UnixSocket    string
-	TLSConfig     *tls.Config
-	Services      map[string]ServiceConfig
+	ListenAddress            string
+	UnixSocket               string
+	TLSConfig                *tls.Config
+	Services                 map[string]ServiceConfig
+	MaxParallelismPerRequest int
 }
 
 // ServiceConfig is the configuration for a single RPC service.
@@ -210,16 +211,18 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 	}
 
 	return &GatewayConfig{
-		ListenAddress: listenAddress,
-		UnixSocket:    extConf.Listen.UnixSocket,
-		TLSConfig:     serverTLS,
-		Services:      services,
+		ListenAddress:            listenAddress,
+		UnixSocket:               extConf.Listen.UnixSocket,
+		TLSConfig:                serverTLS,
+		Services:                 services,
+		MaxParallelismPerRequest: extConf.Limits.PerRequestParallelism,
 	}, nil
 }
 
 type externalGatewayConfig struct {
 	Listen            externalListenConfig     `yaml:"listen"`
 	Backends          []externalBackendConfig  `yaml:"backends"`
+	Limits            externalLimitsConfig     `yaml:"limits"`
 	DefaultBackendTLS *externalClientTLSConfig `yaml:"backend_tls"`
 }
 
@@ -307,6 +310,12 @@ type externalDescriptorConfig struct {
 	DescriptorSetFile string `yaml:"descriptor_set_file"`
 	BufModule         string `yaml:"buf_module"`
 	GRPCReflection    bool   `yaml:"grpc_reflection"`
+}
+
+type externalLimitsConfig struct {
+	PerRequestParallelism int `yaml:"per_request_parallelism"`
+	// TODO: add other limits like message read size limits, resolver batch size limits,
+	//       max total parallelism, max concurrent requests, rate limits, etc.
 }
 
 func newDescriptorSource(ctx context.Context, svcConf *ServiceConfig, config externalDescriptorConfig) (DescriptorSource, error) {

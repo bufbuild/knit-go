@@ -53,7 +53,7 @@ var (
 
 // CreateGateway creates a Knit gateway with the given configuration.
 func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
-	gateway := &knit.Gateway{}
+	gateway := &knit.Gateway{MaxParallelismPerRequest: config.MaxParallelismPerRequest}
 	for svcName, svcConf := range config.Services {
 		httpClient, err := makeHTTPClient(svcConf)
 		if err != nil {
