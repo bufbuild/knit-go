@@ -30,11 +30,11 @@ func (d *dynamicCodec) Name() string {
 	return d.codec.Name()
 }
 
-func (d *dynamicCodec) Marshal(a any) ([]byte, error) {
-	if im, ok := a.(*indirectMessage); ok {
-		a = im.a
+func (d *dynamicCodec) Marshal(msg any) ([]byte, error) {
+	if im, ok := msg.(*indirectMessage); ok {
+		msg = im.a
 	}
-	return d.codec.Marshal(a)
+	return d.codec.Marshal(msg)
 }
 
 func (d *dynamicCodec) Unmarshal(bytes []byte, msg any) error {
@@ -59,8 +59,19 @@ type deferredMessage struct {
 	codec connect.Codec
 }
 
-func (dm *deferredMessage) unmarshal(a any) error {
-	return dm.codec.Unmarshal(dm.bytes, a)
+func (dm *deferredMessage) unmarshal(msg any) error {
+	if dm.codec == nil {
+		// This can happen when the message size is zero: the Connect
+		// framework doesn't bother calling codec.Unmarshal, so this
+		// deferred message never sees the codec.
+		// We'll just double-check that the size is zero and, if so,
+		// don't need to do anything.
+		if len(dm.bytes) == 0 {
+			return nil
+		}
+		return fmt.Errorf("internal: %d bytes, but codec to unmarshal is nil", len(dm.bytes))
+	}
+	return dm.codec.Unmarshal(dm.bytes, msg)
 }
 
 type defaultProtoCodec struct{}
