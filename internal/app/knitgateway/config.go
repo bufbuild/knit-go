@@ -107,11 +107,11 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 		return nil, fmt.Errorf("listen.tls: invalid configuration: %w", err)
 	}
 	// we use this to validate the default_tls config (and can discard the result)
-	_, err = configureClientTLS(extConf.DefaultTLS)
+	_, err = configureClientTLS(extConf.DefaultBackendTLS)
 	if err != nil {
 		return nil, fmt.Errorf("default_tls: invalid configuration: %w", err)
 	}
-	if extConf.DefaultTLS != nil && extConf.DefaultTLS.ServerName != "" {
+	if extConf.DefaultBackendTLS != nil && extConf.DefaultBackendTLS.ServerName != "" {
 		return nil, fmt.Errorf("default_tls: invalid configuration: server_name property cannot be used in default settings, only in per-backend config")
 	}
 
@@ -166,7 +166,7 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 				return nil, fmt.Errorf("backend config #%d: tls stanza present but URL scheme is not https", i+1)
 			}
 		} else {
-			clientTLS, err = configureClientTLS(mergeClientTLSConfig(backendConf.TLS, extConf.DefaultTLS))
+			clientTLS, err = configureClientTLS(mergeClientTLSConfig(backendConf.TLS, extConf.DefaultBackendTLS))
 			if err != nil {
 				return nil, fmt.Errorf("backend config #%d: tls: invalid configuration: %w", i+1, err)
 			}
@@ -218,9 +218,9 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 }
 
 type externalGatewayConfig struct {
-	Listen     externalListenConfig     `yaml:"listen"`
-	Backends   []externalBackendConfig  `yaml:"backends"`
-	DefaultTLS *externalClientTLSConfig `yaml:"default_tls"`
+	Listen            externalListenConfig     `yaml:"listen"`
+	Backends          []externalBackendConfig  `yaml:"backends"`
+	DefaultBackendTLS *externalClientTLSConfig `yaml:"backend_tls"`
 }
 
 type externalListenConfig struct {

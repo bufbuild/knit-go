@@ -68,18 +68,37 @@ type deferredGRPCDescriptorSource struct {
 	ctx     context.Context //nolint:containedctx
 	opts    []connect.ClientOption
 	baseURL string
+
+	mu       sync.RWMutex
+	delegate *grpcDescriptorSource
 }
 
-func (d *deferredGRPCDescriptorSource) FindDescriptorByName(protoreflect.FullName) (protoreflect.Descriptor, error) {
-	return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+func (d *deferredGRPCDescriptorSource) FindDescriptorByName(name protoreflect.FullName) (protoreflect.Descriptor, error) {
+	d.mu.RLock()
+	delegate := d.delegate
+	d.mu.RUnlock()
+	if delegate == nil {
+		return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+	}
+	return delegate.FindDescriptorByName(name)
 }
 
-func (d *deferredGRPCDescriptorSource) FindExtensionByNumber(protoreflect.FullName, protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
-	return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+func (d *deferredGRPCDescriptorSource) FindExtensionByNumber(msg protoreflect.FullName, ext protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
+	d.mu.RLock()
+	delegate := d.delegate
+	d.mu.RUnlock()
+	if delegate == nil {
+		return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
+	}
+	return delegate.FindExtensionByNumber(msg, ext)
 }
 
-func (d *deferredGRPCDescriptorSource) WithHTTPClient(client connect.HTTPClient) DescriptorSource {
-	return newGRPCDescriptorSource(d.ctx, client, d.opts, d.baseURL)
+func (d *deferredGRPCDescriptorSource) WithHTTPClient(client connect.HTTPClient) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.delegate == nil {
+		d.delegate = newGRPCDescriptorSource(d.ctx, client, d.opts, d.baseURL)
+	}
 }
 
 type grpcDescriptorSource struct {

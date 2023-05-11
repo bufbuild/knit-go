@@ -61,7 +61,7 @@ func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
 		}
 		descSource := svcConf.Descriptors
 		if deferredSrc, ok := descSource.(*deferredGRPCDescriptorSource); ok {
-			descSource = deferredSrc.WithHTTPClient(httpClient)
+			deferredSrc.WithHTTPClient(httpClient)
 		}
 
 		desc, err := descSource.FindDescriptorByName(protoreflect.FullName(svcName))

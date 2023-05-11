@@ -220,10 +220,10 @@ backends:
 # If many or all backends use the same TLS configuration, then
 # specify it here instead of repeating it in the 'tls' stanza for
 # each backend.
-#default_tls:
+#backend_tls:
   # This section supports all of the same properties as the 'tls'
   # section under 'backends' above, EXCEPT for 'server_name'. That
-  # property must be provided on a per-backend basis.
+  # property, if used, must be provided on a per-backend basis.
   #min_version: 1.2
   #ciphers:
     #allow: []

@@ -22,6 +22,8 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/bufbuild/knit-go/internal/app/knitgateway"
@@ -104,17 +106,30 @@ func main() {
 		ReadHeaderTimeout: 30 * time.Second,
 		TLSConfig:         config.TLSConfig,
 	}
+
+	ignored := make(chan os.Signal)
+	signal.Notify(ignored, syscall.SIGHUP)
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGALRM, syscall.SIGQUIT, syscall.SIGTSTP, syscall.SIGUSR1, syscall.SIGUSR2)
+
 	group, grpCtx := errgroup.WithContext(ctx)
-	shutdownComplete := make(chan struct{})
-	go func() {
-		defer close(shutdownComplete)
-		<-grpCtx.Done()
+	group.Go(func() error {
+		// if either listener below stops or we get a signal, shut down the whole server
+		select {
+		case <-grpCtx.Done():
+		case s := <-sig:
+			logger.Sugar().Infof("Received signal %v. Shutting down...", s)
+		}
+		defer signal.Stop(sig)
+
 		timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		if err := svr.Shutdown(timeoutCtx); err != nil {
 			logger.Sugar().Errorf("could not complete shutdown: %w", err)
 		}
-	}()
+		return nil
+	})
+
 	scheme := "HTTP"
 	serveFunc := svr.Serve
 	if config.TLSConfig != nil {
@@ -123,6 +138,11 @@ func main() {
 			return svr.ServeTLS(l, "", "")
 		}
 	}
+
+	// NB: goroutines below must return non-nil errors in order for grpCtx
+	// to be cancelled which triggers the above goroutine to cleanup.
+	sentinelErr := errors.New("http server closed")
+
 	if config.ListenAddress != "" {
 		group.Go(func() error {
 			tcpListener, err := net.Listen("tcp", config.ListenAddress)
@@ -132,9 +152,9 @@ func main() {
 
 			logger.Sugar().Infof("Listening on %s for %s requests...", tcpListener.Addr().String(), scheme)
 			if err := serveFunc(tcpListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
-				return fmt.Errorf("HTTP server failed: %w", err)
+				logger.Sugar().Fatalf("%s server failed: %v", scheme, err)
 			}
-			return nil
+			return sentinelErr
 		})
 	}
 	if config.UnixSocket != "" {
@@ -145,14 +165,14 @@ func main() {
 			}
 			logger.Sugar().Infof("Listening on unix socket %s for %s requests...", config.UnixSocket, scheme)
 			if err := serveFunc(unixListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
-				return fmt.Errorf("HTTP server failed: %w", err)
+				logger.Sugar().Fatalf("%s server (unix socket) failed: %v", scheme, err)
 			}
-			return nil
+			return sentinelErr
 		})
 	}
-	err = group.Wait()
-	<-shutdownComplete
-	if err != nil {
+
+	_ = group.Wait()
+	if err != nil && !errors.Is(err, sentinelErr) {
 		fatalf("%v", err)
 	}
 }
