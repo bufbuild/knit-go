@@ -107,7 +107,7 @@ func main() {
 		TLSConfig:         config.TLSConfig,
 	}
 
-	ignored := make(chan os.Signal)
+	ignored := make(chan os.Signal, 1)
 	signal.Notify(ignored, syscall.SIGHUP)
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGALRM, syscall.SIGQUIT, syscall.SIGTSTP, syscall.SIGUSR1, syscall.SIGUSR2)
