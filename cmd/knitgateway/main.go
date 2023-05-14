@@ -99,7 +99,19 @@ func main() {
 		mux.ServeHTTP(w, r)
 	})
 	// TODO: CORS should not be so lenient unless configured to be so
-	corsHandler := cors.AllowAll().Handler(certCapturingHandler)
+	corsHandler := cors.New(cors.Options{
+		AllowOriginFunc: func(origin string) bool { return true },
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	}).Handler(certCapturingHandler)
 	loggingHandler := knitgateway.NewLoggingHandler(corsHandler, logger)
 	svr := http.Server{
 		Handler:           h2c.NewHandler(loggingHandler, &http2.Server{}),
