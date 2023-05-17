@@ -56,6 +56,6 @@ issues:
     - path: cmd/.*/main\.go
       linters:
         - forbidigo # log.Fatal used in standalone main functions
-    - path: internal/app/knitgateway/config\.go
+    - path: internal/app/knitgateway/(config|cache)\.go
       linters:
         - tagliatelle # Buf conventions for yaml varies from common practices

@@ -20,17 +20,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
+	"time"
 
-	"buf.build/gen/go/bufbuild/reflect/bufbuild/connect-go/buf/reflect/v1beta1/reflectv1beta1connect"
-	"buf.build/gen/go/bufbuild/reflect/protocolbuffers/go/buf/reflect/v1beta1"
 	"github.com/bufbuild/connect-go"
 	"github.com/bufbuild/knit-go"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
+	"github.com/bufbuild/prototransform"
+	"golang.org/x/net/http2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -49,6 +48,9 @@ const (
 	tlsVersion11 = "1.1"
 	tlsVersion12 = "1.2"
 	tlsVersion13 = "1.3"
+
+	defaultPollingPeriod  = 15 * time.Minute
+	defaultStartupMaxWait = 15 * time.Second
 )
 
 // GatewayConfig is the configuration for a Knit gateway.
@@ -58,22 +60,25 @@ type GatewayConfig struct {
 	TLSConfig                *tls.Config
 	Services                 map[string]ServiceConfig
 	MaxParallelismPerRequest int
+	StartupMaxWait           time.Duration
+	PollingPeriod            time.Duration
+	PollingJitter            float64
+	PollingDebounce          time.Duration
+	Cache                    DescriptorCacheConfig
 }
 
 // ServiceConfig is the configuration for a single RPC service.
 type ServiceConfig struct {
 	BaseURL     *url.URL
-	UnixSocket  string
-	TLSConfig   *tls.Config
+	HTTPClient  connect.HTTPClient
 	ConnectOpts []connect.ClientOption
-	H2C         bool
-	Descriptors DescriptorSource
-	Index       int
+	Descriptors prototransform.SchemaPoller
+	Cacheable   bool
 }
 
 // LoadConfig reads the config file at the given path and returns the resulting
 // GatewayConfig on success.
-func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //nolint:gocyclo
+func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 	configInput, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -99,7 +104,12 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 		return nil, errors.New("listen config must include at least one of 'port' or 'unix_socket'")
 	}
 
-	descriptorSources := map[externalDescriptorConfig]DescriptorSource{}
+	if len(extConf.Backends) == 0 {
+		return nil, fmt.Errorf("backends config is empty")
+	}
+
+	pollers := map[descriptorSource]prototransform.SchemaPoller{}
+	numSourcesCacheable := 0
 	backendConfigIndexByService := map[string]int{}
 	services := map[string]ServiceConfig{}
 
@@ -119,6 +129,9 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 	for i, backendConf := range extConf.Backends {
 		if backendConf.RouteTo == "" {
 			return nil, fmt.Errorf("backend config #%d: missing 'route_to' property", i+1)
+		}
+		if len(backendConf.Services) == 0 {
+			return nil, fmt.Errorf("backend config #%d: 'services' property should not be empty", i+1)
 		}
 		routeURL, err := url.Parse(backendConf.RouteTo)
 		if err != nil {
@@ -176,25 +189,30 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 			}
 		}
 
+		httpClient, err := makeHTTPClient(clientTLS, backendConf.UnixSocket, h2c)
+		if err != nil {
+			return nil, fmt.Errorf("backend config #%d: failed to create HTTP client: %w", i+1, err)
+		}
 		svcConf := ServiceConfig{
 			BaseURL:     routeURL,
-			UnixSocket:  backendConf.UnixSocket,
-			TLSConfig:   clientTLS,
+			HTTPClient:  httpClient,
 			ConnectOpts: options,
-			H2C:         h2c,
-			Index:       i,
 		}
-		if !backendConf.Descriptors.GRPCReflection {
-			svcConf.Descriptors = descriptorSources[backendConf.Descriptors]
+		descSrc, err := newDescriptorSource(backendConf.Descriptors, backendConf.RouteTo, h2c)
+		if err != nil {
+			return nil, fmt.Errorf("backend config #%d: %w", i+1, err)
 		}
-		if svcConf.Descriptors == nil {
-			descSrc, err := newDescriptorSource(ctx, &svcConf, backendConf.Descriptors)
+		if descSrc.isCacheable() {
+			numSourcesCacheable++
+		}
+		poller := pollers[descSrc]
+		if poller == nil {
+			poller, err = descSrc.newPoller(httpClient, options)
 			if err != nil {
 				return nil, fmt.Errorf("backend config #%d: %w", i+1, err)
 			}
-			svcConf.Descriptors = descSrc
-			descriptorSources[backendConf.Descriptors] = descSrc
 		}
+		svcConf.Descriptors = poller
 
 		for _, svc := range backendConf.Services {
 			if otherIndex, ok := backendConfigIndexByService[svc]; ok {
@@ -210,20 +228,61 @@ func LoadConfig(ctx context.Context, path string) (*GatewayConfig, error) { //no
 		listenAddress = fmt.Sprintf("%s:%d", extConf.Listen.BindAddress, *extConf.Listen.Port)
 	}
 
+	pollingPeriod := defaultPollingPeriod
+	if extConf.Descriptors.PollingPeriodSeconds < 0 {
+		return nil, fmt.Errorf("descriptors.polling_period_seconds may not be negative: %d", extConf.Descriptors.PollingPeriodSeconds)
+	}
+	if extConf.Descriptors.PollingPeriodSeconds > 0 {
+		pollingPeriod = time.Second * time.Duration(extConf.Descriptors.PollingPeriodSeconds)
+	}
+
+	if extConf.Descriptors.PollingJitter < 0 {
+		return nil, fmt.Errorf("descriptors.polling_jitter may not be negative: %f", extConf.Descriptors.PollingJitter)
+	}
+	if extConf.Descriptors.PollingJitter > 1 {
+		return nil, fmt.Errorf("descriptors.polling_jitter may not be greater than 1.0: %f", extConf.Descriptors.PollingJitter)
+	}
+
+	if extConf.Descriptors.PollingDebounceSeconds < 0 {
+		return nil, fmt.Errorf("descriptors.polling_debounce_seconds may not be negative: %d", extConf.Descriptors.PollingDebounceSeconds)
+	}
+
+	startupMaxWait := defaultStartupMaxWait
+	if extConf.Descriptors.StartupMaxWaitSeconds < 0 {
+		return nil, fmt.Errorf("descriptors.startup_max_wait_seconds may not be negative: %d", extConf.Descriptors.StartupMaxWaitSeconds)
+	}
+	if extConf.Descriptors.StartupMaxWaitSeconds > 0 {
+		startupMaxWait = time.Second * time.Duration(extConf.Descriptors.StartupMaxWaitSeconds)
+	}
+
+	cacheConfig, err := newCacheConfig(extConf.Descriptors.Cache, numSourcesCacheable)
+	if err != nil {
+		return nil, err
+	}
+	if cacheConfig != nil && numSourcesCacheable == 0 {
+		return nil, fmt.Errorf("caching configured in ")
+	}
+
 	return &GatewayConfig{
 		ListenAddress:            listenAddress,
 		UnixSocket:               extConf.Listen.UnixSocket,
 		TLSConfig:                serverTLS,
 		Services:                 services,
 		MaxParallelismPerRequest: extConf.Limits.PerRequestParallelism,
+		StartupMaxWait:           startupMaxWait,
+		PollingPeriod:            pollingPeriod,
+		PollingJitter:            extConf.Descriptors.PollingJitter,
+		PollingDebounce:          time.Second * time.Duration(extConf.Descriptors.PollingDebounceSeconds),
+		Cache:                    cacheConfig,
 	}, nil
 }
 
 type externalGatewayConfig struct {
-	Listen            externalListenConfig     `yaml:"listen"`
-	Backends          []externalBackendConfig  `yaml:"backends"`
-	Limits            externalLimitsConfig     `yaml:"limits"`
-	DefaultBackendTLS *externalClientTLSConfig `yaml:"backend_tls"`
+	Listen            externalListenConfig            `yaml:"listen"`
+	Backends          []externalBackendConfig         `yaml:"backends"`
+	Limits            externalLimitsConfig            `yaml:"limits"`
+	DefaultBackendTLS *externalClientTLSConfig        `yaml:"backend_tls"`
+	Descriptors       externalDescriptorPollingConfig `yaml:"descriptors"`
 }
 
 type externalListenConfig struct {
@@ -309,7 +368,16 @@ type externalClientTLSConfig struct {
 type externalDescriptorConfig struct {
 	DescriptorSetFile string `yaml:"descriptor_set_file"`
 	BufModule         string `yaml:"buf_module"`
-	GRPCReflection    bool   `yaml:"grpc_reflection"`
+	// TODO: Headers/authn for reflection requests.
+	GRPCReflection bool `yaml:"grpc_reflection"`
+}
+
+type externalDescriptorPollingConfig struct {
+	StartupMaxWaitSeconds  int                           `yaml:"startup_max_wait_seconds"`
+	PollingPeriodSeconds   int                           `yaml:"polling_period_seconds"`
+	PollingJitter          float64                       `yaml:"polling_jitter"`
+	PollingDebounceSeconds int                           `yaml:"polling_debounce_seconds"`
+	Cache                  externalDescriptorCacheConfig `yaml:"cache"`
 }
 
 type externalLimitsConfig struct {
@@ -318,93 +386,59 @@ type externalLimitsConfig struct {
 	//       max total parallelism, max concurrent requests, rate limits, etc.
 }
 
-func newDescriptorSource(ctx context.Context, svcConf *ServiceConfig, config externalDescriptorConfig) (DescriptorSource, error) {
-	var properties []string
-	if config.DescriptorSetFile != "" {
-		properties = append(properties, "descriptor_set_file")
-	}
-	if config.GRPCReflection {
-		properties = append(properties, "grpc_reflection")
-	}
-	if config.BufModule != "" {
-		properties = append(properties, "buf_module")
-	}
-	if len(properties) > 1 {
-		return nil, fmt.Errorf("descriptor config should have exactly one field set, instead got %d [%v]", len(properties), properties)
-	}
-	switch {
-	case config.DescriptorSetFile != "":
-		data, err := os.ReadFile(config.DescriptorSetFile)
-		if err != nil {
-			return nil, fmt.Errorf("failed to load descriptor set %q: %w", config.DescriptorSetFile, err)
+func makeHTTPClient(tlsConfig *tls.Config, unixSocket string, h2c bool) (connect.HTTPClient, error) {
+	if tlsConfig == nil && unixSocket == "" {
+		// can use default clients
+		if h2c {
+			return defaultH2CClient, nil
 		}
-		var files descriptorpb.FileDescriptorSet
-		if err := proto.Unmarshal(data, &files); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal Descriptors from %s: %w", config.DescriptorSetFile, err)
-		}
-		descSrc, err := newFileDescriptorSetSource(&files)
-		if err != nil {
-			return nil, fmt.Errorf("failed to process Descriptors read from %s: %w", config.DescriptorSetFile, err)
-		}
-		return descSrc, nil
+		return http.DefaultClient, nil
+	}
 
-	case config.BufModule != "":
-		parts := strings.Split(config.BufModule, "/")
-		if len(parts) != 3 {
-			return nil, fmt.Errorf("descriptor config should have exactly one field set, instead got %d [%v]", len(properties), properties)
+	dial := defaultDialer.DialContext
+	if unixSocket != "" {
+		if err := checkUnixSocket(unixSocket); err != nil {
+			return nil, errorHasFilename(err, unixSocket)
 		}
-		envBufToken := os.Getenv("BUF_TOKEN")
-		if envBufToken == "" {
-			return nil, fmt.Errorf("cannot download module %q: no BUF_TOKEN environment variable set", config.BufModule)
+		dial = func(ctx context.Context, _, _ string) (net.Conn, error) {
+			return defaultDialer.DialContext(ctx, "unix", unixSocket)
 		}
-		tok := parseBufToken(envBufToken, parts[0])
-		if tok == "" {
-			return nil, fmt.Errorf("cannot download module %q: BUF_TOKEN environment variable did not include a token for remote %q", config.BufModule, parts[0])
-		}
-		req := connect.NewRequest(&reflectv1beta1.GetFileDescriptorSetRequest{
-			Module: config.BufModule,
-		})
-		req.Header().Set("Authorization", fmt.Sprintf("Bearer %s", tok))
-		reflectClient := reflectv1beta1connect.NewFileDescriptorSetServiceClient(http.DefaultClient, "https://api."+parts[0])
-		resp, err := reflectClient.GetFileDescriptorSet(ctx, req)
-		if err != nil {
-			return nil, fmt.Errorf("failed to download Descriptors from %s: %w", parts[0], err)
-		}
-		descSrc, err := newFileDescriptorSetSource(resp.Msg.FileDescriptorSet)
-		if err != nil {
-			return nil, fmt.Errorf("failed to process Descriptors downloaded from %s: %w", parts[0], err)
-		}
-		return descSrc, nil
-
-	case config.GRPCReflection:
-		if svcConf.BaseURL.Scheme == httpScheme && !svcConf.H2C {
-			return nil, fmt.Errorf("cannot use grpc reflection with http scheme without H2C")
-		}
-		return &deferredGRPCDescriptorSource{
-			ctx:     ctx,
-			opts:    svcConf.ConnectOpts,
-			baseURL: svcConf.BaseURL.String(),
-		}, nil
-
-	default:
-		return nil, fmt.Errorf("descriptor config is empty")
 	}
+
+	if h2c {
+		// This is the same as used above in defaultH2CClient
+		transport := &http2.Transport{
+			AllowHTTP: true,
+			DialTLSContext: func(ctx context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
+				return dial(ctx, network, addr)
+			},
+		}
+		if tlsConfig != nil {
+			transport.TLSClientConfig = tlsConfig
+		}
+		return &http.Client{Transport: transport}, nil
+	}
+
+	// This is the same as http.DefaultTransport.
+	transport := &http.Transport{
+		Proxy:                 http.ProxyFromEnvironment,
+		DialContext:           dial,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+	if tlsConfig != nil {
+		transport.TLSClientConfig = tlsConfig
+	}
+	return &http.Client{Transport: transport}, nil
 }
 
-func parseBufToken(envVar, remote string) string {
-	isMultiToken := strings.ContainsAny(envVar, "@,")
-	if !isMultiToken {
-		return envVar
+func checkUnixSocket(socketPath string) error {
+	conn, err := defaultDialer.Dial("unix", socketPath)
+	if err != nil {
+		return err
 	}
-	tokenConfigs := strings.Split(envVar, ",")
-	suffix := "@" + remote
-	for _, tokenConfig := range tokenConfigs {
-		token := strings.TrimSuffix(tokenConfig, suffix)
-		if token == tokenConfig {
-			// did not have the right suffix
-			continue
-		}
-		return token
-	}
-	return ""
+	return conn.Close()
 }

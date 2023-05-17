@@ -16,299 +16,221 @@ package knitgateway
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"net/http"
+	"os"
 	"strings"
-	"sync"
 
+	"buf.build/gen/go/bufbuild/reflect/bufbuild/connect-go/buf/reflect/v1beta1/reflectv1beta1connect"
 	"github.com/bufbuild/connect-go"
 	"github.com/bufbuild/connect-grpcreflect-go"
-	"google.golang.org/protobuf/reflect/protodesc"
+	"github.com/bufbuild/prototransform"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/dynamicpb"
 )
 
-// DescriptorSource provides descriptors, allowing a Knit gateway to process
-// a schema dynamically.
-type DescriptorSource interface {
-	FindDescriptorByName(protoreflect.FullName) (protoreflect.Descriptor, error)
-	FindExtensionByNumber(message protoreflect.FullName, field protoreflect.FieldNumber) (protoreflect.ExtensionType, error)
+type descriptorSource interface {
+	fmt.Stringer
+
+	isCacheable() bool
+	newPoller(client connect.HTTPClient, opts []connect.ClientOption) (prototransform.SchemaPoller, error)
 }
 
-type fileDescriptorSetSource struct {
-	files protoregistry.Files
-	types protoregistry.Types
+func newDescriptorSource(config externalDescriptorConfig, targetURL string, h2c bool) (descriptorSource, error) {
+	var zero descriptorSource
+	var properties []string
+	if config.DescriptorSetFile != "" {
+		properties = append(properties, "descriptor_set_file")
+	}
+	if config.GRPCReflection {
+		properties = append(properties, "grpc_reflection")
+	}
+	if config.BufModule != "" {
+		properties = append(properties, "buf_module")
+	}
+	if len(properties) > 1 {
+		return zero, fmt.Errorf("descriptor config should have exactly one field set, instead got %d [%v]", len(properties), properties)
+	}
+	switch {
+	case config.DescriptorSetFile != "":
+		return descriptorSetFileSource(config.DescriptorSetFile), nil
+
+	case config.BufModule != "":
+		return bufModuleSource(config.BufModule), nil
+
+	case config.GRPCReflection:
+		if !strings.HasPrefix(targetURL, httpsScheme) && !h2c {
+			return zero, fmt.Errorf("cannot use grpc reflection with http scheme without H2C")
+		}
+		return grpcReflectionSource(targetURL), nil
+
+	default:
+		return zero, fmt.Errorf("descriptor config is empty")
+	}
 }
 
-func newFileDescriptorSetSource(fileDescriptorSet *descriptorpb.FileDescriptorSet) (*fileDescriptorSetSource, error) {
-	files, err := protodesc.NewFiles(fileDescriptorSet)
+type descriptorSetFileSource string
+
+func (f descriptorSetFileSource) String() string {
+	return fmt.Sprintf("descriptor set file: %q", string(f))
+}
+
+func (f descriptorSetFileSource) isCacheable() bool {
+	return false // no need to cache descriptors that were read from file
+}
+
+func (f descriptorSetFileSource) newPoller(_ connect.HTTPClient, _ []connect.ClientOption) (prototransform.SchemaPoller, error) {
+	info, err := os.Stat(string(f))
+	if err != nil {
+		return nil, fmt.Errorf("failed to load descriptor set %q: %w", f, err)
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("failed to load descriptor set %q: path is a directory, not a file", f)
+	}
+	return filePoller(f), nil
+}
+
+type bufModuleSource string
+
+func (b bufModuleSource) String() string {
+	return fmt.Sprintf("module %s", string(b))
+}
+
+func (b bufModuleSource) isCacheable() bool {
+	return true
+}
+
+func (b bufModuleSource) newPoller(_ connect.HTTPClient, _ []connect.ClientOption) (prototransform.SchemaPoller, error) {
+	moduleVersionParts := strings.SplitN(string(b), ":", 2)
+	module := moduleVersionParts[0]
+	var version string
+	if len(moduleVersionParts) > 1 {
+		version = moduleVersionParts[1]
+	}
+	moduleParts := strings.SplitN(module, "/", 2)
+	remote := moduleParts[0]
+	token, err := prototransform.BufTokenFromEnvironment(string(b))
 	if err != nil {
 		return nil, err
 	}
-	var result fileDescriptorSetSource
-	files.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
-		registerExtensions(&result.types, fd)
-		return true
-	})
-	result.files = *files
-	return &result, nil
+	reflectClient := reflectv1beta1connect.NewFileDescriptorSetServiceClient(
+		http.DefaultClient,
+		"https://api."+remote,
+		connect.WithInterceptors(prototransform.NewAuthInterceptor(token)),
+	)
+	return prototransform.NewSchemaPoller(reflectClient, module, version), nil
 }
 
-func (f *fileDescriptorSetSource) FindDescriptorByName(name protoreflect.FullName) (protoreflect.Descriptor, error) {
-	return f.files.FindDescriptorByName(name)
+type grpcReflectionSource string
+
+func (g grpcReflectionSource) String() string {
+	return fmt.Sprintf("gRPC server reflection %s", string(g))
 }
 
-func (f *fileDescriptorSetSource) FindExtensionByNumber(message protoreflect.FullName, field protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
-	return f.types.FindExtensionByNumber(message, field)
+func (g grpcReflectionSource) isCacheable() bool {
+	return true
 }
 
-type deferredGRPCDescriptorSource struct {
-	ctx     context.Context //nolint:containedctx
-	opts    []connect.ClientOption
+func (g grpcReflectionSource) newPoller(client connect.HTTPClient, opts []connect.ClientOption) (prototransform.SchemaPoller, error) {
+	reflectClient := grpcreflect.NewClient(client, string(g), opts...)
+	return &grpcReflectionPoller{client: reflectClient}, nil
+}
+
+type filePoller string
+
+func (f filePoller) GetSchema(_ context.Context, _ []string, _ string) (descriptors *descriptorpb.FileDescriptorSet, version string, err error) {
+	data, err := os.ReadFile(string(f))
+	if err != nil {
+		return nil, "", err
+	}
+	descriptors = &descriptorpb.FileDescriptorSet{}
+	if err := proto.Unmarshal(data, descriptors); err != nil {
+		return nil, "", err
+	}
+	return descriptors, "", nil
+}
+
+func (f filePoller) GetSchemaID() string {
+	return fmt.Sprintf("file:%s", f)
+}
+
+type grpcReflectionPoller struct {
 	baseURL string
-
-	mu       sync.RWMutex
-	delegate *grpcDescriptorSource
+	client  *grpcreflect.Client
 }
 
-func (d *deferredGRPCDescriptorSource) FindDescriptorByName(name protoreflect.FullName) (protoreflect.Descriptor, error) {
-	d.mu.RLock()
-	delegate := d.delegate
-	d.mu.RUnlock()
-	if delegate == nil {
-		return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
-	}
-	return delegate.FindDescriptorByName(name)
-}
+func (g *grpcReflectionPoller) GetSchema(ctx context.Context, symbols []string, _ string) (descriptors *descriptorpb.FileDescriptorSet, version string, err error) {
+	stream := g.client.NewStream(ctx)
 
-func (d *deferredGRPCDescriptorSource) FindExtensionByNumber(msg protoreflect.FullName, ext protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
-	d.mu.RLock()
-	delegate := d.delegate
-	d.mu.RUnlock()
-	if delegate == nil {
-		return nil, fmt.Errorf("internal: unable to use gRPC reflection because HTTP client not yet initialized")
-	}
-	return delegate.FindExtensionByNumber(msg, ext)
-}
-
-func (d *deferredGRPCDescriptorSource) WithHTTPClient(client connect.HTTPClient) {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	if d.delegate == nil {
-		d.delegate = newGRPCDescriptorSource(d.ctx, client, d.opts, d.baseURL)
-	}
-}
-
-type grpcDescriptorSource struct {
-	ctx    context.Context //nolint:containedctx
-	client *grpcreflect.Client
-
-	mu               sync.Mutex
-	stream           *grpcreflect.ClientStream
-	downloadedProtos map[string]*descriptorpb.FileDescriptorProto
-	cachedFiles      protoregistry.Files
-	cachedExts       protoregistry.Types
-}
-
-func newGRPCDescriptorSource(
-	ctx context.Context,
-	httpClient connect.HTTPClient,
-	opts []connect.ClientOption,
-	baseURL string,
-) *grpcDescriptorSource {
-	baseURL = strings.TrimSuffix(baseURL, "/")
-	res := &grpcDescriptorSource{
-		ctx:              ctx,
-		client:           grpcreflect.NewClient(httpClient, baseURL, opts...),
-		downloadedProtos: map[string]*descriptorpb.FileDescriptorProto{},
-	}
-	return res
-}
-
-func (r *grpcDescriptorSource) FindDescriptorByName(name protoreflect.FullName) (protoreflect.Descriptor, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	d, err := r.cachedFiles.FindDescriptorByName(name)
-	if d != nil {
-		return d, nil
-	}
-	if !errors.Is(err, protoregistry.NotFound) {
-		return nil, err
-	}
-	// if not found in existing files, fetch more
-	fileDescriptorProtos, err := r.fileContainingSymbolLocked(name)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve symbol %q: %w", name, err)
-	}
-	if err := r.cacheFilesLocked(fileDescriptorProtos); err != nil {
-		return nil, err
-	}
-	// now it should definitely be in there!
-	return r.cachedFiles.FindDescriptorByName(name)
-}
-
-func (r *grpcDescriptorSource) FindExtensionByNumber(message protoreflect.FullName, field protoreflect.FieldNumber) (protoreflect.ExtensionType, error) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	ext, err := r.cachedExts.FindExtensionByNumber(message, field)
-	if ext != nil {
-		return ext, nil
-	}
-	if !errors.Is(err, protoregistry.NotFound) {
-		return nil, err
-	}
-	// if not found in existing files, fetch more
-	fileDescriptorProtos, err := r.fileContainingExtensionLocked(message, field)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve extension %d for %q: %w", field, message, err)
-	}
-	if err := r.cacheFilesLocked(fileDescriptorProtos); err != nil {
-		return nil, err
-	}
-	// now it should definitely be in there!
-	return r.cachedExts.FindExtensionByNumber(message, field)
-}
-
-func (r *grpcDescriptorSource) fileContainingSymbolLocked(name protoreflect.FullName) ([]*descriptorpb.FileDescriptorProto, error) {
-	return r.doLocked(func(stream *grpcreflect.ClientStream) ([]*descriptorpb.FileDescriptorProto, error) {
-		return stream.FileContainingSymbol(name)
-	})
-}
-
-func (r *grpcDescriptorSource) fileContainingExtensionLocked(message protoreflect.FullName, field protoreflect.FieldNumber) ([]*descriptorpb.FileDescriptorProto, error) {
-	return r.doLocked(func(stream *grpcreflect.ClientStream) ([]*descriptorpb.FileDescriptorProto, error) {
-		return stream.FileContainingExtension(message, field)
-	})
-}
-
-func (r *grpcDescriptorSource) fileByNameLocked(name string) ([]*descriptorpb.FileDescriptorProto, error) {
-	return r.doLocked(func(stream *grpcreflect.ClientStream) ([]*descriptorpb.FileDescriptorProto, error) {
-		return stream.FileByFilename(name)
-	})
-}
-
-func (r *grpcDescriptorSource) cacheFilesLocked(files []*descriptorpb.FileDescriptorProto) error {
-	for _, file := range files {
-		if _, ok := r.downloadedProtos[file.GetName()]; ok {
-			continue // already downloaded, don't bother overwriting
-		}
-		r.downloadedProtos[file.GetName()] = file
-	}
-	for _, file := range files {
-		if err := r.cacheFileLocked(file.GetName(), nil); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (r *grpcDescriptorSource) cacheFileLocked(name string, seen []string) error {
-	if _, err := r.cachedFiles.FindFileByPath(name); err == nil {
-		return nil // already processed this file
-	}
-	for i, alreadySeen := range seen {
-		if name == alreadySeen {
-			// we've seen this file already which means malformed
-			// file descriptor protos that have an import cycle
-			cycle := append(seen[i:], name) //nolint:gocritic
-			return fmt.Errorf("downloaded files contain an import cycle: %s", strings.Join(cycle, " -> "))
-		}
-	}
-
-	file := r.downloadedProtos[name]
-	if file == nil {
-		// download missing file(s)
-		moreFiles, err := r.fileByNameLocked(name)
+	if len(symbols) == 0 {
+		names, err := stream.ListServices()
 		if err != nil {
-			return err
+			return nil, "", err
 		}
-		for _, newFile := range moreFiles {
-			r.downloadedProtos[newFile.GetName()] = newFile
-			if newFile.GetName() == name {
-				file = newFile
+		symbols = make([]string, len(names))
+		for i := range names {
+			symbols[i] = string(names[i])
+		}
+	}
+
+	seen := map[string]struct{}{}
+	var results []*descriptorpb.FileDescriptorProto
+	var queue []string
+	handleFiles := func(files []*descriptorpb.FileDescriptorProto) {
+		// Add new files to results
+		for _, file := range files {
+			if _, ok := seen[file.GetName()]; ok {
+				continue
+			}
+			results = append(results, file)
+			seen[file.GetName()] = struct{}{}
+		}
+		// Queue up any other files that we need from dependencies.
+		// We do this is a separate pass (instead of combining into
+		// one loop over files) so that we don't queue up files that
+		// are actually present later in the files slice.
+		for _, file := range files {
+			if _, ok := seen[file.GetName()]; ok {
+				continue
+			}
+			for _, dep := range file.GetDependency() {
+				if _, ok := seen[dep]; ok {
+					continue
+				}
+				seen[dep] = struct{}{}
+				queue = append(queue, dep)
 			}
 		}
-		if file == nil {
-			return fmt.Errorf("requested file %q but response did not contain it", name)
+	}
+
+	// start with the symbols of interest
+	for _, sym := range symbols {
+		files, err := stream.FileContainingSymbol(protoreflect.FullName(sym))
+		if err != nil {
+			return nil, "", err
 		}
+		handleFiles(files)
 	}
 
-	// make sure imports have been downloaded and cached
-	for _, dep := range file.Dependency {
-		if err := r.cacheFileLocked(dep, append(seen, name)); err != nil {
-			return err
+	// and now process the queue until we have the whole dependency graph
+	for len(queue) > 0 {
+		files, err := stream.FileByFilename(queue[0])
+		if err != nil {
+			return nil, "", err
 		}
+		queue = queue[1:]
+		handleFiles(files)
 	}
 
-	// now we can create and cache this file
-	fileDescriptor, err := protodesc.NewFile(file, &r.cachedFiles)
-	if err != nil {
-		return err
-	}
-	if err := r.cachedFiles.RegisterFile(fileDescriptor); err != nil {
-		return err
-	}
-	registerExtensions(&r.cachedExts, fileDescriptor)
-	return nil
+	// We could topologically sort the files, since that's how descriptor sets
+	// look when produced by a compiler. But it's not necessary since the proto
+	// runtime (protodesc.NewFiles) doesn't require it.
+	return &descriptorpb.FileDescriptorSet{File: results}, "", nil
 }
 
-func (r *grpcDescriptorSource) doLocked(send func(*grpcreflect.ClientStream) ([]*descriptorpb.FileDescriptorProto, error)) ([]*descriptorpb.FileDescriptorProto, error) {
-	stream := r.getStreamLocked()
-	descs, err := send(stream)
-	if grpcreflect.IsReflectionStreamBroken(err) {
-		// recreate stream and try again
-		r.resetLocked()
-		stream := r.getStreamLocked()
-		descs, err = send(stream)
-		if grpcreflect.IsReflectionStreamBroken(err) {
-			// again? reset the stream so next call can try again... but we won't try again
-			r.resetLocked()
-		}
-	}
-	return descs, err
-}
-
-func (r *grpcDescriptorSource) getStreamLocked() *grpcreflect.ClientStream {
-	if r.stream == nil {
-		r.stream = r.client.NewStream(r.ctx)
-	}
-	return r.stream
-}
-
-func (r *grpcDescriptorSource) Reset() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.resetLocked()
-}
-
-func (r *grpcDescriptorSource) resetLocked() {
-	if r.stream == nil {
-		// nothing to do
-		return
-	}
-	_, _ = r.stream.Close()
-	r.stream = nil
-}
-
-type extensionContainer interface {
-	Messages() protoreflect.MessageDescriptors
-	Extensions() protoreflect.ExtensionDescriptors
-}
-
-func registerExtensions(reg *protoregistry.Types, descriptor extensionContainer) {
-	exts := descriptor.Extensions()
-	for i := 0; i < exts.Len(); i++ {
-		extType := dynamicpb.NewExtensionType(exts.Get(i))
-		_ = reg.RegisterExtension(extType)
-	}
-	msgs := descriptor.Messages()
-	for i := 0; i < msgs.Len(); i++ {
-		registerExtensions(reg, msgs.Get(i))
-	}
+func (g *grpcReflectionPoller) GetSchemaID() string {
+	return fmt.Sprintf("grpc reflection %s", g.baseURL)
 }
 
 func descriptorKind(desc protoreflect.Descriptor) string {

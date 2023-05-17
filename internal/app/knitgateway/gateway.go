@@ -18,12 +18,17 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
+	"io"
+	"math"
 	"net"
 	"net/http"
+	"sync/atomic"
 	"time"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/bufbuild/knit-go"
+	"github.com/bufbuild/prototransform"
+	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -51,40 +56,272 @@ var (
 	}
 )
 
-// CreateGateway creates a Knit gateway with the given configuration.
-func CreateGateway(config *GatewayConfig) (*knit.Gateway, error) {
-	gateway := &knit.Gateway{MaxParallelismPerRequest: config.MaxParallelismPerRequest}
-	for svcName, svcConf := range config.Services {
-		httpClient, err := makeHTTPClient(svcConf)
-		if err != nil {
-			return nil, fmt.Errorf("backend #%d: failed to create HTTP client: %w", svcConf.Index+1, err)
-		}
-		descSource := svcConf.Descriptors
-		if deferredSrc, ok := descSource.(*deferredGRPCDescriptorSource); ok {
-			deferredSrc.WithHTTPClient(httpClient)
-		}
+// Gateway is a hot-swappable Knit gateway. It watches schemas for updates and
+// then replaces the underlying HTTP handler with one that has new configuration
+// when an update is observed.
+type Gateway struct {
+	watchers   map[prototransform.SchemaPoller]*prototransform.SchemaWatcher
+	config     *GatewayConfig
+	updateChan <-chan struct{}
+	delegate   atomic.Pointer[handlerWrapper]
+	pattern    string
+}
 
-		desc, err := descSource.FindDescriptorByName(protoreflect.FullName(svcName))
+// CreateGateway creates a new gateway with the given configuration. This
+// starts background goroutines which will terminate when the given context
+// is cancelled.
+func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfig) (g *Gateway, err error) {
+	type pollerDetails struct {
+		symbols   []string
+		cacheable bool
+	}
+	pollerInfo := map[prototransform.SchemaPoller]*pollerDetails{}
+	for svcName, svcConf := range config.Services {
+		details := pollerInfo[svcConf.Descriptors]
+		if details == nil {
+			details = &pollerDetails{cacheable: svcConf.Cacheable}
+			pollerInfo[svcConf.Descriptors] = details
+		}
+		details.symbols = append(details.symbols, svcName)
+	}
+
+	closers := make([]io.Closer, 0, len(pollerInfo)+1)
+	closeAll := func() {
+		for _, closer := range closers {
+			_ = closer.Close()
+		}
+	}
+	defer func() {
+		// if we're returning an error, not the gateway
+		// then go ahead and shutdown down anything started
 		if err != nil {
-			return nil, fmt.Errorf("could not get descriptor for service %s: %w", svcName, err)
+			closeAll()
+		}
+	}()
+
+	var schemaCache prototransform.Cache
+	if config.Cache != nil {
+		var err error
+		var closer io.Closer
+		schemaCache, closer, err = config.Cache.toCache()
+		if closer != nil {
+			closers = append(closers, closer)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("could not create cache: %w", err)
+		}
+	}
+
+	updateChan := make(chan struct{}, 1)
+	gateway := &Gateway{
+		watchers:   map[prototransform.SchemaPoller]*prototransform.SchemaWatcher{},
+		config:     config,
+		updateChan: updateChan,
+	}
+	period, jitter := config.PollingPeriod, config.PollingJitter
+	for poller := range pollerInfo {
+		poller := poller
+		details := pollerInfo[poller]
+		watcherConfig := &prototransform.SchemaWatcherConfig{
+			SchemaPoller:   poller,
+			IncludeSymbols: details.symbols,
+			PollingPeriod:  period,
+			Jitter:         jitter,
+		}
+		var sync func()
+		if jitter != 0 {
+			// Instead of letting everything jitter independently,
+			// we let the first one handle the jittered scheduling
+			// and then sync the rest to it.
+			period = math.MaxInt64
+			jitter = 0
+			sync = func() {
+				for _, watcher := range gateway.watchers {
+					watcher.ResolveNow()
+				}
+			}
+		}
+		if details.cacheable {
+			watcherConfig.Cache = schemaCache
+		}
+		watcherConfig.OnUpdate = func() {
+			if sync != nil {
+				sync()
+			}
+			logger.Info("received schema update", zap.String("source", poller.GetSchemaID()))
+			if ctx.Err() != nil {
+				return // don't bother sending update signal
+			}
+			select {
+			case updateChan <- struct{}{}:
+			default:
+				// if updateChan buffer is full, update signal already pending
+			}
+		}
+		watcherConfig.OnError = func(err error) {
+			logger.Error("error updating schema",
+				zap.String("source", poller.GetSchemaID()),
+				zap.Error(err),
+			)
+		}
+		watcher, err := prototransform.NewSchemaWatcher(ctx, watcherConfig)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create schema watcher for %s: %w", poller.GetSchemaID(), err)
+		}
+		gateway.watchers[poller] = watcher
+		closers = append(closers, closerFunc(func() error {
+			watcher.Stop()
+			return nil
+		}))
+	}
+
+	go gateway.handleUpdates(ctx, logger)
+	go func() {
+		<-ctx.Done()
+		// make sure everything is shutdown when context is cancelled
+		closeAll()
+	}()
+
+	return gateway, nil
+}
+
+// AwaitReady returns nil when the gateway is ready and all schemas have been downloaded.
+// It returns an error if the given context is cancelled or if the configured startup
+// max wait period elapses.
+func (g *Gateway) AwaitReady(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, g.config.StartupMaxWait)
+	defer cancel()
+	for _, watcher := range g.watchers {
+		if err := watcher.AwaitReady(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// CreateHandler creates the underlying HTTP handler. This must be called explicitly
+// once by the application. Thereafter, it is called automatically when schemas are
+// updated.
+func (g *Gateway) CreateHandler() error {
+	knitGateway := &knit.Gateway{MaxParallelismPerRequest: g.config.MaxParallelismPerRequest}
+	for svcName, svcConf := range g.config.Services {
+		watcher := g.watchers[svcConf.Descriptors]
+		desc, err := watcher.FindDescriptorByName(protoreflect.FullName(svcName))
+		if err != nil {
+			return fmt.Errorf("could not get descriptor for service %s: %w", svcName, err)
 		}
 		svc, ok := desc.(protoreflect.ServiceDescriptor)
 		if !ok {
-			return nil, fmt.Errorf("%s is a %s, not a service", svcName, descriptorKind(desc))
+			return fmt.Errorf("%s is a %s, not a service", svcName, descriptorKind(desc))
 		}
 		opts := append(svcConf.ConnectOpts, connect.WithInterceptors(&certForwardingInterceptor{})) //nolint:gocritic
-		err = gateway.AddService(
+		err = knitGateway.AddService(
 			svc,
 			knit.WithRoute(svcConf.BaseURL),
-			knit.WithClient(httpClient),
+			knit.WithClient(svcConf.HTTPClient),
 			knit.WithClientOptions(opts...),
-			knit.WithTypeResolver(typeResolver{DescriptorSource: descSource}),
+			// TODO: The watcher resolves the requested symbols and then answers all requests from
+			// that. So if the initial set of symbols didn't transitively include all needed items
+			// (like other messages used in Any messages or extensions), they won't be present.
+			// Ideally, we could dynamically fetch add'l messages/extensions as needed. This isn't
+			// too tricky with gRPC reflection, but the BSR reflection endpoint doesn't have a way
+			// to resolve extensions by extendee+tag number.
+			knit.WithTypeResolver(watcher),
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to register service %s with gateway: %w", svcName, err)
+			return fmt.Errorf("failed to register service %s with knitGateway: %w", svcName, err)
 		}
 	}
-	return gateway, nil
+	pattern, handler := knitGateway.AsHandler()
+	newDelegate := &handlerWrapper{handler}
+	for {
+		existing := g.delegate.Load()
+		if existing != nil {
+			g.delegate.Store(newDelegate)
+			return nil
+		}
+		// Make sure there are no pending update signals, otherwise it's possible that the
+		// updater goroutine could think it needs to immediately re-create the handler after
+		// we set this to non-nil.
+		select {
+		case <-g.updateChan:
+		default:
+		}
+		if g.delegate.CompareAndSwap(nil, newDelegate) {
+			// to avoid data race, we only set pattern the first time we initialize delegate
+			g.pattern = pattern
+			return nil
+		}
+	}
+}
+
+// Pattern returns the URI pattern that this gateeway handles. This
+// method should only be invoked after first calling CreateHandler.
+func (g *Gateway) Pattern() string {
+	return g.pattern
+}
+
+// ServeHTTP implements http.Handler. If the gateway is not yet ready
+// (schemas have not yet been successfully loaded; AwaitReady returns an
+// error), this will return 503 Service Unavailable.
+func (g *Gateway) ServeHTTP(responseWriter http.ResponseWriter, request *http.Request) {
+	handler := g.delegate.Load()
+	if handler == nil {
+		http.Error(responseWriter, "gateway not initialized", http.StatusServiceUnavailable)
+		return
+	}
+	handler.ServeHTTP(responseWriter, request)
+}
+
+// handleUpdates handles updating the gateway's underlying configuration and
+// associated HTTP handler when schema updates are observed.
+func (g *Gateway) handleUpdates(ctx context.Context, logger *zap.Logger) {
+	updateChan := g.updateChan
+	debounce := g.config.PollingDebounce
+	var timer *time.Timer
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-updateChan:
+			if g.delegate.Load() == nil {
+				// handler not initialized yet
+				continue
+			}
+			if debounce > 0 {
+				if timer == nil {
+					timer = time.NewTimer(debounce)
+				} else {
+					timer.Reset(debounce)
+				}
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+					return
+				case <-timer.C:
+					// clear any pending update signal that arrived
+					// during debounce period
+					select {
+					case <-updateChan:
+					default:
+					}
+				}
+			}
+			if err := g.CreateHandler(); err != nil {
+				logger.Error("failed to create new handler for updated schemas", zap.Error(err))
+			}
+		}
+	}
+}
+
+type closerFunc func() error
+
+func (fn closerFunc) Close() error {
+	return fn()
+}
+
+type handlerWrapper struct {
+	http.Handler
 }
 
 type certForwardingInterceptor struct{}
@@ -111,61 +348,4 @@ func (c *certForwardingInterceptor) WrapStreamingClient(clientFunc connect.Strea
 func (c *certForwardingInterceptor) WrapStreamingHandler(handlerFunc connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	// should never be called
 	return handlerFunc
-}
-
-func makeHTTPClient(config ServiceConfig) (connect.HTTPClient, error) {
-	if config.TLSConfig == nil && config.UnixSocket == "" {
-		// can use default clients
-		if config.H2C {
-			return defaultH2CClient, nil
-		}
-		return http.DefaultClient, nil
-	}
-
-	dial := defaultDialer.DialContext
-	if config.UnixSocket != "" {
-		if err := checkUnixSocket(config.UnixSocket); err != nil {
-			return nil, errorHasFilename(err, config.UnixSocket)
-		}
-		dial = func(ctx context.Context, _, _ string) (net.Conn, error) {
-			return defaultDialer.DialContext(ctx, "unix", config.UnixSocket)
-		}
-	}
-
-	if config.H2C {
-		// This is the same as used above in defaultH2CClient
-		transport := &http2.Transport{
-			AllowHTTP: true,
-			DialTLSContext: func(ctx context.Context, network, addr string, _ *tls.Config) (net.Conn, error) {
-				return dial(ctx, network, addr)
-			},
-		}
-		if config.TLSConfig != nil {
-			transport.TLSClientConfig = config.TLSConfig
-		}
-		return &http.Client{Transport: transport}, nil
-	}
-
-	// This is the same as http.DefaultTransport.
-	transport := &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
-		DialContext:           dial,
-		ForceAttemptHTTP2:     true,
-		MaxIdleConns:          100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-	}
-	if config.TLSConfig != nil {
-		transport.TLSClientConfig = config.TLSConfig
-	}
-	return &http.Client{Transport: transport}, nil
-}
-
-func checkUnixSocket(socketPath string) error {
-	conn, err := defaultDialer.Dial("unix", socketPath)
-	if err != nil {
-		return err
-	}
-	return conn.Close()
 }

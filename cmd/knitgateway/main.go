@@ -65,6 +65,8 @@ func main() {
 	loggerConfig.Encoding = *logFormat
 	loggerConfig.EncoderConfig.TimeKey = "timestamp"
 	loggerConfig.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
+	// stack traces are more noise than helpful with the errors logged by knitgateway
+	loggerConfig.DisableStacktrace = true
 	logger, err := loggerConfig.Build()
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "failed to create logger: %v\n", err)
@@ -74,24 +76,32 @@ func main() {
 		_ = logger.Sync()
 	}()
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 	fatalf := func(msg string, args ...any) {
+		cancel()
 		logger.Sugar().Fatalf(msg, args...)
 		_ = logger.Sync()
 		os.Exit(1)
 	}
 
-	ctx := context.Background()
-	config, err := knitgateway.LoadConfig(ctx, *conf)
+	config, err := knitgateway.LoadConfig(*conf)
 	if err != nil {
 		fatalf("failed to load config from %s: %v", *conf, err)
 	}
-	gateway, err := knitgateway.CreateGateway(config)
+	gateway, err := knitgateway.CreateGateway(ctx, logger, config)
 	if err != nil {
-		fatalf("failed to configure gateway: %v", err)
+		fatalf("failed to create gateway: %v", err)
+	}
+	if err := gateway.AwaitReady(ctx); err != nil {
+		fatalf("failed to gather all schemas after %v: %w", config.StartupMaxWait, err)
+	}
+	if err := gateway.CreateHandler(); err != nil {
+		fatalf("failed to create gateway handler: %v", err)
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle(gateway.AsHandler())
+	mux.Handle(gateway.Pattern(), gateway)
 	certCapturingHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS != nil && len(r.TLS.PeerCertificates) > 0 {
 			r = r.WithContext(knitgateway.ContextWithClientCert(r.Context(), r.TLS.PeerCertificates[0]))
