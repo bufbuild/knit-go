@@ -9,7 +9,7 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20230124162541-5f7a7d875746
 	github.com/bufbuild/connect-go v1.7.0
 	github.com/bufbuild/connect-grpcreflect-go v1.0.1-0.20230317120624-8e24e9604364
-	github.com/bufbuild/prototransform v0.0.0-20230518140609-c3b595c56388
+	github.com/bufbuild/prototransform v0.1.0
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/go-cmp v0.5.9
 	github.com/rs/cors v1.8.3
