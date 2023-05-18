@@ -11,6 +11,7 @@ COPYRIGHT_YEARS := 2023
 LICENSE_IGNORE := -e testdata/
 # Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
 GO ?= go
+DEV_BUILD_VERSION=$(shell git describe --always --dirty)
 
 .PHONY: help
 help: ## Describe useful make targets
@@ -62,7 +63,7 @@ lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 
 .PHONY: install
 install: ## Install all binaries
-	$(GO) install ./...
+	$(GO) install -ldflags '-X "main.buildVersionSuffix=-$(DEV_BUILD_VERSION)"' ./...
 
 .PHONY: upgrade
 upgrade: ## Upgrade dependencies

@@ -40,13 +40,27 @@ const (
 	logFormatJSON    = "json"
 )
 
+//nolint:gochecknoglobals
+var (
+	// TODO: Change this after v0.1.0 is released.
+	// (var instead of const so it could be changed via -X ldflags).
+	buildVersion       = "v0.1.0-dev"
+	buildVersionSuffix = ""
+)
+
 func main() {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	conf := flagSet.String("conf", "knitgateway.yaml", "The path to a YAML config file.")
 	logFormat := flagSet.String("log-format", logFormatConsole, fmt.Sprintf("Can be %q or %q.", logFormatConsole, logFormatJSON))
 	help := flagSet.Bool("help", false, "Show usage information.")
+	version := flagSet.Bool("version", false, "Show the version and exit.")
 	flagSet.Usage = func() { printUsage(flagSet) }
 	_ = flagSet.Parse(os.Args[1:])
+
+	if *version {
+		fmt.Println(buildVersion + buildVersionSuffix)
+		return
+	}
 
 	if flag.NArg() > 0 {
 		_, _ = fmt.Fprintf(os.Stderr, "Error: %s\nThis command does not accept any positional arguments.\n", flag.Arg(0))
