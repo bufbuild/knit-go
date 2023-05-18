@@ -134,7 +134,7 @@ func (g grpcReflectionSource) isCacheable() bool {
 
 func (g grpcReflectionSource) newPoller(client connect.HTTPClient, opts []connect.ClientOption) (prototransform.SchemaPoller, error) {
 	reflectClient := grpcreflect.NewClient(client, string(g), opts...)
-	return &grpcReflectionPoller{client: reflectClient}, nil
+	return &grpcReflectionPoller{baseURL: string(g), client: reflectClient}, nil
 }
 
 type filePoller string
@@ -162,6 +162,9 @@ type grpcReflectionPoller struct {
 
 func (g *grpcReflectionPoller) GetSchema(ctx context.Context, symbols []string, _ string) (descriptors *descriptorpb.FileDescriptorSet, version string, err error) {
 	stream := g.client.NewStream(ctx)
+	defer func() {
+		_, _ = stream.Close()
+	}()
 
 	if len(symbols) == 0 {
 		names, err := stream.ListServices()

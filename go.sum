@@ -13,8 +13,8 @@ github.com/bufbuild/connect-go v1.7.0 h1:MGp82v7SCza+3RhsVhV7aMikwxvI3ZfD72YiGt8
 github.com/bufbuild/connect-go v1.7.0/go.mod h1:GmMJYR6orFqD0Y6ZgX8pwQ8j9baizDrIQMm1/a6LnHk=
 github.com/bufbuild/connect-grpcreflect-go v1.0.1-0.20230317120624-8e24e9604364 h1:qiRIhoFC0QibU5hUHZNVM0Rgowsv4Kw6S1te+Q7WLPg=
 github.com/bufbuild/connect-grpcreflect-go v1.0.1-0.20230317120624-8e24e9604364/go.mod h1:57KmO9HZ/NoysS7mdbbCzUq/y6ogUFIZv034OHUR1as=
-github.com/bufbuild/prototransform v0.0.0-20230518115107-10a650ff9b1b h1:NhaGUe4r62n869p+YQHISwBhOkI6tSdtCMaJlIhCiAo=
-github.com/bufbuild/prototransform v0.0.0-20230518115107-10a650ff9b1b/go.mod h1:ccHdjxBFsll+5+9nhs0UBbu1ypZPVndoL+kaHsy1WCk=
+github.com/bufbuild/prototransform v0.0.0-20230518140609-c3b595c56388 h1:oPDNLoNOH9jUVm4mGCGVn6XbHmgzAna/D/JQmnrzO98=
+github.com/bufbuild/prototransform v0.0.0-20230518140609-c3b595c56388/go.mod h1:ccHdjxBFsll+5+9nhs0UBbu1ypZPVndoL+kaHsy1WCk=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

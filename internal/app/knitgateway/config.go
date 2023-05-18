@@ -204,6 +204,7 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		}
 		if descSrc.isCacheable() {
 			numSourcesCacheable++
+			svcConf.Cacheable = true
 		}
 		poller := pollers[descSrc]
 		if poller == nil {

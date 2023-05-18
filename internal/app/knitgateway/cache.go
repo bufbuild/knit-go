@@ -30,6 +30,7 @@ import (
 	"github.com/bufbuild/prototransform/cache/memcache"
 	"github.com/bufbuild/prototransform/cache/rediscache"
 	"github.com/gomodule/redigo/redis"
+	"go.uber.org/zap"
 )
 
 // DescriptorCacheConfig is the configuration for the mechanism used to
@@ -180,4 +181,25 @@ func (c *externalMemcacheConfig) toCache() (prototransform.Cache, io.Closer, err
 		ExpirationSeconds: c.ExpirySeconds,
 	})
 	return cache, client, err
+}
+
+type loggingCache struct {
+	logger *zap.Logger
+	cache  prototransform.Cache
+}
+
+func (l *loggingCache) Load(ctx context.Context, key string) ([]byte, error) {
+	result, err := l.cache.Load(ctx, key)
+	if err == nil {
+		l.logger.Info("loaded schema from cache", zap.String("key", key))
+	}
+	return result, err
+}
+
+func (l *loggingCache) Save(ctx context.Context, key string, data []byte) error {
+	err := l.cache.Save(ctx, key, data)
+	if err != nil {
+		l.logger.Warn("failed to save schema to cache", zap.String("key", key), zap.Error(err))
+	}
+	return err
 }

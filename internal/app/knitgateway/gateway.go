@@ -110,6 +110,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 		if err != nil {
 			return nil, fmt.Errorf("could not create cache: %w", err)
 		}
+		schemaCache = &loggingCache{logger: logger, cache: schemaCache}
 	}
 
 	updateChan := make(chan struct{}, 1)
@@ -135,9 +136,15 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 			// and then sync the rest to it.
 			period = math.MaxInt64
 			jitter = 0
-			sync = func() {
-				for _, watcher := range gateway.watchers {
-					watcher.ResolveNow()
+			if len(pollerInfo) > 1 {
+				// sync all other watchers to this one's schedule
+				sync = func() {
+					for i, watcher := range gateway.watchers {
+						if i == poller {
+							continue // don't reload ourself
+						}
+						watcher.ResolveNow()
+					}
 				}
 			}
 		}

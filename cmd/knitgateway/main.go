@@ -94,7 +94,7 @@ func main() {
 		fatalf("failed to create gateway: %v", err)
 	}
 	if err := gateway.AwaitReady(ctx); err != nil {
-		fatalf("failed to gather all schemas after %v: %w", config.StartupMaxWait, err)
+		fatalf("failed to gather all schemas after %v: %v", config.StartupMaxWait, err)
 	}
 	if err := gateway.CreateHandler(); err != nil {
 		fatalf("failed to create gateway handler: %v", err)
@@ -135,7 +135,7 @@ func main() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		if err := svr.Shutdown(timeoutCtx); err != nil {
-			logger.Sugar().Errorf("could not complete shutdown: %w", err)
+			logger.Sugar().Errorf("could not complete shutdown: %v", err)
 		}
 		return nil
 	})
