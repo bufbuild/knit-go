@@ -212,6 +212,7 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 			if err != nil {
 				return nil, fmt.Errorf("backend config #%d: %w", i+1, err)
 			}
+			pollers[descSrc] = poller
 		}
 		svcConf.Descriptors = poller
 
@@ -259,9 +260,6 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 	cacheConfig, err := newCacheConfig(extConf.Descriptors.Cache, numSourcesCacheable)
 	if err != nil {
 		return nil, err
-	}
-	if cacheConfig != nil && numSourcesCacheable == 0 {
-		return nil, fmt.Errorf("caching configured in ")
 	}
 
 	return &GatewayConfig{

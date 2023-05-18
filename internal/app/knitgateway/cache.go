@@ -123,7 +123,7 @@ func (c *externalRedisCacheConfig) toCache() (prototransform.Cache, io.Closer, e
 	if c.RequireAuth {
 		password = os.Getenv("REDIS_PASSWORD")
 		if password == "" {
-			return nil, nil, fmt.Errorf("redis.require_auth is true but not REDIS_PASSWORD in environment")
+			return nil, nil, fmt.Errorf("redis.require_auth is true but no REDIS_PASSWORD in environment")
 		}
 		// user is optional
 		user = os.Getenv("REDIS_USER")

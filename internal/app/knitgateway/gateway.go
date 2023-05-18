@@ -92,7 +92,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 		}
 	}
 	defer func() {
-		// if we're returning an error, not the gateway
+		// if we're returning an error, not the gateway,
 		// then go ahead and shutdown down anything started
 		if err != nil {
 			closeAll()
@@ -137,8 +137,8 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 			period = math.MaxInt64
 			jitter = 0
 			if len(pollerInfo) > 1 {
-				// sync all other watchers to this one's schedule
 				sync = func() {
+					// sync all other watchers to this one's schedule
 					for i, watcher := range gateway.watchers {
 						if i == poller {
 							continue // don't reload ourself
