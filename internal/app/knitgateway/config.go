@@ -238,11 +238,15 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		pollingPeriod = time.Second * time.Duration(extConf.Descriptors.PollingPeriodSeconds)
 	}
 
-	if extConf.Descriptors.PollingJitter < 0 {
-		return nil, fmt.Errorf("descriptors.polling_jitter may not be negative: %f", extConf.Descriptors.PollingJitter)
-	}
-	if extConf.Descriptors.PollingJitter > 1 {
-		return nil, fmt.Errorf("descriptors.polling_jitter may not be greater than 1.0: %f", extConf.Descriptors.PollingJitter)
+	jitter := 0.25
+	if extConf.Descriptors.PollingJitter != nil {
+		jitter = *extConf.Descriptors.PollingJitter
+		if jitter < 0 {
+			return nil, fmt.Errorf("descriptors.polling_jitter may not be negative: %f", jitter)
+		}
+		if jitter > 1 {
+			return nil, fmt.Errorf("descriptors.polling_jitter may not be greater than 1.0: %f", jitter)
+		}
 	}
 
 	if extConf.Descriptors.PollingDebounceSeconds < 0 {
@@ -270,7 +274,7 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		MaxParallelismPerRequest: extConf.Limits.PerRequestParallelism,
 		StartupMaxWait:           startupMaxWait,
 		PollingPeriod:            pollingPeriod,
-		PollingJitter:            extConf.Descriptors.PollingJitter,
+		PollingJitter:            jitter,
 		PollingDebounce:          time.Second * time.Duration(extConf.Descriptors.PollingDebounceSeconds),
 		Cache:                    cacheConfig,
 	}, nil
@@ -374,7 +378,7 @@ type externalDescriptorConfig struct {
 type externalDescriptorPollingConfig struct {
 	StartupMaxWaitSeconds  int                           `yaml:"startup_max_wait_seconds"`
 	PollingPeriodSeconds   int                           `yaml:"polling_period_seconds"`
-	PollingJitter          float64                       `yaml:"polling_jitter"`
+	PollingJitter          *float64                      `yaml:"polling_jitter"`
 	PollingDebounceSeconds int                           `yaml:"polling_debounce_seconds"`
 	Cache                  externalDescriptorCacheConfig `yaml:"cache"`
 }
