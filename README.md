@@ -65,9 +65,9 @@ The process of handling a Knit query consists of the following steps:
 
    So if any patches were identified in the above step, they are aggregated into batches
    and sent to resolvers. Resolvers are functions that know how to compute the values of
-   relation fields. Some resolvers do not support batching, in which case they receive a
-   batch size of one. All batches are resolved concurrently (up to the same configurable
-   parallelism limit used for dispatching entry-point RPCs).
+   relation fields. To avoid the N+1 problem, resolvers always accept batches. All batches
+   are resolved concurrently (up to the same configurable parallelism limit used for dispatching
+   entry-point RPCs).
 
    After a resolver provides results, we go back to step 3: the result data is filtered
    according to the mask in the request and inserted into the response structure. If the
