@@ -29,6 +29,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
+	"github.com/rs/cors"
 	"golang.org/x/net/http2"
 	"gopkg.in/yaml.v3"
 )
@@ -58,6 +59,7 @@ type GatewayConfig struct {
 	ListenAddress            string
 	UnixSocket               string
 	TLSConfig                *tls.Config
+	CORSConfig               cors.Options
 	Services                 map[string]ServiceConfig
 	MaxParallelismPerRequest int
 	StartupMaxWait           time.Duration
@@ -266,10 +268,26 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		return nil, err
 	}
 
+	corsConfig := cors.Options{
+		AllowedOrigins:      extConf.CORS.AllowedOrigins,
+		AllowedHeaders:      extConf.CORS.AllowedHeaders,
+		AllowCredentials:    extConf.CORS.AllowCredentials,
+		AllowPrivateNetwork: extConf.CORS.AllowPrivateNetworks,
+		MaxAge:              extConf.CORS.MaxAgeSeconds,
+	}
+	if len(corsConfig.AllowedOrigins) == 0 {
+		// If allowed origina is empty, the cors library defaults to allowing all '*'.
+		// But we want users to opt into that behavior. So if the list is empty, we
+		// provide a function that will be called (instead of using the empty list
+		// of origins).
+		corsConfig.AllowOriginFunc = func(string) bool { return false }
+	}
+
 	return &GatewayConfig{
 		ListenAddress:            listenAddress,
 		UnixSocket:               extConf.Listen.UnixSocket,
 		TLSConfig:                serverTLS,
+		CORSConfig:               corsConfig,
 		Services:                 services,
 		MaxParallelismPerRequest: extConf.Limits.PerRequestParallelism,
 		StartupMaxWait:           startupMaxWait,
@@ -285,6 +303,7 @@ type externalGatewayConfig struct {
 	Backends          []externalBackendConfig         `yaml:"backends"`
 	Limits            externalLimitsConfig            `yaml:"limits"`
 	DefaultBackendTLS *externalClientTLSConfig        `yaml:"backend_tls"`
+	CORS              externalCORSConfig              `yaml:"cors"`
 	Descriptors       externalDescriptorPollingConfig `yaml:"descriptors"`
 }
 
@@ -387,6 +406,14 @@ type externalLimitsConfig struct {
 	PerRequestParallelism int `yaml:"per_request_parallelism"`
 	// TODO: add other limits like message read size limits, resolver batch size limits,
 	//       max total parallelism, max concurrent requests, rate limits, etc.
+}
+
+type externalCORSConfig struct {
+	AllowedOrigins       []string `yaml:"allowed_origins"`
+	AllowedHeaders       []string `yaml:"allowed_headers"`
+	AllowCredentials     bool     `yaml:"allow_credentials"`
+	AllowPrivateNetworks bool     `yaml:"allow_private_networks"`
+	MaxAgeSeconds        int      `yaml:"max_age_seconds"`
 }
 
 func makeHTTPClient(tlsConfig *tls.Config, unixSocket string, h2c bool) (connect.HTTPClient, error) {
