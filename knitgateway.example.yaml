@@ -232,3 +232,138 @@ backends:
   #skip_verify: false
   #cert: /path/to/cert
   #key: /path/to/private-key
+
+# There are other configuration settings related to retrieval
+# of descriptors that are not on a per-backend basis.
+descriptors:
+  # The maximum time to wait at startup for schemas to be resolved.
+  # If startup takes longer than this, the process will exit instead
+  # continuing to wait. If unset or zero, then a default value of
+  # 15 seconds is used.
+  #startup_max_wait_seconds: 15
+
+  # The time to wait in between attempts to re-download a schema.
+  # The gateway continually re-downloads schemas in case they change
+  # over time. If unset or set to zero, a default value of 15 minutes
+  # is used (which is 900 seconds).
+  #polling_period_seconds: 900
+
+  # A value between zero and one for the amount of random jitter to use
+  # when scheduling a polling attempt. This is used to prevent multiple
+  # processes from inadvertently self-synchonizing and turning into a
+  # thundering herd. A typical value for this purpose is 0.1 to 0.3.
+  # A value of zero means no jitter. A value of 1 means 100% jitter,
+  # which means the polling period can be perturbed up to 100% (so
+  # it could be as low as zero as high as double). The default is zero.
+  #polling_jitter: 0
+
+  # The number of seconds to wait after a schema update to "debounce"
+  # updates from multiple sources. A smaller value means the gateway's
+  # internals are re-created more frequently when updates are frequent.
+  # A higher value can be more efficient (re-create the internals only
+  # once for a sequence of rapid updates) but slow down the response
+  # time from receiving a new schema and serving the new configuration.
+  # The default is zero, which is appropriate for development. But
+  # production deployments with multiple schema sources should set it
+  # a reasonable value (like between 5 and 30 seconds).
+  #polling_debounce_seconds: 0
+
+  # This section configures a cache for resolved schemas. For Buf BSR
+  # modules and gRPC reflection as descriptor sources, there is a
+  # possibility that a network partition could prevent the gateway
+  # from downloading a schema at startup. For this, the cache can be
+  # used to fetch a last-known-good schema. The cache is updated
+  # whenever a new schema is downloaded. It is used for loading the
+  # schemas if polling a backend source fails. This improves resilience
+  # of the gateway.
+  #
+  # Note: when loading schemas from local files, caching is not used.
+  # It is assumed that the local file will is at least as reliable as
+  # a cache source, so it's unnecessary.
+  #cache:
+    # Only one of the three keys, file_system, redis, or memcache,
+    # can be used.
+
+    # This caches the results on the file system. This is not a
+    # particularly good fit if the gateway is deployed as a workload
+    # where the storage is ephemeral (such that the cache will
+    # disappear when the workload restarts). But if it is deployed
+    # with a persistent disk or has a network filesystem mounted
+    # this can work well. If the gateway workload will be auto-scaled
+    # horizontally (e.g. more replicas created on demand), then a
+    # network filesystem (where all replicas can share the files)
+    # works better and is typically easier to configure than a
+    # persistent disk.
+    #file_system:
+      # This first property is required and has no default. You must
+      # tell the gateway where to store cached data on the filesystem.
+      #directory: /var/cache/knitgateway
+      # This is a prefix used in names of files that represent cache
+      # entries in the configured directory. The rest of the filename
+      # is a cache key. The default prefix is "cache_". The trailing
+      # underscore is optional and will be automatically added if
+      # needed.
+      #file_name_prefix: "cache"
+      # This is the extension of cache files created. The default is
+      # is ".bin". The leading dot is optional and will be automatically
+      # added if needed.
+      #file_extension: "bin"
+      # The mode used to create the files. This will be combined with the
+      # process's umask to determine the actual permissions of created
+      # files. If unspecified or zero, defaults to 0600 (readable and
+      # writable by owner). This value must be in octal; the leading
+      # zero is optional.
+      #file_mode: 0600
+
+    # This caches the results in a Redis server. Redis servers typically
+    # are fast and have high up-time, making them suitable for use as a
+    # distributed/shared cache.
+    #redis:
+      # The only required property is the address of the Redis host.
+      #host: knit-gateway-redis:6379
+      # If auth is required by the Redis server, set this to true and
+      # also set REDIS_USER (optional) and REDIS_PASSWORD environment
+      # variables. If only a REDIS_PASSWORD is provided, the gateway
+      # will issue the "auth" command with only a password, for servers
+      # using the "requirepass" option. For servers using the Redis
+      # ACL system (as of Redis 6.0), both should be supplied. This
+      # defaults to false.
+      #require_auth: false
+      # The idle timeout is used to close idle connections before they
+      # are closed by the server. To that end, this should be a value
+      # that is less than the server's timeout. If unspecified or zero,
+      # idle connections will not be closed.
+      #idle_timeout_seconds: 900
+      # If the gateway should store cache entries in a numbered database,
+      # indicate the database number here. The default is zero.
+      #database: 0
+      # The key prefix can be used to namespace keys, in case other
+      # workloads use the same Redis server to store data. The default
+      # value is empty.
+      #key_prefix: "knit-schema:"
+      # An expiry may be applied to each cache entry. The entry will be
+      # auto-removed after this number of seconds elapses. By default,
+      # entries will be created without expiry (and never be deleted).
+      #expiry_seconds: 864000
+
+    # This last option is for using memcached as a distributed/shared
+    # cache. This is similar in many regards to using Redis.
+    #memcache:
+      # This first value is the only required value. One or more hosts
+      # must be provided. If multiple hosts are provided, the cache
+      # entries will be distributed across them. This allows some cache
+      # entries surviving, even if a single memcached server instance
+      # becomes unavailable or is reset.
+      #hosts:
+        #- mc-a:11211
+        #- mc-b:11211
+        #- mc-c:11211
+        #- mc-d:11211
+      # The key prefix can be used to namespace keys, in case other
+      # workloads use the same memcached servers to store data. The
+      # default value is empty.
+      #key_prefix: "knit-schema:"
+      # An expiry may be applied to each cache entry. The entry will be
+      # auto-removed after this number of seconds elapses. By default,
+      # entries will be created without expiry (and never be deleted).
+      #expiry_seconds: 864000
