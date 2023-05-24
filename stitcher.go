@@ -20,6 +20,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/bufbuild/connect-go"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/protobuf/proto"
@@ -134,14 +135,17 @@ func (s *stitcher) stitch(ctx context.Context, patches [][]*patch, fallbackCatch
 						entities[i] = batch[i].target
 					}
 					vals, err := key.config.resolver(ctx, key.meta, entities, params[key])
+					if err == nil && len(vals) != len(entities) {
+						err = connect.NewError(
+							connect.CodeInternal,
+							fmt.Errorf("resolver for relation %q of type %q returned %d results, expected %d",
+								batch[0].mask.Name, batch[0].target.ProtoReflect().Descriptor().FullName(), len(vals), len(entities),
+							),
+						)
+					}
 					if err != nil && batch[0].errPatch == nil {
 						return fmt.Errorf("resolver for relation %q of type %q failed: %w",
 							batch[0].mask.Name, batch[0].target.ProtoReflect().Descriptor().FullName(), err,
-						)
-					}
-					if err == nil && len(vals) != len(entities) {
-						return fmt.Errorf("resolver for relation %q of type %q returned %d results, expected %d",
-							batch[0].mask.Name, batch[0].target.ProtoReflect().Descriptor().FullName(), len(vals), len(entities),
 						)
 					}
 
