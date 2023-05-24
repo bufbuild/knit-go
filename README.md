@@ -30,6 +30,7 @@ This repo contains two key components:
 2. A standalone server program that can be used as a Knit gateway and configured via YAML file:
    `"github.com/bufbuild/knit-go/cmd/knitgateway`.
 
+
 ## Knit Gateway
 
 The Knit gateway is a Go server that implements the [Knit service](https://buf.build/bufbuild/knit/docs/main:buf.knit.gateway.v1alpha1#buf.knit.gateway.v1alpha1.KnitService).
@@ -86,6 +87,7 @@ When services are registered, if any of the service's methods are annotated as r
 resolvers, then the gateway will use that RPC method to resolve relations that appear in
 incoming queries.
 
+
 ## Using the Standalone Server
 
 This repo contains a stand-alone Knit gateway server that can get you up
@@ -106,117 +108,28 @@ This builds a binary named `knitgateway` from the latest release.
 Running the binary will start the server, which will by default expect a
 config file named `knitgateway.yaml` to exist in the current working directory.
 
+The binary accepts the following command-line options:
+
+* **`--conf <filename>`**: Overrides the name and path of the config file to use.
+* **`--log-format <format>`**: Configures the log output format. The default is
+  "console" format, which emits logs in a simple human-readable line-oriented text
+  form. The other option is "json" format, which emits structured data formatted
+  as JSON.
+* **`--version`**: Prints the version of the gateway program and then immediately
+  exits.
+
+### Configuration
+
 In order to configure the server, you need to provide a YAML config file. There
-is a an example in the `cmd/knitgateway` folder of this repo named
+is a an example in the root of this repo named
 [`knitgateway.example.yaml`](/knitgateway.example.yaml).
 The example file shows all the properties that can be configured. The example
-also is a working example if you also run the [`swapi-server`](https://github.com/bufbuild/knit-demo/blob/main/go/cmd/swapi-server/)
+also is a working example if you also run the
+[`swapi-server`](https://github.com/bufbuild/knit-demo/blob/main/go/cmd/swapi-server/)
 demo server as the backend.
 
-The YAML config supports two top-level properties, `listen` and `backends`.
-They are described in more detail below.
+The YAML config format is documented in its entirety in a [separate page](/CONFIG.md).
 
-### Listen Config
-
-The `listen` property of the YAML config file defines how the demo server's
-network listener is configured. This property is a YAML map with the following
-keys:
-
-- **`bind_address`**: The address on which to listen. This defaults to 127.0.0.1, so
-  that it only accepts requests on the loopback interface. You can use 0.0.0.0
-  to instead listen on all network interfaces (making the server available from
-  other hosts).
-- **`port`**: The port number on which to listen. This defaults to 0, which means
-  an ephemeral port will be chosen. The actual ephemeral port used will be
-  printed when the server starts, so you can point clients to that port.
-
-This property is optional with defaults as described above if absent.
-
-Note that TLS is not yet supported by the standalone server, only plaintext
-HTTP and HTTP/2. TLS is coming soon.
-
-### Backends Config
-
-The `backends` property of the YAML config file defines what RPC services the
-gateway supports and how to route requests for those services to actual backend
-servers.
-
-The property value is a list of backend configuration maps. Each map in the
-slice has the following keys:
-
-- **`route_to`**: The base URL for this backend. This key must be provided.
-  The URL may use either "http" or "https" scheme. Note that no custom
-  TLS properties (such as custom root CA certificate or client certificates)
-  are currently supported for use with "https" URLs.
-- **`h2c`**: If the `routeTo` property uses a plaintext "http" scheme, but
-  HTTP/2 should be used, set this property to true. It defaults to false.
-- **`protocol`**: This configured the protocol that will be used to communicate
-  with this backend. The default protocol is "connect". Other allowed options
-  are "grpc" or "grpcweb".
-- **`encoding`**: This configures the message encoding for sending requests to
-  this backend. The default is "proto", which uses the Protobuf binary format.
-  The other allowed option is "json".
-- **`services`**: This key is required. The value is a list of fully-qualified
-  service names that will be routed to this backend. If these services contain
-  methods that can resolve relations, then those relations are automatically
-  supported by the server.
-- **`descriptors`**: This key is required. This configuration indicates how
-  the gateway will find descriptors for the above named services. The value is
-  a map with the following keys, of which _only one may be set_:
-  - **`descriptor_set_file`**: The value for this key is the path to a file
-    that is an encoded [file descriptor set](https://github.com/protocolbuffers/protobuf/blob/v22.0/src/google/protobuf/descriptor.proto#L54-L58).
-    Both `buf` and `protoc` can produce such files. (See more below.)
-  - **`buf_module`**: The value for this key is the name of a module that has
-    been pushed to a Buf Schema Registry (BSR). The module name must be in the
-    format "&lt;remote>/&lt;owner>/&lt;repo>". The first part defines the host name for
-    the BSR, for example `buf.build`. When using this option, you must provide
-    an environment variable named [`BUF_TOKEN`](https://docs.buf.build/bsr/authentication#buf_token)
-    that the gateway will use to authenticate with the BSR in order to download
-    the module's descriptors.
-  - **`grpc_reflection`**: The value for this key is a boolean. If true, then
-    the [gRPC Server Reflection](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
-    protocol will be used to download the descriptors from the
-    backend server itself.
-
-### Descriptor Set Examples
-
-If using the `descriptor_set_file` option for the `descriptors` key, you can
-use `buf` or `protoc` to generate a file in the correct format.
-
-The following example uses `buf` to build proto sources in the current
-directory. The `-o` flag indicates the path to the output file that will
-contain the descriptors:
-
-```shell
-buf build . -o ../my-services.protoset
-```
-
-Here's another example using `buf`, this time to build the
-[buf.build/bufbuild/knit-demo](https://buf.build/bufbuild/knit-demo) module.
-This module contains service definitions that describe the
-_Star Wars API_ ([swapi.dev](https://swapi.dev/)).
-
-```shell
-buf build buf.build/bufbuild/knit-demo -o swapi.protoset
-```
-
-Finally, here's an example that uses `protoc`. This compiles a
-hypothetical file at path `foo/bar/services.proto`, where some of
-its imports are defined in a `../../others/proto` directory.
-
-Here too, the `-o` flag indicates the path to the output file that will
-contain the descriptors. Most importantly, you must also include the
-`--include_imports` flag, or else the resulting file may be incomplete
-and unusable by the Knit gateway.
-
-```shell
-protoc -I ../../others/proto foo/bar/services.proto \
-    --include_imports -o ../my-services.protoset
-```
-
-Note that using `protoc` may involve specifying multiple input files
-and multiple `-I` include path options. Refer to your existing scripts
-that invoke `protoc` for code generation.
 
 ## Creating a Custom Gateway
 
@@ -369,13 +282,16 @@ func serveHTTP(bindAddress string, gateway *knit.Gateway) error {
 
 Now a Knit client can send requests to the HTTP server we just started.
 
+
 ## Status: Alpha
 
 Knit is undergoing initial development and is not yet stable.
 
+
 ## Legal
 
 Offered under the [Apache 2 license][badges_license].
+
 
 [badges_license]: https://github.com/bufbuild/knit-go/blob/main/LICENSE
 [badges_slack]: https://buf.build/links/slack
