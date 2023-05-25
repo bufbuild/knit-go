@@ -43,7 +43,7 @@ const (
 //nolint:gochecknoglobals
 var (
 	// (var instead of const so it could be changed via -X ldflags).
-	buildVersion       = "v0.0.2"
+	buildVersion       = "v0.1.0-dev"
 	buildVersionSuffix = ""
 )
 
