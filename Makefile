@@ -80,6 +80,13 @@ release:
 	go install github.com/goreleaser/goreleaser@v1.16.2
 	goreleaser release
 
+.PHONY: checkrelease
+checkrelease:
+	go install github.com/goreleaser/goreleaser@v1.16.2
+	# skips some validation and doesn't actually publish a release, just to test
+	# that building a release works
+	goreleaser release --clean --snapshot
+
 $(BIN)/license-header: Makefile
 	@mkdir -p $(@D)
 	GOBIN=$(abspath $(@D)) $(GO) install \
