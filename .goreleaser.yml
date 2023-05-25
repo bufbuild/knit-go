@@ -20,7 +20,7 @@ archives:
         format: zip
     rlcp: true
     # Follows same naming conventions as release artifacts for bufbuild/buf
-    name_template: '{{ .ProjectName }}-{{ .Tag }}-{{ title .Os }}-{{ if and (eq .Os "linux") (eq .Arch "arm64")}}aarch64{{ else if eq .Arch "amd64" }}x86_64{{ else }}{{ .Arch }}{{ end }}'
+    name_template: 'knitgateway-{{ .Tag }}-{{ title .Os }}-{{ if and (eq .Os "linux") (eq .Arch "arm64")}}aarch64{{ else if eq .Arch "amd64" }}x86_64{{ else }}{{ .Arch }}{{ end }}'
     files:
       - LICENSE
       - knitgateway.example.yaml
