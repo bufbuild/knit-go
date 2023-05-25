@@ -18,7 +18,8 @@ properties for a different category of configuration.
 1. **`listen`**: This section configures the listener for the gateway. This
    contains details about the server like what interface to bind to, what
    port to listen on, and whether TLS should be used.
-2. **`backends`**: This section configures all of the backends to which the
+2. **`limits`**: This section configures limits, to aid with operations.
+3. **`backends`**: This section configures all of the backends to which the
    gateway can send requests when processing a Knit query. This section
    configures the available RPC services that can be used in a Knit query
    and how to route them to backends. It includes connectivity details but
@@ -132,6 +133,21 @@ are allowed and disallowed by default, when no cipher suite configuration is pro
 | TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA           |              | Disallowed  |
 | TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256       | TLS 1.2 only | Disallowed  |
 | TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256         | TLS 1.2 only | Disallowed  |
+
+## Limits Config
+
+The top-level `limits` property is a map. At the moment, there is just one key
+that is allowed.
+
+- **`per_request_parallelism`**: Tte maximum parallelism per request. This is
+  the maximum number of concurrent RPCs that can be made on behalf of a single
+  Knit query.
+
+  If not specified, there is no limit, and all RPCs needed to evaluate a query
+  will all be made in parallel.
+
+As other kinds of controls are implemented, configuration for them will be added
+to this section.
 
 ## Backends Config
 

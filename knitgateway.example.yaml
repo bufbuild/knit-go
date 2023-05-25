@@ -100,6 +100,13 @@ listen:
       # are used to verify client certs.
       #cacert: /path/to/ca-cert
 
+limits:
+  # As of now, there is only one supported limit: the maximum parallelism
+  # per request. This is the maximum number of concurrent RPCs that can be
+  # made on behalf of a single Knit query. If not specified, there is no
+  # limit, and all RPCs needed to evaluate a query will all be made in parallel.
+  per_request_parallelism: 10
+
 backends:
 # You can define any number of backends. For this example, there is
 # only one, which is the swapi-server program defined in the
