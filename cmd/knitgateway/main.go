@@ -133,7 +133,7 @@ func main() {
 	ignored := make(chan os.Signal, 1)
 	signal.Notify(ignored, syscall.SIGHUP)
 	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGALRM, syscall.SIGQUIT, syscall.SIGTSTP, syscall.SIGUSR1, syscall.SIGUSR2)
+	signal.Notify(sig, syscall.SIGTERM, syscall.SIGINT, syscall.SIGALRM, syscall.SIGQUIT)
 
 	group, grpCtx := errgroup.WithContext(ctx)
 	group.Go(func() error {
