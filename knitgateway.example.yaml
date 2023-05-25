@@ -180,30 +180,27 @@ backends:
   descriptors:
     grpc_reflection: true
 
-  # These particular services are also available in the
-  # BSR. So the following configuration also works:
-  #
-  #   descriptors:
-  #     buf_module: buf.build/bufbuild/knit-demo
-  #
-  # Note that this requires a BUF_TOKEN environment variable
-  # for authenticating with the BSR.
+    # These particular services are also available in the
+    # BSR. So the following configuration also works:
+    #
+    #buf_module: buf.build/bufbuild/knit-demo
+    #
+    # Note that this requires a BUF_TOKEN environment variable
+    # for authenticating with the BSR.
 
-  # If your servers do not support gRPC reflection and
-  # your schema is not in the BSR, you can also provide
-  # them via file descriptor sets. These can be produced
-  # with the Buf CLI using the "build" command:
-  #    buf build buf.build/bufbuild/knit-demo -o swapi.protoset
-  # They can also be produced by "protoc" using a '-o'
-  # flag. Don't forget to use '--include_imports' so that
-  # the file is self-contained:
-  #    protoc --include_imports -o swapi.protoset ...
-  #
-  # Once you have a file, you can use configuration like so:
-  #
-  #   descriptors:
-  #     descriptor_set_file: path/to/swapi.protoset
-  #
+    # If your servers do not support gRPC reflection and
+    # your schema is not in the BSR, you can also provide
+    # them via file descriptor sets. These can be produced
+    # with the Buf CLI using the "build" command:
+    #    buf build buf.build/bufbuild/knit-demo -o swapi.protoset
+    # They can also be produced by "protoc" using a '-o'
+    # flag. Don't forget to use '--include_imports' so that
+    # the file is self-contained:
+    #    protoc --include_imports -o swapi.protoset ...
+    #
+    # Once you have a file, you can use configuration like so:
+    #
+    #descriptor_set_file: path/to/swapi.protoset
 
   # Since gRPC reflection uses a full-duplex bidi stream, we must
   # use HTTP/2. Usually, HTTP/2 is negotiated during the TLS
@@ -233,42 +230,6 @@ backends:
   #cert: /path/to/cert
   #key: /path/to/private-key
 
-# If your server will be handling cross-origin requests from
-# browsers, you need to configure CORS. If this section is absent
-# then CORS preflight requests will always get a negative response
-# (i.e. origin not allowed).
-cors:
-  # This is a list of allowed origins. Specifying a single wildcard
-  # means all origins are allowed. An entry in the list can include
-  # a single wildcard as a domain component, for example
-  # "https://*.foo.com" is an allowed value that allows all
-  # immediate sub-domains of foo.com.
-  # The default value is empty, which does not allow any origins.
-  allowed_origins: ['*']
-  # This is a list of allowed headers. The special entry '*' means
-  # all headers are allowed.
-  # The default value is empty, which does not allow any headers.
-  allowed_headers: ['*']
-  # When true, the browser will be allowed to use credentials (such
-  # as client TLS certs or cookies) with cross-origin requests.
-  # The default value is false.
-  allow_credentials: true
-  # When true, the browser will be allowed to send cross-origin
-  # requests using a private network.
-  # The default value is false.
-  #allow_private_networks: false
-  # When true, the browser will be allowed to send cross-origin
-  # requests using a private network.
-  # The default value is false.
-  #allow_private_networks: false
-  # This value allows the browser to cache the results of a
-  # pre-flight request, resulting in potentially fewer pre-flight
-  # requests to authorize future cross-origin requests. If this
-  # field is omitted or zero, no such header is sent to the browser.
-  # If not specified in a response header, the default for browsers
-  # is 5 seconds.
-  #max_age_seconds: 600
-
 # There are other configuration settings related to retrieval
 # of descriptors that are not on a per-backend basis.
 descriptors:
@@ -290,8 +251,8 @@ descriptors:
   # thundering herd. A typical value for this purpose is 0.1 to 0.3.
   # A value of zero means no jitter. A value of 1 means 100% jitter,
   # which means the polling period can be perturbed up to 100% (so
-  # it could be as low as zero as high as double). The default is zero.
-  #polling_jitter: 0
+  # it could be as low as zero as high as double). The default is 0.25.
+  #polling_jitter: 0.25
 
   # The number of seconds to wait after a schema update to "debounce"
   # updates from multiple sources. A smaller value means the gateway's
@@ -341,7 +302,7 @@ descriptors:
       # needed.
       #file_name_prefix: "cache"
       # This is the extension of cache files created. The default is
-      # is ".bin". The leading dot is optional and will be automatically
+      # ".bin". The leading dot is optional and will be automatically
       # added if needed.
       #file_extension: "bin"
       # The mode used to create the files. This will be combined with the
@@ -403,3 +364,35 @@ descriptors:
       # auto-removed after this number of seconds elapses. By default,
       # entries will be created without expiry (and never be deleted).
       #expiry_seconds: 864000
+
+# If your server will be handling cross-origin requests from
+# browsers, you need to configure CORS. If this section is absent
+# then CORS preflight requests will always get a negative response
+# (i.e. origin not allowed).
+cors:
+  # This is a list of allowed origins. Specifying a single wildcard
+  # means all origins are allowed. An entry in the list can include
+  # a single wildcard as a domain component, for example
+  # "https://*.foo.com" is an allowed value that allows all
+  # immediate sub-domains of foo.com.
+  # The default value is empty, which does not allow any origins.
+  allowed_origins: ['*']
+  # This is a list of allowed headers. The special entry '*' means
+  # all headers are allowed.
+  # The default value is empty, which does not allow any headers.
+  allowed_headers: ['*']
+  # When true, the browser will be allowed to use credentials (such
+  # as client TLS certs or cookies) with cross-origin requests.
+  # The default value is false.
+  allow_credentials: true
+  # When true, the browser will be allowed to send cross-origin
+  # requests using a private network.
+  # The default value is false.
+  #allow_private_networks: false
+  # This value allows the browser to cache the results of a
+  # pre-flight request, resulting in potentially fewer pre-flight
+  # requests to authorize future cross-origin requests. If this
+  # field is omitted or zero, no such header is sent to the browser.
+  # If not specified in a response header, the default for browsers
+  # is 5 seconds.
+  #max_age_seconds: 600
