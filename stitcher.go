@@ -20,7 +20,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bufbuild/connect-go"
+	connect "github.com/bufbuild/connect-go"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/protobuf/proto"

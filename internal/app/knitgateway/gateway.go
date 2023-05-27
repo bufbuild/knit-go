@@ -25,7 +25,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/bufbuild/connect-go"
+	connect "github.com/bufbuild/connect-go"
 	"github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
 	"go.uber.org/zap"

@@ -17,8 +17,8 @@ package knit
 import (
 	"testing"
 
-	"buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
-	"github.com/bufbuild/connect-go"
+	gatewayv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
+	connect "github.com/bufbuild/connect-go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"

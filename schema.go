@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"strings"
 
-	"buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
-	"github.com/bufbuild/connect-go"
+	gatewayv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
+	connect "github.com/bufbuild/connect-go"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/anypb"
