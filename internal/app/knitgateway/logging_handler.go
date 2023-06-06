@@ -15,6 +15,7 @@
 package knitgateway
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -22,12 +23,12 @@ import (
 )
 
 // NewLoggingHandler wraps the given handler so that all incoming requests are logged.
-func NewLoggingHandler(handler http.Handler, logger *zap.Logger) http.Handler {
+func NewLoggingHandler(handler http.Handler, logger *zap.Logger, suffix string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		intercepted, w := intercept(w)
 		handler.ServeHTTP(w, r)
-		logRequest(logger, r, intercepted.status, intercepted.transportFailed, intercepted.size, time.Since(start))
+		logRequest(logger, suffix, r, intercepted.status, intercepted.transportFailed, intercepted.size, time.Since(start))
 	})
 }
 
@@ -74,11 +75,25 @@ type writerAndFlusher struct {
 	http.Flusher
 }
 
-func logRequest(logger *zap.Logger, r *http.Request, status int, transportFailed bool, bodySize int, latency time.Duration) {
-	logger.Info("handled HTTP request",
-		zap.String("method", r.Method),
-		zap.String("requestURI", r.RequestURI),
-		zap.String("remoteAddr", r.RemoteAddr),
+func logRequest(
+	logger *zap.Logger,
+	suffix string,
+	req *http.Request,
+	status int,
+	transportFailed bool,
+	bodySize int,
+	latency time.Duration,
+) {
+	var msg string
+	if suffix == "" {
+		msg = "handled HTTP request"
+	} else {
+		msg = fmt.Sprintf("handled HTTP %s request", suffix)
+	}
+	logger.Info(msg,
+		zap.String("method", req.Method),
+		zap.String("requestURI", req.RequestURI),
+		zap.String("remoteAddr", req.RemoteAddr),
 		zap.Int("status", status),
 		zap.Bool("transportFailed", transportFailed),
 		zap.Int("responseBytes", bodySize),

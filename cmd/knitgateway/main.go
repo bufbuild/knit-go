@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"flag"
 	"fmt"
@@ -47,6 +48,7 @@ var (
 	buildVersionSuffix = ""
 )
 
+//nolint:gocyclo
 func main() {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	conf := flagSet.String("conf", "knitgateway.yaml", "The path to a YAML config file.")
@@ -113,20 +115,39 @@ func main() {
 		fatalf("failed to create gateway handler: %v", err)
 	}
 
-	mux := http.NewServeMux()
-	mux.Handle(gateway.Pattern(), gateway)
 	certCapturingHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.TLS != nil && len(r.TLS.PeerCertificates) > 0 {
 			r = r.WithContext(knitgateway.ContextWithClientCert(r.Context(), r.TLS.PeerCertificates[0]))
 		}
-		mux.ServeHTTP(w, r)
+		gateway.ServeHTTP(w, r)
 	})
 	corsHandler := cors.New(config.CORSConfig).Handler(certCapturingHandler)
-	loggingHandler := knitgateway.NewLoggingHandler(corsHandler, logger)
+
+	mux := http.NewServeMux()
+	mux.Handle(gateway.Pattern(), corsHandler)
+	if config.Admin != nil && config.Admin.UseMainListeners {
+		knitgateway.RegisterAdminHandlers(gateway, mux)
+	}
+	loggingHandler := knitgateway.NewLoggingHandler(mux, logger, "")
 	svr := http.Server{
 		Handler:           h2c.NewHandler(loggingHandler, &http2.Server{}),
 		ReadHeaderTimeout: 30 * time.Second,
 		TLSConfig:         config.TLSConfig,
+	}
+
+	var adminSvr *http.Server
+	if config.Admin != nil && !config.Admin.UseMainListeners {
+		adminMux := http.NewServeMux()
+		knitgateway.RegisterAdminHandlers(gateway, adminMux)
+		var tlsConfig *tls.Config
+		if config.Admin.UseTLS {
+			tlsConfig = config.TLSConfig
+		}
+		adminSvr = &http.Server{
+			Handler:           knitgateway.NewLoggingHandler(adminMux, logger, "admin"),
+			ReadHeaderTimeout: 30 * time.Second,
+			TLSConfig:         tlsConfig,
+		}
 	}
 
 	ignored := make(chan os.Signal, 1)
@@ -146,7 +167,16 @@ func main() {
 
 		timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
-		if err := svr.Shutdown(timeoutCtx); err != nil {
+		shutdownGroup, shutdownContext := errgroup.WithContext(timeoutCtx)
+		shutdownGroup.Go(func() error {
+			return svr.Shutdown(shutdownContext)
+		})
+		if adminSvr != nil {
+			shutdownGroup.Go(func() error {
+				return adminSvr.Shutdown(shutdownContext)
+			})
+		}
+		if err := shutdownGroup.Wait(); err != nil {
 			logger.Sugar().Errorf("could not complete shutdown: %v", err)
 		}
 		return nil
@@ -188,6 +218,29 @@ func main() {
 			logger.Sugar().Infof("Listening on unix socket %s for %s requests...", config.UnixSocket, scheme)
 			if err := serveFunc(unixListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				logger.Sugar().Fatalf("%s server (unix socket) failed: %v", scheme, err)
+			}
+			return sentinelErr
+		})
+	}
+
+	if adminSvr != nil {
+		group.Go(func() error {
+			scheme := "HTTP"
+			serveFunc := adminSvr.Serve
+			if config.Admin.UseTLS {
+				scheme = "HTTPS"
+				serveFunc = func(l net.Listener) error {
+					return adminSvr.ServeTLS(l, "", "")
+				}
+			}
+
+			tcpListener, err := net.Listen("tcp", config.Admin.ListenAddress)
+			if err != nil {
+				return fmt.Errorf("failed to listen on bind address %s: %w", config.Admin.ListenAddress, err)
+			}
+			logger.Sugar().Infof("Listening on %s for %s Admin requests...", tcpListener.Addr().String(), scheme)
+			if err := serveFunc(tcpListener); err != nil && !errors.Is(err, http.ErrServerClosed) {
+				logger.Sugar().Fatalf("%s Admin server failed: %v", scheme, err)
 			}
 			return sentinelErr
 		})
