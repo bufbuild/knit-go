@@ -10,6 +10,13 @@ linters-settings:
       - '^print$'
       - '^println$'
       - '^panic$'
+  importas:
+    no-unaliased: true
+    alias:
+      - pkg:  buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1
+        alias: gatewayv1alpha1
+      - pkg: github.com/bufbuild/connect-go
+        alias: connect
   godox:
     # TODO, OPT, etc. comments are fine to commit. Use FIXME comments for
     # temporary hacks, and use godox to prevent committing them.
