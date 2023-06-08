@@ -23,7 +23,7 @@ import (
 
 	"buf.build/gen/go/bufbuild/reflect/bufbuild/connect-go/buf/reflect/v1beta1/reflectv1beta1connect"
 	connect "github.com/bufbuild/connect-go"
-	"github.com/bufbuild/connect-grpcreflect-go"
+	grpcreflect "github.com/bufbuild/connect-grpcreflect-go"
 	"github.com/bufbuild/prototransform"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"

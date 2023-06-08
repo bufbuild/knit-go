@@ -17,6 +17,8 @@ linters-settings:
         alias: gatewayv1alpha1
       - pkg: github.com/bufbuild/connect-go
         alias: connect
+      - pkg: github.com/bufbuild/connect-grpcreflect-go
+        alias: grpcreflect
       - pkg: github.com/bufbuild/knit-go
         alias: knit
   godox:
