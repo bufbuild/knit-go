@@ -20,7 +20,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 
-	"github.com/bufbuild/knit-go"
+	knit "github.com/bufbuild/knit-go"
 	"github.com/bufbuild/knit-go/internal/crosstest"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest/crosstestconnect"
 	"golang.org/x/net/http2"

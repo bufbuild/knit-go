@@ -26,7 +26,7 @@ import (
 	"time"
 
 	connect "github.com/bufbuild/connect-go"
-	"github.com/bufbuild/knit-go"
+	knit "github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"

@@ -17,6 +17,10 @@ linters-settings:
         alias: gatewayv1alpha1
       - pkg: github.com/bufbuild/connect-go
         alias: connect
+      - pkg: github.com/bufbuild/connect-grpcreflect-go
+        alias: grpcreflect
+      - pkg: github.com/bufbuild/knit-go
+        alias: knit
   godox:
     # TODO, OPT, etc. comments are fine to commit. Use FIXME comments for
     # temporary hacks, and use godox to prevent committing them.
