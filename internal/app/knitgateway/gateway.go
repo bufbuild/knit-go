@@ -22,6 +22,8 @@ import (
 	"math"
 	"net"
 	"net/http"
+	"sort"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -31,6 +33,7 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 const (
@@ -60,11 +63,12 @@ var (
 // then replaces the underlying HTTP handler with one that has new configuration
 // when an update is observed.
 type Gateway struct {
-	watchers   map[prototransform.SchemaPoller]*prototransform.SchemaWatcher
-	config     *GatewayConfig
-	updateChan <-chan struct{}
-	delegate   atomic.Pointer[handlerWrapper]
-	pattern    string
+	watchers     map[prototransform.SchemaPoller]*prototransform.SchemaWatcher
+	config       *GatewayConfig
+	updateChan   <-chan struct{}
+	delegate     atomic.Pointer[handlerWrapper]
+	pattern      string
+	pollingStats map[prototransform.SchemaPoller]*pollingStats
 }
 
 // CreateGateway creates a new gateway with the given configuration. This
@@ -115,21 +119,23 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 
 	updateChan := make(chan struct{}, 1)
 	gateway := &Gateway{
-		watchers:   map[prototransform.SchemaPoller]*prototransform.SchemaWatcher{},
-		config:     config,
-		updateChan: updateChan,
+		watchers:     map[prototransform.SchemaPoller]*prototransform.SchemaWatcher{},
+		pollingStats: map[prototransform.SchemaPoller]*pollingStats{},
+		config:       config,
+		updateChan:   updateChan,
 	}
 	period, jitter := config.PollingPeriod, config.PollingJitter
 	for poller := range pollerInfo {
 		poller := poller
 		details := pollerInfo[poller]
+		stats := &pollingStats{}
 		watcherConfig := &prototransform.SchemaWatcherConfig{
-			SchemaPoller:   poller,
+			SchemaPoller:   trackingPoller{poller: poller, stats: stats},
 			IncludeSymbols: details.symbols,
 			PollingPeriod:  period,
 			Jitter:         jitter,
 		}
-		var sync func()
+		var syncOthers func()
 		if jitter != 0 {
 			// Instead of letting everything jitter independently,
 			// we let the first one handle the jittered scheduling
@@ -137,7 +143,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 			period = math.MaxInt64
 			jitter = 0
 			if len(pollerInfo) > 1 {
-				sync = func() {
+				syncOthers = func() {
 					// sync all other watchers to this one's schedule
 					for i, watcher := range gateway.watchers {
 						if i == poller {
@@ -152,9 +158,10 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 			watcherConfig.Cache = schemaCache
 		}
 		watcherConfig.OnUpdate = func() {
-			if sync != nil {
-				sync()
+			if syncOthers != nil {
+				syncOthers()
 			}
+			stats.updated()
 			logger.Info("received schema update", zap.String("source", poller.GetSchemaID()))
 			if ctx.Err() != nil {
 				return // don't bother sending update signal
@@ -176,6 +183,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 			return nil, fmt.Errorf("failed to create schema watcher for %s: %w", poller.GetSchemaID(), err)
 		}
 		gateway.watchers[poller] = watcher
+		gateway.pollingStats[poller] = stats
 		closers = append(closers, closerFunc(func() error {
 			watcher.Stop()
 			return nil
@@ -211,6 +219,7 @@ func (g *Gateway) AwaitReady(ctx context.Context) error {
 // updated.
 func (g *Gateway) CreateHandler() error {
 	knitGateway := &knit.Gateway{MaxParallelismPerRequest: g.config.MaxParallelismPerRequest}
+	services := make([]protoreflect.ServiceDescriptor, 0, len(g.config.Services))
 	for svcName, svcConf := range g.config.Services {
 		watcher := g.watchers[svcConf.Descriptors]
 		desc, err := watcher.FindDescriptorByName(protoreflect.FullName(svcName))
@@ -238,9 +247,13 @@ func (g *Gateway) CreateHandler() error {
 		if err != nil {
 			return fmt.Errorf("failed to register service %s with knitGateway: %w", svcName, err)
 		}
+		services = append(services, svc)
 	}
 	pattern, handler := knitGateway.AsHandler()
-	newDelegate := &handlerWrapper{handler}
+	sort.Slice(services, func(i, j int) bool {
+		return services[i].FullName() < services[j].FullName()
+	})
+	newDelegate := &handlerWrapper{Handler: handler, services: services}
 	for {
 		existing := g.delegate.Load()
 		if existing != nil {
@@ -329,6 +342,7 @@ func (fn closerFunc) Close() error {
 
 type handlerWrapper struct {
 	http.Handler
+	services []protoreflect.ServiceDescriptor
 }
 
 type certForwardingInterceptor struct{}
@@ -355,4 +369,50 @@ func (c *certForwardingInterceptor) WrapStreamingClient(clientFunc connect.Strea
 func (c *certForwardingInterceptor) WrapStreamingHandler(handlerFunc connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	// should never be called
 	return handlerFunc
+}
+
+type pollingStats struct {
+	mu                       sync.Mutex
+	lastUpdated, lastChecked time.Time
+	lastErr                  error
+}
+
+func (s *pollingStats) LastUpdated() time.Time {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastUpdated
+}
+
+func (s *pollingStats) LastChecked() (time.Time, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.lastChecked, s.lastErr
+}
+
+func (s *pollingStats) updated() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.lastUpdated = time.Now()
+}
+
+func (s *pollingStats) checked(err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.lastChecked = time.Now()
+	s.lastErr = err
+}
+
+type trackingPoller struct {
+	poller prototransform.SchemaPoller
+	stats  *pollingStats
+}
+
+func (t trackingPoller) GetSchema(ctx context.Context, symbols []string, currentVersion string) (descriptors *descriptorpb.FileDescriptorSet, version string, err error) {
+	descriptors, version, err = t.poller.GetSchema(ctx, symbols, currentVersion)
+	t.stats.checked(err)
+	return descriptors, version, err
+}
+
+func (t trackingPoller) GetSchemaID() string {
+	return t.poller.GetSchemaID()
 }

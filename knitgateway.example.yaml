@@ -100,6 +100,41 @@ listen:
       # are used to verify client certs.
       #cacert: /path/to/ca-cert
 
+admin:
+  # By default, admin endpoints are available. Note that admin endpoints are
+  # NOT secured, other than by being served on a potentially different network
+  # interface and port and using the same TLS config (if any) as the main
+  # traffic port. If these measures are insufficient to adequately protect
+  # these endpoints in your environment, you can disable them with the
+  # following setting.
+  #enabled: true
+
+  # Configures a port from which admin endpoints are served. If not
+  # configured, defaults to 0, which instructs the operating system to
+  # select an ephemeral port. An ephemeral port means that basically every
+  # instance of the gateway will be using a different high-numbered port.
+  # The admin endpoints are nearly inaccessible this way. (Requires either
+  # probing the host for which ports have listeners or access to the logs
+  # where the gateway prints the actual port used.)
+  port: 30481
+
+  # Configures which network interfaces are used for serving admin endpoints.
+  # The default is 127.0.0.1, so that only the loopback interface is allowed.
+  #bind_address: 127.0.0.1
+
+  # By default, the admin endpoints will use the same TLS config as the main
+  # traffic port. If the main traffic port uses TLS, but the admin endpoints
+  # can use plaintext (generally okay if they aren't exposed externally, such
+  # as if only allowed over loopback interface).
+  #use_tls: false
+
+  # Instead of having the admin endpoints exposed on a different interface or
+  # port, they can instead be exposed via the same listeners as for other
+  # Knit application traffic. If this flag is set to true, use caution in
+  # ingress or service mesh configuration to prevent unauthorized clients
+  # from accessing "/admin/" URI paths.
+  #use_main_listeners: false
+
 limits:
   # As of now, there is only one supported limit: the maximum parallelism
   # per request. This is the maximum number of concurrent RPCs that can be

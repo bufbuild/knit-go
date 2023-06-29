@@ -15,6 +15,7 @@
 package knitgateway
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"errors"
@@ -67,6 +68,8 @@ type GatewayConfig struct {
 	PollingJitter            float64
 	PollingDebounce          time.Duration
 	Cache                    DescriptorCacheConfig
+	Admin                    *AdminConfig
+	RawConfig                []byte
 }
 
 // ServiceConfig is the configuration for a single RPC service.
@@ -78,17 +81,24 @@ type ServiceConfig struct {
 	Cacheable   bool
 }
 
+// AdminConfig is the configuration for the gateway's admin endpoints.
+type AdminConfig struct {
+	// If true, admin endpoints are served via the same listeners/ports
+	// as other traffic. If false, the following two properties are
+	// used to construct a separate listener.
+	UseMainListeners bool
+	ListenAddress    string
+	UseTLS           bool
+}
+
 // LoadConfig reads the config file at the given path and returns the resulting
 // GatewayConfig on success.
 func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
-	configInput, err := os.Open(path)
+	rawConfig, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		_ = configInput.Close()
-	}()
-	dec := yaml.NewDecoder(configInput)
+	dec := yaml.NewDecoder(bytes.NewReader(rawConfig))
 	dec.KnownFields(true)
 	var extConf externalGatewayConfig
 	if err := dec.Decode(&extConf); err != nil {
@@ -108,6 +118,11 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 
 	if len(extConf.Backends) == 0 {
 		return nil, fmt.Errorf("backends config is empty")
+	}
+
+	adminConf, err := loadAdminConfig(&extConf)
+	if err != nil {
+		return nil, err
 	}
 
 	pollers := map[descriptorSource]prototransform.SchemaPoller{}
@@ -263,38 +278,40 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		startupMaxWait = time.Second * time.Duration(extConf.Descriptors.StartupMaxWaitSeconds)
 	}
 
-	cacheConfig, err := newCacheConfig(extConf.Descriptors.Cache, numSourcesCacheable)
+	cacheConf, err := newCacheConfig(extConf.Descriptors.Cache, numSourcesCacheable)
 	if err != nil {
 		return nil, err
 	}
 
-	corsConfig := cors.Options{
+	corsConf := cors.Options{
 		AllowedOrigins:      extConf.CORS.AllowedOrigins,
 		AllowedHeaders:      extConf.CORS.AllowedHeaders,
 		AllowCredentials:    extConf.CORS.AllowCredentials,
 		AllowPrivateNetwork: extConf.CORS.AllowPrivateNetworks,
 		MaxAge:              extConf.CORS.MaxAgeSeconds,
 	}
-	if len(corsConfig.AllowedOrigins) == 0 {
+	if len(corsConf.AllowedOrigins) == 0 {
 		// If allowed origina is empty, the cors library defaults to allowing all '*'.
 		// But we want users to opt into that behavior. So if the list is empty, we
 		// provide a function that will be called (instead of using the empty list
 		// of origins).
-		corsConfig.AllowOriginFunc = func(string) bool { return false }
+		corsConf.AllowOriginFunc = func(string) bool { return false }
 	}
 
 	return &GatewayConfig{
 		ListenAddress:            listenAddress,
 		UnixSocket:               extConf.Listen.UnixSocket,
 		TLSConfig:                serverTLS,
-		CORSConfig:               corsConfig,
+		CORSConfig:               corsConf,
 		Services:                 services,
 		MaxParallelismPerRequest: extConf.Limits.PerRequestParallelism,
 		StartupMaxWait:           startupMaxWait,
 		PollingPeriod:            pollingPeriod,
 		PollingJitter:            jitter,
 		PollingDebounce:          time.Second * time.Duration(extConf.Descriptors.PollingDebounceSeconds),
-		Cache:                    cacheConfig,
+		Cache:                    cacheConf,
+		Admin:                    adminConf,
+		RawConfig:                rawConfig,
 	}, nil
 }
 
@@ -305,6 +322,7 @@ type externalGatewayConfig struct {
 	DefaultBackendTLS *externalClientTLSConfig        `yaml:"backend_tls"`
 	CORS              externalCORSConfig              `yaml:"cors"`
 	Descriptors       externalDescriptorPollingConfig `yaml:"descriptors"`
+	Admin             externalAdminConfig             `yaml:"admin"`
 }
 
 type externalListenConfig struct {
@@ -414,6 +432,71 @@ type externalCORSConfig struct {
 	AllowCredentials     bool     `yaml:"allow_credentials"`
 	AllowPrivateNetworks bool     `yaml:"allow_private_networks"`
 	MaxAgeSeconds        int      `yaml:"max_age_seconds"`
+}
+
+type externalAdminConfig struct {
+	Enabled *bool `yaml:"enabled"`
+	// If true, the admin endpoints are exposed using the same listeners as used
+	// for accepting requests for Knit traffic. If configured this way, caution
+	// should be used to protect these endpoints from external access, such as
+	// via ingress or reverse proxy that refuses to forward requests for all URI
+	// paths that start with "/admin/".
+	UseMainListeners bool `yaml:"use_main_listeners"`
+	// The bind address for the listener used to serve admin endpoints. If absent
+	// or empty string, defaults to 127.0.0.1 (loopback-only).
+	BindAddress string `yaml:"bind_address"`
+	// The port on which to listen for admin requests. If absent, defaults to
+	// zero, which will pick an ephemeral port. In non-development environments,
+	// this effectively makes the admin endpoints inaccessible.
+	Port int `yaml:"port"`
+	// If true, the TLS settings under "listen" will be applied to the admin port.
+	// It is an error to configure this setting if the admin endpoints are served
+	// from the same listeners as other traffic.
+	//
+	// If set to true, but "listen" section does not configure TLS, the config is
+	// invalid. If not present, it defaults to true if TLS is configured in "listen"
+	// but false otherwise. If false, then the admin port will use plaintext, even
+	// if the "listen" section configures TLS for the main traffic port. If false,
+	// it is recommended that "bin_address" be loopback-only.
+	UseTLS *bool `yaml:"use_tls"`
+}
+
+func loadAdminConfig(extConf *externalGatewayConfig) (*AdminConfig, error) {
+	adminEnabled := extConf.Admin.Enabled == nil || *extConf.Admin.Enabled
+	if !adminEnabled {
+		if extConf.Admin.UseMainListeners || extConf.Admin.BindAddress != "" ||
+			extConf.Admin.Port != 0 || extConf.Admin.UseTLS != nil {
+			return nil, fmt.Errorf("admin 'enabled' is false, but other properties for configuring admin endpoints also present")
+		}
+		return nil, nil //nolint:nilnil
+	}
+
+	var adminConf AdminConfig
+	if extConf.Admin.UseMainListeners {
+		adminConf.UseMainListeners = true
+		if extConf.Admin.BindAddress != "" || extConf.Admin.Port != 0 || extConf.Admin.UseTLS != nil {
+			return nil, fmt.Errorf("admin 'use_main_listeners' is true, but other properties for configuring separate listener are also present")
+		}
+		return &adminConf, nil
+	}
+
+	if extConf.Admin.UseTLS != nil && *extConf.Admin.UseTLS && extConf.Listen.TLS == nil {
+		return nil, fmt.Errorf("admin config 'use_tls' is true, but no server TLS configuration present")
+	}
+	if extConf.Listen.Port != nil && extConf.Admin.Port == *extConf.Listen.Port {
+		return nil, fmt.Errorf("admin port cannot be the same as main listen port (did you mean to instead set 'use_main_listeners' to true?)")
+	}
+	if extConf.Admin.UseTLS != nil {
+		adminConf.UseTLS = *extConf.Admin.UseTLS
+	} else {
+		adminConf.UseTLS = extConf.Listen.TLS != nil
+	}
+	if extConf.Admin.BindAddress == "" {
+		extConf.Admin.BindAddress = "127.0.0.1"
+	}
+	adminConf.ListenAddress = fmt.Sprintf("%s:%d", extConf.Admin.BindAddress, extConf.Admin.Port)
+
+	return &adminConf, nil
 }
 
 func makeHTTPClient(tlsConfig *tls.Config, unixSocket string, h2c bool) (connect.HTTPClient, error) {
