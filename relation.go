@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"net/http"
 
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"

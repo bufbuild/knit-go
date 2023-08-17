@@ -19,9 +19,9 @@
 package knittestconnect
 
 import (
+	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	connect_go "github.com/bufbuild/connect-go"
 	knittest "github.com/bufbuild/knit-go/internal/gen/buf/knittest"
 	http "net/http"
 	strings "strings"
@@ -32,7 +32,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect_go.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_7_0
 
 const (
 	// FooServiceName is the fully-qualified name of the FooService service.
@@ -61,9 +61,9 @@ const (
 
 // FooServiceClient is a client for the buf.knittest.FooService service.
 type FooServiceClient interface {
-	GetFoo(context.Context, *connect_go.Request[knittest.GetFooRequest]) (*connect_go.Response[knittest.GetFooResponse], error)
-	MutateFoo(context.Context, *connect_go.Request[knittest.MutateFooRequest]) (*connect_go.Response[knittest.MutateFooResponse], error)
-	QueryFoos(context.Context, *connect_go.Request[knittest.QueryFoosRequest]) (*connect_go.ServerStreamForClient[knittest.QueryFoosResponse], error)
+	GetFoo(context.Context, *connect.Request[knittest.GetFooRequest]) (*connect.Response[knittest.GetFooResponse], error)
+	MutateFoo(context.Context, *connect.Request[knittest.MutateFooRequest]) (*connect.Response[knittest.MutateFooResponse], error)
+	QueryFoos(context.Context, *connect.Request[knittest.QueryFoosRequest]) (*connect.ServerStreamForClient[knittest.QueryFoosResponse], error)
 }
 
 // NewFooServiceClient constructs a client for the buf.knittest.FooService service. By default, it
@@ -73,21 +73,21 @@ type FooServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewFooServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) FooServiceClient {
+func NewFooServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) FooServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &fooServiceClient{
-		getFoo: connect_go.NewClient[knittest.GetFooRequest, knittest.GetFooResponse](
+		getFoo: connect.NewClient[knittest.GetFooRequest, knittest.GetFooResponse](
 			httpClient,
 			baseURL+FooServiceGetFooProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		mutateFoo: connect_go.NewClient[knittest.MutateFooRequest, knittest.MutateFooResponse](
+		mutateFoo: connect.NewClient[knittest.MutateFooRequest, knittest.MutateFooResponse](
 			httpClient,
 			baseURL+FooServiceMutateFooProcedure,
 			opts...,
 		),
-		queryFoos: connect_go.NewClient[knittest.QueryFoosRequest, knittest.QueryFoosResponse](
+		queryFoos: connect.NewClient[knittest.QueryFoosRequest, knittest.QueryFoosResponse](
 			httpClient,
 			baseURL+FooServiceQueryFoosProcedure,
 			opts...,
@@ -97,31 +97,31 @@ func NewFooServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts 
 
 // fooServiceClient implements FooServiceClient.
 type fooServiceClient struct {
-	getFoo    *connect_go.Client[knittest.GetFooRequest, knittest.GetFooResponse]
-	mutateFoo *connect_go.Client[knittest.MutateFooRequest, knittest.MutateFooResponse]
-	queryFoos *connect_go.Client[knittest.QueryFoosRequest, knittest.QueryFoosResponse]
+	getFoo    *connect.Client[knittest.GetFooRequest, knittest.GetFooResponse]
+	mutateFoo *connect.Client[knittest.MutateFooRequest, knittest.MutateFooResponse]
+	queryFoos *connect.Client[knittest.QueryFoosRequest, knittest.QueryFoosResponse]
 }
 
 // GetFoo calls buf.knittest.FooService.GetFoo.
-func (c *fooServiceClient) GetFoo(ctx context.Context, req *connect_go.Request[knittest.GetFooRequest]) (*connect_go.Response[knittest.GetFooResponse], error) {
+func (c *fooServiceClient) GetFoo(ctx context.Context, req *connect.Request[knittest.GetFooRequest]) (*connect.Response[knittest.GetFooResponse], error) {
 	return c.getFoo.CallUnary(ctx, req)
 }
 
 // MutateFoo calls buf.knittest.FooService.MutateFoo.
-func (c *fooServiceClient) MutateFoo(ctx context.Context, req *connect_go.Request[knittest.MutateFooRequest]) (*connect_go.Response[knittest.MutateFooResponse], error) {
+func (c *fooServiceClient) MutateFoo(ctx context.Context, req *connect.Request[knittest.MutateFooRequest]) (*connect.Response[knittest.MutateFooResponse], error) {
 	return c.mutateFoo.CallUnary(ctx, req)
 }
 
 // QueryFoos calls buf.knittest.FooService.QueryFoos.
-func (c *fooServiceClient) QueryFoos(ctx context.Context, req *connect_go.Request[knittest.QueryFoosRequest]) (*connect_go.ServerStreamForClient[knittest.QueryFoosResponse], error) {
+func (c *fooServiceClient) QueryFoos(ctx context.Context, req *connect.Request[knittest.QueryFoosRequest]) (*connect.ServerStreamForClient[knittest.QueryFoosResponse], error) {
 	return c.queryFoos.CallServerStream(ctx, req)
 }
 
 // FooServiceHandler is an implementation of the buf.knittest.FooService service.
 type FooServiceHandler interface {
-	GetFoo(context.Context, *connect_go.Request[knittest.GetFooRequest]) (*connect_go.Response[knittest.GetFooResponse], error)
-	MutateFoo(context.Context, *connect_go.Request[knittest.MutateFooRequest]) (*connect_go.Response[knittest.MutateFooResponse], error)
-	QueryFoos(context.Context, *connect_go.Request[knittest.QueryFoosRequest], *connect_go.ServerStream[knittest.QueryFoosResponse]) error
+	GetFoo(context.Context, *connect.Request[knittest.GetFooRequest]) (*connect.Response[knittest.GetFooResponse], error)
+	MutateFoo(context.Context, *connect.Request[knittest.MutateFooRequest]) (*connect.Response[knittest.MutateFooResponse], error)
+	QueryFoos(context.Context, *connect.Request[knittest.QueryFoosRequest], *connect.ServerStream[knittest.QueryFoosResponse]) error
 }
 
 // NewFooServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -129,45 +129,55 @@ type FooServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewFooServiceHandler(svc FooServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(FooServiceGetFooProcedure, connect_go.NewUnaryHandler(
+func NewFooServiceHandler(svc FooServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	fooServiceGetFooHandler := connect.NewUnaryHandler(
 		FooServiceGetFooProcedure,
 		svc.GetFoo,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(FooServiceMutateFooProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	fooServiceMutateFooHandler := connect.NewUnaryHandler(
 		FooServiceMutateFooProcedure,
 		svc.MutateFoo,
 		opts...,
-	))
-	mux.Handle(FooServiceQueryFoosProcedure, connect_go.NewServerStreamHandler(
+	)
+	fooServiceQueryFoosHandler := connect.NewServerStreamHandler(
 		FooServiceQueryFoosProcedure,
 		svc.QueryFoos,
 		opts...,
-	))
-	return "/buf.knittest.FooService/", mux
+	)
+	return "/buf.knittest.FooService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case FooServiceGetFooProcedure:
+			fooServiceGetFooHandler.ServeHTTP(w, r)
+		case FooServiceMutateFooProcedure:
+			fooServiceMutateFooHandler.ServeHTTP(w, r)
+		case FooServiceQueryFoosProcedure:
+			fooServiceQueryFoosHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedFooServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedFooServiceHandler struct{}
 
-func (UnimplementedFooServiceHandler) GetFoo(context.Context, *connect_go.Request[knittest.GetFooRequest]) (*connect_go.Response[knittest.GetFooResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.FooService.GetFoo is not implemented"))
+func (UnimplementedFooServiceHandler) GetFoo(context.Context, *connect.Request[knittest.GetFooRequest]) (*connect.Response[knittest.GetFooResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.FooService.GetFoo is not implemented"))
 }
 
-func (UnimplementedFooServiceHandler) MutateFoo(context.Context, *connect_go.Request[knittest.MutateFooRequest]) (*connect_go.Response[knittest.MutateFooResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.FooService.MutateFoo is not implemented"))
+func (UnimplementedFooServiceHandler) MutateFoo(context.Context, *connect.Request[knittest.MutateFooRequest]) (*connect.Response[knittest.MutateFooResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.FooService.MutateFoo is not implemented"))
 }
 
-func (UnimplementedFooServiceHandler) QueryFoos(context.Context, *connect_go.Request[knittest.QueryFoosRequest], *connect_go.ServerStream[knittest.QueryFoosResponse]) error {
-	return connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.FooService.QueryFoos is not implemented"))
+func (UnimplementedFooServiceHandler) QueryFoos(context.Context, *connect.Request[knittest.QueryFoosRequest], *connect.ServerStream[knittest.QueryFoosResponse]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.FooService.QueryFoos is not implemented"))
 }
 
 // FizzServiceClient is a client for the buf.knittest.FizzService service.
 type FizzServiceClient interface {
-	GetFizz(context.Context, *connect_go.Request[knittest.GetFizzRequest]) (*connect_go.Response[knittest.GetFizzResponse], error)
+	GetFizz(context.Context, *connect.Request[knittest.GetFizzRequest]) (*connect.Response[knittest.GetFizzResponse], error)
 }
 
 // NewFizzServiceClient constructs a client for the buf.knittest.FizzService service. By default, it
@@ -177,31 +187,31 @@ type FizzServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewFizzServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) FizzServiceClient {
+func NewFizzServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) FizzServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &fizzServiceClient{
-		getFizz: connect_go.NewClient[knittest.GetFizzRequest, knittest.GetFizzResponse](
+		getFizz: connect.NewClient[knittest.GetFizzRequest, knittest.GetFizzResponse](
 			httpClient,
 			baseURL+FizzServiceGetFizzProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
 // fizzServiceClient implements FizzServiceClient.
 type fizzServiceClient struct {
-	getFizz *connect_go.Client[knittest.GetFizzRequest, knittest.GetFizzResponse]
+	getFizz *connect.Client[knittest.GetFizzRequest, knittest.GetFizzResponse]
 }
 
 // GetFizz calls buf.knittest.FizzService.GetFizz.
-func (c *fizzServiceClient) GetFizz(ctx context.Context, req *connect_go.Request[knittest.GetFizzRequest]) (*connect_go.Response[knittest.GetFizzResponse], error) {
+func (c *fizzServiceClient) GetFizz(ctx context.Context, req *connect.Request[knittest.GetFizzRequest]) (*connect.Response[knittest.GetFizzResponse], error) {
 	return c.getFizz.CallUnary(ctx, req)
 }
 
 // FizzServiceHandler is an implementation of the buf.knittest.FizzService service.
 type FizzServiceHandler interface {
-	GetFizz(context.Context, *connect_go.Request[knittest.GetFizzRequest]) (*connect_go.Response[knittest.GetFizzResponse], error)
+	GetFizz(context.Context, *connect.Request[knittest.GetFizzRequest]) (*connect.Response[knittest.GetFizzResponse], error)
 }
 
 // NewFizzServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -209,20 +219,26 @@ type FizzServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewFizzServiceHandler(svc FizzServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(FizzServiceGetFizzProcedure, connect_go.NewUnaryHandler(
+func NewFizzServiceHandler(svc FizzServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	fizzServiceGetFizzHandler := connect.NewUnaryHandler(
 		FizzServiceGetFizzProcedure,
 		svc.GetFizz,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	return "/buf.knittest.FizzService/", mux
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/buf.knittest.FizzService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case FizzServiceGetFizzProcedure:
+			fizzServiceGetFizzHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedFizzServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedFizzServiceHandler struct{}
 
-func (UnimplementedFizzServiceHandler) GetFizz(context.Context, *connect_go.Request[knittest.GetFizzRequest]) (*connect_go.Response[knittest.GetFizzResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.FizzService.GetFizz is not implemented"))
+func (UnimplementedFizzServiceHandler) GetFizz(context.Context, *connect.Request[knittest.GetFizzRequest]) (*connect.Response[knittest.GetFizzResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.FizzService.GetFizz is not implemented"))
 }

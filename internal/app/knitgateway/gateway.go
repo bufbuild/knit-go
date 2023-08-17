@@ -27,7 +27,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	knit "github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
 	"go.uber.org/zap"

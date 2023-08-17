@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	gatewayv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/anypb"

@@ -20,7 +20,7 @@ import (
 	"strings"
 	"sync"
 
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/protobuf/proto"

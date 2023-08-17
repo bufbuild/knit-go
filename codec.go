@@ -17,7 +17,7 @@ package knit
 import (
 	"fmt"
 
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )

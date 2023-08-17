@@ -19,9 +19,9 @@
 package crosstestconnect
 
 import (
+	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	connect_go "github.com/bufbuild/connect-go"
 	crosstest "github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
@@ -33,7 +33,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect_go.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_7_0
 
 const (
 	// ParentServiceName is the fully-qualified name of the ParentService service.
@@ -90,11 +90,11 @@ const (
 
 // ParentServiceClient is a client for the buf.knit.crosstest.ParentService service.
 type ParentServiceClient interface {
-	ListParents(context.Context, *connect_go.Request[crosstest.ListParentsRequest]) (*connect_go.Response[crosstest.ListParentsResponse], error)
-	GetParent(context.Context, *connect_go.Request[crosstest.GetParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	CreateParent(context.Context, *connect_go.Request[crosstest.CreateParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	UpdateParent(context.Context, *connect_go.Request[crosstest.UpdateParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	DeleteParent(context.Context, *connect_go.Request[crosstest.DeleteParentRequest]) (*connect_go.Response[emptypb.Empty], error)
+	ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error)
+	GetParent(context.Context, *connect.Request[crosstest.GetParentRequest]) (*connect.Response[crosstest.Parent], error)
+	CreateParent(context.Context, *connect.Request[crosstest.CreateParentRequest]) (*connect.Response[crosstest.Parent], error)
+	UpdateParent(context.Context, *connect.Request[crosstest.UpdateParentRequest]) (*connect.Response[crosstest.Parent], error)
+	DeleteParent(context.Context, *connect.Request[crosstest.DeleteParentRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewParentServiceClient constructs a client for the buf.knit.crosstest.ParentService service. By
@@ -104,32 +104,32 @@ type ParentServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewParentServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) ParentServiceClient {
+func NewParentServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ParentServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &parentServiceClient{
-		listParents: connect_go.NewClient[crosstest.ListParentsRequest, crosstest.ListParentsResponse](
+		listParents: connect.NewClient[crosstest.ListParentsRequest, crosstest.ListParentsResponse](
 			httpClient,
 			baseURL+ParentServiceListParentsProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getParent: connect_go.NewClient[crosstest.GetParentRequest, crosstest.Parent](
+		getParent: connect.NewClient[crosstest.GetParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceGetParentProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		createParent: connect_go.NewClient[crosstest.CreateParentRequest, crosstest.Parent](
+		createParent: connect.NewClient[crosstest.CreateParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceCreateParentProcedure,
 			opts...,
 		),
-		updateParent: connect_go.NewClient[crosstest.UpdateParentRequest, crosstest.Parent](
+		updateParent: connect.NewClient[crosstest.UpdateParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceUpdateParentProcedure,
 			opts...,
 		),
-		deleteParent: connect_go.NewClient[crosstest.DeleteParentRequest, emptypb.Empty](
+		deleteParent: connect.NewClient[crosstest.DeleteParentRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ParentServiceDeleteParentProcedure,
 			opts...,
@@ -139,45 +139,45 @@ func NewParentServiceClient(httpClient connect_go.HTTPClient, baseURL string, op
 
 // parentServiceClient implements ParentServiceClient.
 type parentServiceClient struct {
-	listParents  *connect_go.Client[crosstest.ListParentsRequest, crosstest.ListParentsResponse]
-	getParent    *connect_go.Client[crosstest.GetParentRequest, crosstest.Parent]
-	createParent *connect_go.Client[crosstest.CreateParentRequest, crosstest.Parent]
-	updateParent *connect_go.Client[crosstest.UpdateParentRequest, crosstest.Parent]
-	deleteParent *connect_go.Client[crosstest.DeleteParentRequest, emptypb.Empty]
+	listParents  *connect.Client[crosstest.ListParentsRequest, crosstest.ListParentsResponse]
+	getParent    *connect.Client[crosstest.GetParentRequest, crosstest.Parent]
+	createParent *connect.Client[crosstest.CreateParentRequest, crosstest.Parent]
+	updateParent *connect.Client[crosstest.UpdateParentRequest, crosstest.Parent]
+	deleteParent *connect.Client[crosstest.DeleteParentRequest, emptypb.Empty]
 }
 
 // ListParents calls buf.knit.crosstest.ParentService.ListParents.
-func (c *parentServiceClient) ListParents(ctx context.Context, req *connect_go.Request[crosstest.ListParentsRequest]) (*connect_go.Response[crosstest.ListParentsResponse], error) {
+func (c *parentServiceClient) ListParents(ctx context.Context, req *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error) {
 	return c.listParents.CallUnary(ctx, req)
 }
 
 // GetParent calls buf.knit.crosstest.ParentService.GetParent.
-func (c *parentServiceClient) GetParent(ctx context.Context, req *connect_go.Request[crosstest.GetParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
+func (c *parentServiceClient) GetParent(ctx context.Context, req *connect.Request[crosstest.GetParentRequest]) (*connect.Response[crosstest.Parent], error) {
 	return c.getParent.CallUnary(ctx, req)
 }
 
 // CreateParent calls buf.knit.crosstest.ParentService.CreateParent.
-func (c *parentServiceClient) CreateParent(ctx context.Context, req *connect_go.Request[crosstest.CreateParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
+func (c *parentServiceClient) CreateParent(ctx context.Context, req *connect.Request[crosstest.CreateParentRequest]) (*connect.Response[crosstest.Parent], error) {
 	return c.createParent.CallUnary(ctx, req)
 }
 
 // UpdateParent calls buf.knit.crosstest.ParentService.UpdateParent.
-func (c *parentServiceClient) UpdateParent(ctx context.Context, req *connect_go.Request[crosstest.UpdateParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
+func (c *parentServiceClient) UpdateParent(ctx context.Context, req *connect.Request[crosstest.UpdateParentRequest]) (*connect.Response[crosstest.Parent], error) {
 	return c.updateParent.CallUnary(ctx, req)
 }
 
 // DeleteParent calls buf.knit.crosstest.ParentService.DeleteParent.
-func (c *parentServiceClient) DeleteParent(ctx context.Context, req *connect_go.Request[crosstest.DeleteParentRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (c *parentServiceClient) DeleteParent(ctx context.Context, req *connect.Request[crosstest.DeleteParentRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteParent.CallUnary(ctx, req)
 }
 
 // ParentServiceHandler is an implementation of the buf.knit.crosstest.ParentService service.
 type ParentServiceHandler interface {
-	ListParents(context.Context, *connect_go.Request[crosstest.ListParentsRequest]) (*connect_go.Response[crosstest.ListParentsResponse], error)
-	GetParent(context.Context, *connect_go.Request[crosstest.GetParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	CreateParent(context.Context, *connect_go.Request[crosstest.CreateParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	UpdateParent(context.Context, *connect_go.Request[crosstest.UpdateParentRequest]) (*connect_go.Response[crosstest.Parent], error)
-	DeleteParent(context.Context, *connect_go.Request[crosstest.DeleteParentRequest]) (*connect_go.Response[emptypb.Empty], error)
+	ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error)
+	GetParent(context.Context, *connect.Request[crosstest.GetParentRequest]) (*connect.Response[crosstest.Parent], error)
+	CreateParent(context.Context, *connect.Request[crosstest.CreateParentRequest]) (*connect.Response[crosstest.Parent], error)
+	UpdateParent(context.Context, *connect.Request[crosstest.UpdateParentRequest]) (*connect.Response[crosstest.Parent], error)
+	DeleteParent(context.Context, *connect.Request[crosstest.DeleteParentRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewParentServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -185,68 +185,82 @@ type ParentServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewParentServiceHandler(svc ParentServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(ParentServiceListParentsProcedure, connect_go.NewUnaryHandler(
+func NewParentServiceHandler(svc ParentServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	parentServiceListParentsHandler := connect.NewUnaryHandler(
 		ParentServiceListParentsProcedure,
 		svc.ListParents,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(ParentServiceGetParentProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	parentServiceGetParentHandler := connect.NewUnaryHandler(
 		ParentServiceGetParentProcedure,
 		svc.GetParent,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(ParentServiceCreateParentProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	parentServiceCreateParentHandler := connect.NewUnaryHandler(
 		ParentServiceCreateParentProcedure,
 		svc.CreateParent,
 		opts...,
-	))
-	mux.Handle(ParentServiceUpdateParentProcedure, connect_go.NewUnaryHandler(
+	)
+	parentServiceUpdateParentHandler := connect.NewUnaryHandler(
 		ParentServiceUpdateParentProcedure,
 		svc.UpdateParent,
 		opts...,
-	))
-	mux.Handle(ParentServiceDeleteParentProcedure, connect_go.NewUnaryHandler(
+	)
+	parentServiceDeleteParentHandler := connect.NewUnaryHandler(
 		ParentServiceDeleteParentProcedure,
 		svc.DeleteParent,
 		opts...,
-	))
-	return "/buf.knit.crosstest.ParentService/", mux
+	)
+	return "/buf.knit.crosstest.ParentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case ParentServiceListParentsProcedure:
+			parentServiceListParentsHandler.ServeHTTP(w, r)
+		case ParentServiceGetParentProcedure:
+			parentServiceGetParentHandler.ServeHTTP(w, r)
+		case ParentServiceCreateParentProcedure:
+			parentServiceCreateParentHandler.ServeHTTP(w, r)
+		case ParentServiceUpdateParentProcedure:
+			parentServiceUpdateParentHandler.ServeHTTP(w, r)
+		case ParentServiceDeleteParentProcedure:
+			parentServiceDeleteParentHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedParentServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedParentServiceHandler struct{}
 
-func (UnimplementedParentServiceHandler) ListParents(context.Context, *connect_go.Request[crosstest.ListParentsRequest]) (*connect_go.Response[crosstest.ListParentsResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.ListParents is not implemented"))
+func (UnimplementedParentServiceHandler) ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.ListParents is not implemented"))
 }
 
-func (UnimplementedParentServiceHandler) GetParent(context.Context, *connect_go.Request[crosstest.GetParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.GetParent is not implemented"))
+func (UnimplementedParentServiceHandler) GetParent(context.Context, *connect.Request[crosstest.GetParentRequest]) (*connect.Response[crosstest.Parent], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.GetParent is not implemented"))
 }
 
-func (UnimplementedParentServiceHandler) CreateParent(context.Context, *connect_go.Request[crosstest.CreateParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.CreateParent is not implemented"))
+func (UnimplementedParentServiceHandler) CreateParent(context.Context, *connect.Request[crosstest.CreateParentRequest]) (*connect.Response[crosstest.Parent], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.CreateParent is not implemented"))
 }
 
-func (UnimplementedParentServiceHandler) UpdateParent(context.Context, *connect_go.Request[crosstest.UpdateParentRequest]) (*connect_go.Response[crosstest.Parent], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.UpdateParent is not implemented"))
+func (UnimplementedParentServiceHandler) UpdateParent(context.Context, *connect.Request[crosstest.UpdateParentRequest]) (*connect.Response[crosstest.Parent], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.UpdateParent is not implemented"))
 }
 
-func (UnimplementedParentServiceHandler) DeleteParent(context.Context, *connect_go.Request[crosstest.DeleteParentRequest]) (*connect_go.Response[emptypb.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.DeleteParent is not implemented"))
+func (UnimplementedParentServiceHandler) DeleteParent(context.Context, *connect.Request[crosstest.DeleteParentRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ParentService.DeleteParent is not implemented"))
 }
 
 // ChildServiceClient is a client for the buf.knit.crosstest.ChildService service.
 type ChildServiceClient interface {
-	ListChildren(context.Context, *connect_go.Request[crosstest.ListChildrenRequest]) (*connect_go.Response[crosstest.ListChildrenResponse], error)
-	GetChild(context.Context, *connect_go.Request[crosstest.GetChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	CreateChild(context.Context, *connect_go.Request[crosstest.CreateChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	UpdateChild(context.Context, *connect_go.Request[crosstest.UpdateChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	DeleteChild(context.Context, *connect_go.Request[crosstest.DeleteChildRequest]) (*connect_go.Response[emptypb.Empty], error)
+	ListChildren(context.Context, *connect.Request[crosstest.ListChildrenRequest]) (*connect.Response[crosstest.ListChildrenResponse], error)
+	GetChild(context.Context, *connect.Request[crosstest.GetChildRequest]) (*connect.Response[crosstest.Child], error)
+	CreateChild(context.Context, *connect.Request[crosstest.CreateChildRequest]) (*connect.Response[crosstest.Child], error)
+	UpdateChild(context.Context, *connect.Request[crosstest.UpdateChildRequest]) (*connect.Response[crosstest.Child], error)
+	DeleteChild(context.Context, *connect.Request[crosstest.DeleteChildRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewChildServiceClient constructs a client for the buf.knit.crosstest.ChildService service. By
@@ -256,32 +270,32 @@ type ChildServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewChildServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) ChildServiceClient {
+func NewChildServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ChildServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &childServiceClient{
-		listChildren: connect_go.NewClient[crosstest.ListChildrenRequest, crosstest.ListChildrenResponse](
+		listChildren: connect.NewClient[crosstest.ListChildrenRequest, crosstest.ListChildrenResponse](
 			httpClient,
 			baseURL+ChildServiceListChildrenProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getChild: connect_go.NewClient[crosstest.GetChildRequest, crosstest.Child](
+		getChild: connect.NewClient[crosstest.GetChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceGetChildProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		createChild: connect_go.NewClient[crosstest.CreateChildRequest, crosstest.Child](
+		createChild: connect.NewClient[crosstest.CreateChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceCreateChildProcedure,
 			opts...,
 		),
-		updateChild: connect_go.NewClient[crosstest.UpdateChildRequest, crosstest.Child](
+		updateChild: connect.NewClient[crosstest.UpdateChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceUpdateChildProcedure,
 			opts...,
 		),
-		deleteChild: connect_go.NewClient[crosstest.DeleteChildRequest, emptypb.Empty](
+		deleteChild: connect.NewClient[crosstest.DeleteChildRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ChildServiceDeleteChildProcedure,
 			opts...,
@@ -291,45 +305,45 @@ func NewChildServiceClient(httpClient connect_go.HTTPClient, baseURL string, opt
 
 // childServiceClient implements ChildServiceClient.
 type childServiceClient struct {
-	listChildren *connect_go.Client[crosstest.ListChildrenRequest, crosstest.ListChildrenResponse]
-	getChild     *connect_go.Client[crosstest.GetChildRequest, crosstest.Child]
-	createChild  *connect_go.Client[crosstest.CreateChildRequest, crosstest.Child]
-	updateChild  *connect_go.Client[crosstest.UpdateChildRequest, crosstest.Child]
-	deleteChild  *connect_go.Client[crosstest.DeleteChildRequest, emptypb.Empty]
+	listChildren *connect.Client[crosstest.ListChildrenRequest, crosstest.ListChildrenResponse]
+	getChild     *connect.Client[crosstest.GetChildRequest, crosstest.Child]
+	createChild  *connect.Client[crosstest.CreateChildRequest, crosstest.Child]
+	updateChild  *connect.Client[crosstest.UpdateChildRequest, crosstest.Child]
+	deleteChild  *connect.Client[crosstest.DeleteChildRequest, emptypb.Empty]
 }
 
 // ListChildren calls buf.knit.crosstest.ChildService.ListChildren.
-func (c *childServiceClient) ListChildren(ctx context.Context, req *connect_go.Request[crosstest.ListChildrenRequest]) (*connect_go.Response[crosstest.ListChildrenResponse], error) {
+func (c *childServiceClient) ListChildren(ctx context.Context, req *connect.Request[crosstest.ListChildrenRequest]) (*connect.Response[crosstest.ListChildrenResponse], error) {
 	return c.listChildren.CallUnary(ctx, req)
 }
 
 // GetChild calls buf.knit.crosstest.ChildService.GetChild.
-func (c *childServiceClient) GetChild(ctx context.Context, req *connect_go.Request[crosstest.GetChildRequest]) (*connect_go.Response[crosstest.Child], error) {
+func (c *childServiceClient) GetChild(ctx context.Context, req *connect.Request[crosstest.GetChildRequest]) (*connect.Response[crosstest.Child], error) {
 	return c.getChild.CallUnary(ctx, req)
 }
 
 // CreateChild calls buf.knit.crosstest.ChildService.CreateChild.
-func (c *childServiceClient) CreateChild(ctx context.Context, req *connect_go.Request[crosstest.CreateChildRequest]) (*connect_go.Response[crosstest.Child], error) {
+func (c *childServiceClient) CreateChild(ctx context.Context, req *connect.Request[crosstest.CreateChildRequest]) (*connect.Response[crosstest.Child], error) {
 	return c.createChild.CallUnary(ctx, req)
 }
 
 // UpdateChild calls buf.knit.crosstest.ChildService.UpdateChild.
-func (c *childServiceClient) UpdateChild(ctx context.Context, req *connect_go.Request[crosstest.UpdateChildRequest]) (*connect_go.Response[crosstest.Child], error) {
+func (c *childServiceClient) UpdateChild(ctx context.Context, req *connect.Request[crosstest.UpdateChildRequest]) (*connect.Response[crosstest.Child], error) {
 	return c.updateChild.CallUnary(ctx, req)
 }
 
 // DeleteChild calls buf.knit.crosstest.ChildService.DeleteChild.
-func (c *childServiceClient) DeleteChild(ctx context.Context, req *connect_go.Request[crosstest.DeleteChildRequest]) (*connect_go.Response[emptypb.Empty], error) {
+func (c *childServiceClient) DeleteChild(ctx context.Context, req *connect.Request[crosstest.DeleteChildRequest]) (*connect.Response[emptypb.Empty], error) {
 	return c.deleteChild.CallUnary(ctx, req)
 }
 
 // ChildServiceHandler is an implementation of the buf.knit.crosstest.ChildService service.
 type ChildServiceHandler interface {
-	ListChildren(context.Context, *connect_go.Request[crosstest.ListChildrenRequest]) (*connect_go.Response[crosstest.ListChildrenResponse], error)
-	GetChild(context.Context, *connect_go.Request[crosstest.GetChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	CreateChild(context.Context, *connect_go.Request[crosstest.CreateChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	UpdateChild(context.Context, *connect_go.Request[crosstest.UpdateChildRequest]) (*connect_go.Response[crosstest.Child], error)
-	DeleteChild(context.Context, *connect_go.Request[crosstest.DeleteChildRequest]) (*connect_go.Response[emptypb.Empty], error)
+	ListChildren(context.Context, *connect.Request[crosstest.ListChildrenRequest]) (*connect.Response[crosstest.ListChildrenResponse], error)
+	GetChild(context.Context, *connect.Request[crosstest.GetChildRequest]) (*connect.Response[crosstest.Child], error)
+	CreateChild(context.Context, *connect.Request[crosstest.CreateChildRequest]) (*connect.Response[crosstest.Child], error)
+	UpdateChild(context.Context, *connect.Request[crosstest.UpdateChildRequest]) (*connect.Response[crosstest.Child], error)
+	DeleteChild(context.Context, *connect.Request[crosstest.DeleteChildRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewChildServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -337,65 +351,79 @@ type ChildServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewChildServiceHandler(svc ChildServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(ChildServiceListChildrenProcedure, connect_go.NewUnaryHandler(
+func NewChildServiceHandler(svc ChildServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	childServiceListChildrenHandler := connect.NewUnaryHandler(
 		ChildServiceListChildrenProcedure,
 		svc.ListChildren,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(ChildServiceGetChildProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	childServiceGetChildHandler := connect.NewUnaryHandler(
 		ChildServiceGetChildProcedure,
 		svc.GetChild,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(ChildServiceCreateChildProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	childServiceCreateChildHandler := connect.NewUnaryHandler(
 		ChildServiceCreateChildProcedure,
 		svc.CreateChild,
 		opts...,
-	))
-	mux.Handle(ChildServiceUpdateChildProcedure, connect_go.NewUnaryHandler(
+	)
+	childServiceUpdateChildHandler := connect.NewUnaryHandler(
 		ChildServiceUpdateChildProcedure,
 		svc.UpdateChild,
 		opts...,
-	))
-	mux.Handle(ChildServiceDeleteChildProcedure, connect_go.NewUnaryHandler(
+	)
+	childServiceDeleteChildHandler := connect.NewUnaryHandler(
 		ChildServiceDeleteChildProcedure,
 		svc.DeleteChild,
 		opts...,
-	))
-	return "/buf.knit.crosstest.ChildService/", mux
+	)
+	return "/buf.knit.crosstest.ChildService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case ChildServiceListChildrenProcedure:
+			childServiceListChildrenHandler.ServeHTTP(w, r)
+		case ChildServiceGetChildProcedure:
+			childServiceGetChildHandler.ServeHTTP(w, r)
+		case ChildServiceCreateChildProcedure:
+			childServiceCreateChildHandler.ServeHTTP(w, r)
+		case ChildServiceUpdateChildProcedure:
+			childServiceUpdateChildHandler.ServeHTTP(w, r)
+		case ChildServiceDeleteChildProcedure:
+			childServiceDeleteChildHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedChildServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedChildServiceHandler struct{}
 
-func (UnimplementedChildServiceHandler) ListChildren(context.Context, *connect_go.Request[crosstest.ListChildrenRequest]) (*connect_go.Response[crosstest.ListChildrenResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.ListChildren is not implemented"))
+func (UnimplementedChildServiceHandler) ListChildren(context.Context, *connect.Request[crosstest.ListChildrenRequest]) (*connect.Response[crosstest.ListChildrenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.ListChildren is not implemented"))
 }
 
-func (UnimplementedChildServiceHandler) GetChild(context.Context, *connect_go.Request[crosstest.GetChildRequest]) (*connect_go.Response[crosstest.Child], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.GetChild is not implemented"))
+func (UnimplementedChildServiceHandler) GetChild(context.Context, *connect.Request[crosstest.GetChildRequest]) (*connect.Response[crosstest.Child], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.GetChild is not implemented"))
 }
 
-func (UnimplementedChildServiceHandler) CreateChild(context.Context, *connect_go.Request[crosstest.CreateChildRequest]) (*connect_go.Response[crosstest.Child], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.CreateChild is not implemented"))
+func (UnimplementedChildServiceHandler) CreateChild(context.Context, *connect.Request[crosstest.CreateChildRequest]) (*connect.Response[crosstest.Child], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.CreateChild is not implemented"))
 }
 
-func (UnimplementedChildServiceHandler) UpdateChild(context.Context, *connect_go.Request[crosstest.UpdateChildRequest]) (*connect_go.Response[crosstest.Child], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.UpdateChild is not implemented"))
+func (UnimplementedChildServiceHandler) UpdateChild(context.Context, *connect.Request[crosstest.UpdateChildRequest]) (*connect.Response[crosstest.Child], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.UpdateChild is not implemented"))
 }
 
-func (UnimplementedChildServiceHandler) DeleteChild(context.Context, *connect_go.Request[crosstest.DeleteChildRequest]) (*connect_go.Response[emptypb.Empty], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.DeleteChild is not implemented"))
+func (UnimplementedChildServiceHandler) DeleteChild(context.Context, *connect.Request[crosstest.DeleteChildRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.ChildService.DeleteChild is not implemented"))
 }
 
 // RelationsServiceClient is a client for the buf.knit.crosstest.RelationsService service.
 type RelationsServiceClient interface {
-	GetChildParent(context.Context, *connect_go.Request[crosstest.GetChildParentRequest]) (*connect_go.Response[crosstest.GetChildParentResponse], error)
-	GetParentChildren(context.Context, *connect_go.Request[crosstest.GetParentChildrenRequest]) (*connect_go.Response[crosstest.GetParentChildrenResponse], error)
+	GetChildParent(context.Context, *connect.Request[crosstest.GetChildParentRequest]) (*connect.Response[crosstest.GetChildParentResponse], error)
+	GetParentChildren(context.Context, *connect.Request[crosstest.GetParentChildrenRequest]) (*connect.Response[crosstest.GetParentChildrenResponse], error)
 }
 
 // NewRelationsServiceClient constructs a client for the buf.knit.crosstest.RelationsService
@@ -405,44 +433,44 @@ type RelationsServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewRelationsServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) RelationsServiceClient {
+func NewRelationsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) RelationsServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &relationsServiceClient{
-		getChildParent: connect_go.NewClient[crosstest.GetChildParentRequest, crosstest.GetChildParentResponse](
+		getChildParent: connect.NewClient[crosstest.GetChildParentRequest, crosstest.GetChildParentResponse](
 			httpClient,
 			baseURL+RelationsServiceGetChildParentProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getParentChildren: connect_go.NewClient[crosstest.GetParentChildrenRequest, crosstest.GetParentChildrenResponse](
+		getParentChildren: connect.NewClient[crosstest.GetParentChildrenRequest, crosstest.GetParentChildrenResponse](
 			httpClient,
 			baseURL+RelationsServiceGetParentChildrenProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
 // relationsServiceClient implements RelationsServiceClient.
 type relationsServiceClient struct {
-	getChildParent    *connect_go.Client[crosstest.GetChildParentRequest, crosstest.GetChildParentResponse]
-	getParentChildren *connect_go.Client[crosstest.GetParentChildrenRequest, crosstest.GetParentChildrenResponse]
+	getChildParent    *connect.Client[crosstest.GetChildParentRequest, crosstest.GetChildParentResponse]
+	getParentChildren *connect.Client[crosstest.GetParentChildrenRequest, crosstest.GetParentChildrenResponse]
 }
 
 // GetChildParent calls buf.knit.crosstest.RelationsService.GetChildParent.
-func (c *relationsServiceClient) GetChildParent(ctx context.Context, req *connect_go.Request[crosstest.GetChildParentRequest]) (*connect_go.Response[crosstest.GetChildParentResponse], error) {
+func (c *relationsServiceClient) GetChildParent(ctx context.Context, req *connect.Request[crosstest.GetChildParentRequest]) (*connect.Response[crosstest.GetChildParentResponse], error) {
 	return c.getChildParent.CallUnary(ctx, req)
 }
 
 // GetParentChildren calls buf.knit.crosstest.RelationsService.GetParentChildren.
-func (c *relationsServiceClient) GetParentChildren(ctx context.Context, req *connect_go.Request[crosstest.GetParentChildrenRequest]) (*connect_go.Response[crosstest.GetParentChildrenResponse], error) {
+func (c *relationsServiceClient) GetParentChildren(ctx context.Context, req *connect.Request[crosstest.GetParentChildrenRequest]) (*connect.Response[crosstest.GetParentChildrenResponse], error) {
 	return c.getParentChildren.CallUnary(ctx, req)
 }
 
 // RelationsServiceHandler is an implementation of the buf.knit.crosstest.RelationsService service.
 type RelationsServiceHandler interface {
-	GetChildParent(context.Context, *connect_go.Request[crosstest.GetChildParentRequest]) (*connect_go.Response[crosstest.GetChildParentResponse], error)
-	GetParentChildren(context.Context, *connect_go.Request[crosstest.GetParentChildrenRequest]) (*connect_go.Response[crosstest.GetParentChildrenResponse], error)
+	GetChildParent(context.Context, *connect.Request[crosstest.GetChildParentRequest]) (*connect.Response[crosstest.GetChildParentResponse], error)
+	GetParentChildren(context.Context, *connect.Request[crosstest.GetParentChildrenRequest]) (*connect.Response[crosstest.GetParentChildrenResponse], error)
 }
 
 // NewRelationsServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -450,30 +478,38 @@ type RelationsServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(RelationsServiceGetChildParentProcedure, connect_go.NewUnaryHandler(
+func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	relationsServiceGetChildParentHandler := connect.NewUnaryHandler(
 		RelationsServiceGetChildParentProcedure,
 		svc.GetChildParent,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetParentChildrenProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetParentChildrenHandler := connect.NewUnaryHandler(
 		RelationsServiceGetParentChildrenProcedure,
 		svc.GetParentChildren,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	return "/buf.knit.crosstest.RelationsService/", mux
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/buf.knit.crosstest.RelationsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case RelationsServiceGetChildParentProcedure:
+			relationsServiceGetChildParentHandler.ServeHTTP(w, r)
+		case RelationsServiceGetParentChildrenProcedure:
+			relationsServiceGetParentChildrenHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedRelationsServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedRelationsServiceHandler struct{}
 
-func (UnimplementedRelationsServiceHandler) GetChildParent(context.Context, *connect_go.Request[crosstest.GetChildParentRequest]) (*connect_go.Response[crosstest.GetChildParentResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.RelationsService.GetChildParent is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetChildParent(context.Context, *connect.Request[crosstest.GetChildParentRequest]) (*connect.Response[crosstest.GetChildParentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.RelationsService.GetChildParent is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetParentChildren(context.Context, *connect_go.Request[crosstest.GetParentChildrenRequest]) (*connect_go.Response[crosstest.GetParentChildrenResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knit.crosstest.RelationsService.GetParentChildren is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetParentChildren(context.Context, *connect.Request[crosstest.GetParentChildrenRequest]) (*connect.Response[crosstest.GetParentChildrenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knit.crosstest.RelationsService.GetParentChildren is not implemented"))
 }

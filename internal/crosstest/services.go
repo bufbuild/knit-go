@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	connect "connectrpc.com/connect"
+	"connectrpc.com/connect"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest/crosstestconnect"
 	"google.golang.org/protobuf/proto"
