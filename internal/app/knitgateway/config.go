@@ -27,7 +27,7 @@ import (
 	"os"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	knit "github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
 	"github.com/rs/cors"

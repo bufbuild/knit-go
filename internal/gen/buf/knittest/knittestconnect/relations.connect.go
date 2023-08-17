@@ -19,9 +19,9 @@
 package knittestconnect
 
 import (
+	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
-	connect_go "github.com/bufbuild/connect-go"
 	knittest "github.com/bufbuild/knit-go/internal/gen/buf/knittest"
 	http "net/http"
 	strings "strings"
@@ -32,7 +32,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect_go.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_7_0
 
 const (
 	// RelationsServiceName is the fully-qualified name of the RelationsService service.
@@ -72,13 +72,13 @@ const (
 
 // RelationsServiceClient is a client for the buf.knittest.RelationsService service.
 type RelationsServiceClient interface {
-	GetFooStyle(context.Context, *connect_go.Request[knittest.GetFooStyleRequest]) (*connect_go.Response[knittest.GetFooStyleResponse], error)
-	GetFooBalanceCents(context.Context, *connect_go.Request[knittest.GetFooBalanceCentsRequest]) (*connect_go.Response[knittest.GetFooBalanceCentsResponse], error)
-	GetFooBars(context.Context, *connect_go.Request[knittest.GetFooBarsRequest]) (*connect_go.Response[knittest.GetFooBarsResponse], error)
-	GetFooDescription(context.Context, *connect_go.Request[knittest.GetFooDescriptionRequest]) (*connect_go.Response[knittest.GetFooDescriptionResponse], error)
-	GetBarBaz(context.Context, *connect_go.Request[knittest.GetBarBazRequest]) (*connect_go.Response[knittest.GetBarBazResponse], error)
-	GetBarBedazzles(context.Context, *connect_go.Request[knittest.GetBarBedazzlesRequest]) (*connect_go.Response[knittest.GetBarBedazzlesResponse], error)
-	GetFizzBuzzes(context.Context, *connect_go.Request[knittest.GetFizzBuzzesRequest]) (*connect_go.Response[knittest.GetFizzBuzzesResponse], error)
+	GetFooStyle(context.Context, *connect.Request[knittest.GetFooStyleRequest]) (*connect.Response[knittest.GetFooStyleResponse], error)
+	GetFooBalanceCents(context.Context, *connect.Request[knittest.GetFooBalanceCentsRequest]) (*connect.Response[knittest.GetFooBalanceCentsResponse], error)
+	GetFooBars(context.Context, *connect.Request[knittest.GetFooBarsRequest]) (*connect.Response[knittest.GetFooBarsResponse], error)
+	GetFooDescription(context.Context, *connect.Request[knittest.GetFooDescriptionRequest]) (*connect.Response[knittest.GetFooDescriptionResponse], error)
+	GetBarBaz(context.Context, *connect.Request[knittest.GetBarBazRequest]) (*connect.Response[knittest.GetBarBazResponse], error)
+	GetBarBedazzles(context.Context, *connect.Request[knittest.GetBarBedazzlesRequest]) (*connect.Response[knittest.GetBarBedazzlesResponse], error)
+	GetFizzBuzzes(context.Context, *connect.Request[knittest.GetFizzBuzzesRequest]) (*connect.Response[knittest.GetFizzBuzzesResponse], error)
 }
 
 // NewRelationsServiceClient constructs a client for the buf.knittest.RelationsService service. By
@@ -88,109 +88,109 @@ type RelationsServiceClient interface {
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewRelationsServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) RelationsServiceClient {
+func NewRelationsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) RelationsServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &relationsServiceClient{
-		getFooStyle: connect_go.NewClient[knittest.GetFooStyleRequest, knittest.GetFooStyleResponse](
+		getFooStyle: connect.NewClient[knittest.GetFooStyleRequest, knittest.GetFooStyleResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooStyleProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getFooBalanceCents: connect_go.NewClient[knittest.GetFooBalanceCentsRequest, knittest.GetFooBalanceCentsResponse](
+		getFooBalanceCents: connect.NewClient[knittest.GetFooBalanceCentsRequest, knittest.GetFooBalanceCentsResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooBalanceCentsProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getFooBars: connect_go.NewClient[knittest.GetFooBarsRequest, knittest.GetFooBarsResponse](
+		getFooBars: connect.NewClient[knittest.GetFooBarsRequest, knittest.GetFooBarsResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooBarsProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getFooDescription: connect_go.NewClient[knittest.GetFooDescriptionRequest, knittest.GetFooDescriptionResponse](
+		getFooDescription: connect.NewClient[knittest.GetFooDescriptionRequest, knittest.GetFooDescriptionResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooDescriptionProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getBarBaz: connect_go.NewClient[knittest.GetBarBazRequest, knittest.GetBarBazResponse](
+		getBarBaz: connect.NewClient[knittest.GetBarBazRequest, knittest.GetBarBazResponse](
 			httpClient,
 			baseURL+RelationsServiceGetBarBazProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getBarBedazzles: connect_go.NewClient[knittest.GetBarBedazzlesRequest, knittest.GetBarBedazzlesResponse](
+		getBarBedazzles: connect.NewClient[knittest.GetBarBedazzlesRequest, knittest.GetBarBedazzlesResponse](
 			httpClient,
 			baseURL+RelationsServiceGetBarBedazzlesProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
-		getFizzBuzzes: connect_go.NewClient[knittest.GetFizzBuzzesRequest, knittest.GetFizzBuzzesResponse](
+		getFizzBuzzes: connect.NewClient[knittest.GetFizzBuzzesRequest, knittest.GetFizzBuzzesResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFizzBuzzesProcedure,
-			connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-			connect_go.WithClientOptions(opts...),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
 // relationsServiceClient implements RelationsServiceClient.
 type relationsServiceClient struct {
-	getFooStyle        *connect_go.Client[knittest.GetFooStyleRequest, knittest.GetFooStyleResponse]
-	getFooBalanceCents *connect_go.Client[knittest.GetFooBalanceCentsRequest, knittest.GetFooBalanceCentsResponse]
-	getFooBars         *connect_go.Client[knittest.GetFooBarsRequest, knittest.GetFooBarsResponse]
-	getFooDescription  *connect_go.Client[knittest.GetFooDescriptionRequest, knittest.GetFooDescriptionResponse]
-	getBarBaz          *connect_go.Client[knittest.GetBarBazRequest, knittest.GetBarBazResponse]
-	getBarBedazzles    *connect_go.Client[knittest.GetBarBedazzlesRequest, knittest.GetBarBedazzlesResponse]
-	getFizzBuzzes      *connect_go.Client[knittest.GetFizzBuzzesRequest, knittest.GetFizzBuzzesResponse]
+	getFooStyle        *connect.Client[knittest.GetFooStyleRequest, knittest.GetFooStyleResponse]
+	getFooBalanceCents *connect.Client[knittest.GetFooBalanceCentsRequest, knittest.GetFooBalanceCentsResponse]
+	getFooBars         *connect.Client[knittest.GetFooBarsRequest, knittest.GetFooBarsResponse]
+	getFooDescription  *connect.Client[knittest.GetFooDescriptionRequest, knittest.GetFooDescriptionResponse]
+	getBarBaz          *connect.Client[knittest.GetBarBazRequest, knittest.GetBarBazResponse]
+	getBarBedazzles    *connect.Client[knittest.GetBarBedazzlesRequest, knittest.GetBarBedazzlesResponse]
+	getFizzBuzzes      *connect.Client[knittest.GetFizzBuzzesRequest, knittest.GetFizzBuzzesResponse]
 }
 
 // GetFooStyle calls buf.knittest.RelationsService.GetFooStyle.
-func (c *relationsServiceClient) GetFooStyle(ctx context.Context, req *connect_go.Request[knittest.GetFooStyleRequest]) (*connect_go.Response[knittest.GetFooStyleResponse], error) {
+func (c *relationsServiceClient) GetFooStyle(ctx context.Context, req *connect.Request[knittest.GetFooStyleRequest]) (*connect.Response[knittest.GetFooStyleResponse], error) {
 	return c.getFooStyle.CallUnary(ctx, req)
 }
 
 // GetFooBalanceCents calls buf.knittest.RelationsService.GetFooBalanceCents.
-func (c *relationsServiceClient) GetFooBalanceCents(ctx context.Context, req *connect_go.Request[knittest.GetFooBalanceCentsRequest]) (*connect_go.Response[knittest.GetFooBalanceCentsResponse], error) {
+func (c *relationsServiceClient) GetFooBalanceCents(ctx context.Context, req *connect.Request[knittest.GetFooBalanceCentsRequest]) (*connect.Response[knittest.GetFooBalanceCentsResponse], error) {
 	return c.getFooBalanceCents.CallUnary(ctx, req)
 }
 
 // GetFooBars calls buf.knittest.RelationsService.GetFooBars.
-func (c *relationsServiceClient) GetFooBars(ctx context.Context, req *connect_go.Request[knittest.GetFooBarsRequest]) (*connect_go.Response[knittest.GetFooBarsResponse], error) {
+func (c *relationsServiceClient) GetFooBars(ctx context.Context, req *connect.Request[knittest.GetFooBarsRequest]) (*connect.Response[knittest.GetFooBarsResponse], error) {
 	return c.getFooBars.CallUnary(ctx, req)
 }
 
 // GetFooDescription calls buf.knittest.RelationsService.GetFooDescription.
-func (c *relationsServiceClient) GetFooDescription(ctx context.Context, req *connect_go.Request[knittest.GetFooDescriptionRequest]) (*connect_go.Response[knittest.GetFooDescriptionResponse], error) {
+func (c *relationsServiceClient) GetFooDescription(ctx context.Context, req *connect.Request[knittest.GetFooDescriptionRequest]) (*connect.Response[knittest.GetFooDescriptionResponse], error) {
 	return c.getFooDescription.CallUnary(ctx, req)
 }
 
 // GetBarBaz calls buf.knittest.RelationsService.GetBarBaz.
-func (c *relationsServiceClient) GetBarBaz(ctx context.Context, req *connect_go.Request[knittest.GetBarBazRequest]) (*connect_go.Response[knittest.GetBarBazResponse], error) {
+func (c *relationsServiceClient) GetBarBaz(ctx context.Context, req *connect.Request[knittest.GetBarBazRequest]) (*connect.Response[knittest.GetBarBazResponse], error) {
 	return c.getBarBaz.CallUnary(ctx, req)
 }
 
 // GetBarBedazzles calls buf.knittest.RelationsService.GetBarBedazzles.
-func (c *relationsServiceClient) GetBarBedazzles(ctx context.Context, req *connect_go.Request[knittest.GetBarBedazzlesRequest]) (*connect_go.Response[knittest.GetBarBedazzlesResponse], error) {
+func (c *relationsServiceClient) GetBarBedazzles(ctx context.Context, req *connect.Request[knittest.GetBarBedazzlesRequest]) (*connect.Response[knittest.GetBarBedazzlesResponse], error) {
 	return c.getBarBedazzles.CallUnary(ctx, req)
 }
 
 // GetFizzBuzzes calls buf.knittest.RelationsService.GetFizzBuzzes.
-func (c *relationsServiceClient) GetFizzBuzzes(ctx context.Context, req *connect_go.Request[knittest.GetFizzBuzzesRequest]) (*connect_go.Response[knittest.GetFizzBuzzesResponse], error) {
+func (c *relationsServiceClient) GetFizzBuzzes(ctx context.Context, req *connect.Request[knittest.GetFizzBuzzesRequest]) (*connect.Response[knittest.GetFizzBuzzesResponse], error) {
 	return c.getFizzBuzzes.CallUnary(ctx, req)
 }
 
 // RelationsServiceHandler is an implementation of the buf.knittest.RelationsService service.
 type RelationsServiceHandler interface {
-	GetFooStyle(context.Context, *connect_go.Request[knittest.GetFooStyleRequest]) (*connect_go.Response[knittest.GetFooStyleResponse], error)
-	GetFooBalanceCents(context.Context, *connect_go.Request[knittest.GetFooBalanceCentsRequest]) (*connect_go.Response[knittest.GetFooBalanceCentsResponse], error)
-	GetFooBars(context.Context, *connect_go.Request[knittest.GetFooBarsRequest]) (*connect_go.Response[knittest.GetFooBarsResponse], error)
-	GetFooDescription(context.Context, *connect_go.Request[knittest.GetFooDescriptionRequest]) (*connect_go.Response[knittest.GetFooDescriptionResponse], error)
-	GetBarBaz(context.Context, *connect_go.Request[knittest.GetBarBazRequest]) (*connect_go.Response[knittest.GetBarBazResponse], error)
-	GetBarBedazzles(context.Context, *connect_go.Request[knittest.GetBarBedazzlesRequest]) (*connect_go.Response[knittest.GetBarBedazzlesResponse], error)
-	GetFizzBuzzes(context.Context, *connect_go.Request[knittest.GetFizzBuzzesRequest]) (*connect_go.Response[knittest.GetFizzBuzzesResponse], error)
+	GetFooStyle(context.Context, *connect.Request[knittest.GetFooStyleRequest]) (*connect.Response[knittest.GetFooStyleResponse], error)
+	GetFooBalanceCents(context.Context, *connect.Request[knittest.GetFooBalanceCentsRequest]) (*connect.Response[knittest.GetFooBalanceCentsResponse], error)
+	GetFooBars(context.Context, *connect.Request[knittest.GetFooBarsRequest]) (*connect.Response[knittest.GetFooBarsResponse], error)
+	GetFooDescription(context.Context, *connect.Request[knittest.GetFooDescriptionRequest]) (*connect.Response[knittest.GetFooDescriptionResponse], error)
+	GetBarBaz(context.Context, *connect.Request[knittest.GetBarBazRequest]) (*connect.Response[knittest.GetBarBazResponse], error)
+	GetBarBedazzles(context.Context, *connect.Request[knittest.GetBarBedazzlesRequest]) (*connect.Response[knittest.GetBarBedazzlesResponse], error)
+	GetFizzBuzzes(context.Context, *connect.Request[knittest.GetFizzBuzzesRequest]) (*connect.Response[knittest.GetFizzBuzzesResponse], error)
 }
 
 // NewRelationsServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -198,80 +198,98 @@ type RelationsServiceHandler interface {
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
-	mux := http.NewServeMux()
-	mux.Handle(RelationsServiceGetFooStyleProcedure, connect_go.NewUnaryHandler(
+func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	relationsServiceGetFooStyleHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooStyleProcedure,
 		svc.GetFooStyle,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetFooBalanceCentsProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetFooBalanceCentsHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooBalanceCentsProcedure,
 		svc.GetFooBalanceCents,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetFooBarsProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetFooBarsHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooBarsProcedure,
 		svc.GetFooBars,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetFooDescriptionProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetFooDescriptionHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooDescriptionProcedure,
 		svc.GetFooDescription,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetBarBazProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetBarBazHandler := connect.NewUnaryHandler(
 		RelationsServiceGetBarBazProcedure,
 		svc.GetBarBaz,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetBarBedazzlesProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetBarBedazzlesHandler := connect.NewUnaryHandler(
 		RelationsServiceGetBarBedazzlesProcedure,
 		svc.GetBarBedazzles,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	mux.Handle(RelationsServiceGetFizzBuzzesProcedure, connect_go.NewUnaryHandler(
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	relationsServiceGetFizzBuzzesHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFizzBuzzesProcedure,
 		svc.GetFizzBuzzes,
-		connect_go.WithIdempotency(connect_go.IdempotencyNoSideEffects),
-		connect_go.WithHandlerOptions(opts...),
-	))
-	return "/buf.knittest.RelationsService/", mux
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/buf.knittest.RelationsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case RelationsServiceGetFooStyleProcedure:
+			relationsServiceGetFooStyleHandler.ServeHTTP(w, r)
+		case RelationsServiceGetFooBalanceCentsProcedure:
+			relationsServiceGetFooBalanceCentsHandler.ServeHTTP(w, r)
+		case RelationsServiceGetFooBarsProcedure:
+			relationsServiceGetFooBarsHandler.ServeHTTP(w, r)
+		case RelationsServiceGetFooDescriptionProcedure:
+			relationsServiceGetFooDescriptionHandler.ServeHTTP(w, r)
+		case RelationsServiceGetBarBazProcedure:
+			relationsServiceGetBarBazHandler.ServeHTTP(w, r)
+		case RelationsServiceGetBarBedazzlesProcedure:
+			relationsServiceGetBarBedazzlesHandler.ServeHTTP(w, r)
+		case RelationsServiceGetFizzBuzzesProcedure:
+			relationsServiceGetFizzBuzzesHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
 }
 
 // UnimplementedRelationsServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedRelationsServiceHandler struct{}
 
-func (UnimplementedRelationsServiceHandler) GetFooStyle(context.Context, *connect_go.Request[knittest.GetFooStyleRequest]) (*connect_go.Response[knittest.GetFooStyleResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooStyle is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetFooStyle(context.Context, *connect.Request[knittest.GetFooStyleRequest]) (*connect.Response[knittest.GetFooStyleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooStyle is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetFooBalanceCents(context.Context, *connect_go.Request[knittest.GetFooBalanceCentsRequest]) (*connect_go.Response[knittest.GetFooBalanceCentsResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooBalanceCents is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetFooBalanceCents(context.Context, *connect.Request[knittest.GetFooBalanceCentsRequest]) (*connect.Response[knittest.GetFooBalanceCentsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooBalanceCents is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetFooBars(context.Context, *connect_go.Request[knittest.GetFooBarsRequest]) (*connect_go.Response[knittest.GetFooBarsResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooBars is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetFooBars(context.Context, *connect.Request[knittest.GetFooBarsRequest]) (*connect.Response[knittest.GetFooBarsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooBars is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetFooDescription(context.Context, *connect_go.Request[knittest.GetFooDescriptionRequest]) (*connect_go.Response[knittest.GetFooDescriptionResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooDescription is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetFooDescription(context.Context, *connect.Request[knittest.GetFooDescriptionRequest]) (*connect.Response[knittest.GetFooDescriptionResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFooDescription is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetBarBaz(context.Context, *connect_go.Request[knittest.GetBarBazRequest]) (*connect_go.Response[knittest.GetBarBazResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetBarBaz is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetBarBaz(context.Context, *connect.Request[knittest.GetBarBazRequest]) (*connect.Response[knittest.GetBarBazResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetBarBaz is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetBarBedazzles(context.Context, *connect_go.Request[knittest.GetBarBedazzlesRequest]) (*connect_go.Response[knittest.GetBarBedazzlesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetBarBedazzles is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetBarBedazzles(context.Context, *connect.Request[knittest.GetBarBedazzlesRequest]) (*connect.Response[knittest.GetBarBedazzlesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetBarBedazzles is not implemented"))
 }
 
-func (UnimplementedRelationsServiceHandler) GetFizzBuzzes(context.Context, *connect_go.Request[knittest.GetFizzBuzzesRequest]) (*connect_go.Response[knittest.GetFizzBuzzesResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFizzBuzzes is not implemented"))
+func (UnimplementedRelationsServiceHandler) GetFizzBuzzes(context.Context, *connect.Request[knittest.GetFizzBuzzesRequest]) (*connect.Response[knittest.GetFizzBuzzesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("buf.knittest.RelationsService.GetFizzBuzzes is not implemented"))
 }

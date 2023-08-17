@@ -20,9 +20,9 @@ import (
 	"net/http"
 	"strings"
 
-	"buf.build/gen/go/bufbuild/knit/bufbuild/connect-go/buf/knit/gateway/v1alpha1/gatewayv1alpha1connect"
+	"buf.build/gen/go/bufbuild/knit/connectrpc/go/buf/knit/gateway/v1alpha1/gatewayv1alpha1connect"
 	gatewayv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
-	connect "github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/dynamicpb"
 	"google.golang.org/protobuf/types/known/structpb"

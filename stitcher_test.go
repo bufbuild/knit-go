@@ -26,7 +26,7 @@ import (
 	"time"
 
 	gatewayv1alpha1 "buf.build/gen/go/bufbuild/knit/protocolbuffers/go/buf/knit/gateway/v1alpha1"
-	connect "github.com/bufbuild/connect-go"
+	"connectrpc.com/connect"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knittest"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knittest/knittestconnect"
 	"github.com/google/go-cmp/cmp"
