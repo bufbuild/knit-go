@@ -18,7 +18,7 @@ import (
 	"context"
 	"strings"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest"
 	"github.com/bufbuild/knit-go/internal/gen/buf/knit/crosstest/crosstestconnect"
 )

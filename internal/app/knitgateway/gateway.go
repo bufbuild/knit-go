@@ -27,7 +27,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	connect "github.com/bufbuild/connect-go"
+	connect "connectrpc.com/connect"
 	knit "github.com/bufbuild/knit-go"
 	"github.com/bufbuild/prototransform"
 	"go.uber.org/zap"
@@ -157,7 +157,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 		if details.cacheable {
 			watcherConfig.Cache = schemaCache
 		}
-		watcherConfig.OnUpdate = func() {
+		watcherConfig.OnUpdate = func(_ *prototransform.SchemaWatcher) {
 			if syncOthers != nil {
 				syncOthers()
 			}
@@ -172,7 +172,7 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 				// if updateChan buffer is full, update signal already pending
 			}
 		}
-		watcherConfig.OnError = func(err error) {
+		watcherConfig.OnError = func(_ *prototransform.SchemaWatcher, err error) {
 			logger.Error("error updating schema",
 				zap.String("source", poller.GetSchemaID()),
 				zap.Error(err),
