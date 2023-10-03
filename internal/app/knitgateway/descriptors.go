@@ -117,7 +117,10 @@ func (b bufModuleSource) newPoller(_ connect.HTTPClient, _ []connect.ClientOptio
 	reflectClient := reflectv1beta1connect.NewFileDescriptorSetServiceClient(
 		http.DefaultClient,
 		"https://api."+remote,
-		connect.WithInterceptors(prototransform.NewAuthInterceptor(token)),
+		connect.WithInterceptors(
+			prototransform.NewAuthInterceptor(token),
+			connect.UnaryInterceptorFunc(UserAgentInterceptor),
+		),
 	)
 	return prototransform.NewSchemaPoller(reflectClient, module, version), nil
 }

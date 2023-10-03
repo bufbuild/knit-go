@@ -63,7 +63,7 @@ lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 
 .PHONY: install
 install: ## Install all binaries
-	$(GO) install -ldflags '-X "main.buildVersionSuffix=-$(DEV_BUILD_VERSION)"' ./...
+	$(GO) install -ldflags '-X "github.com/bufbuild/knit-go/internal/app/knitgateway.buildVersionSuffix=-$(DEV_BUILD_VERSION)"' ./...
 
 .PHONY: upgrade
 upgrade: ## Upgrade dependencies

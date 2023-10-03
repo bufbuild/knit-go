@@ -45,6 +45,11 @@ var forbiddenHeaders = map[string]struct{}{
 	"trailer":           {},
 	"transfer-encoding": {},
 	"upgrade":           {},
+	// User-Agent is not forbidden, but we intentionally do NOT forward
+	// it since the outbound requests are sufficiently distinct from
+	// the original request. Instead, the gateway presents itself as
+	// the user agent to RPC backends.
+	"user-agent": {},
 }
 
 type handler struct {

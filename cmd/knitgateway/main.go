@@ -41,13 +41,6 @@ const (
 	logFormatJSON    = "json"
 )
 
-//nolint:gochecknoglobals
-var (
-	// (var instead of const so it could be changed via -X ldflags).
-	buildVersion       = "v0.1.0-dev"
-	buildVersionSuffix = ""
-)
-
 //nolint:gocyclo
 func main() {
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
@@ -59,7 +52,7 @@ func main() {
 	_ = flagSet.Parse(os.Args[1:])
 
 	if *version {
-		fmt.Println(buildVersion + buildVersionSuffix)
+		fmt.Println(knitgateway.Version())
 		return
 	}
 
