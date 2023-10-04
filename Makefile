@@ -11,7 +11,14 @@ COPYRIGHT_YEARS := 2023
 LICENSE_IGNORE := -e testdata/
 # Set to use a different compiler. For example, `GO=go1.18rc1 make test`.
 GO ?= go
-DEV_BUILD_VERSION=$(shell git describe --always --dirty)
+LATEST_VERSION = $(shell git describe --tags --abbrev=0)
+CURRENT_VERSION = $(shell git describe --tags --always --dirty)
+# If not on release tag, this is a dev build. Add suffix to version.
+ifneq ($(CURRENT_VERSION), $(LATEST_VERSION))
+	DEV_BUILD_VERSION_DIRECTIVE = buildVersionSuffix=-$(shell git describe --exclude '*' --always --dirty)
+else
+	DEV_BUILD_VERSION_DIRECTIVE = buildVersion=$(CURRENT_VERSION)
+endif
 
 .PHONY: help
 help: ## Describe useful make targets
@@ -63,7 +70,7 @@ lintfix: $(BIN)/golangci-lint ## Automatically fix some lint errors
 
 .PHONY: install
 install: ## Install all binaries
-	$(GO) install -ldflags '-X "github.com/bufbuild/knit-go/internal/app/knitgateway.buildVersionSuffix=-$(DEV_BUILD_VERSION)"' ./...
+	$(GO) install -ldflags '-X "github.com/bufbuild/knit-go/internal/app/knitgateway.$(DEV_BUILD_VERSION_DIRECTIVE)"' ./...
 
 .PHONY: upgrade
 upgrade: ## Upgrade dependencies
