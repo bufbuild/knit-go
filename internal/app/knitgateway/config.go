@@ -158,7 +158,9 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 			return nil, fmt.Errorf("backend config #%d: %q is not a valid URL: schema should be '%s' or '%s'",
 				i+1, backendConf.RouteTo, httpScheme, httpsScheme)
 		}
-		var options []connect.ClientOption
+		options := []connect.ClientOption{
+			connect.WithInterceptors(connect.UnaryInterceptorFunc(UserAgentInterceptor)),
+		}
 		switch backendConf.Encoding {
 		case "", protoEncoding:
 			// nothing to do; this is the default
