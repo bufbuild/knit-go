@@ -24,7 +24,7 @@ import (
 //nolint:gochecknoglobals
 var (
 	// NB: These are vars instead of consts so they can be changed via -X ldflags.
-	buildVersion       = "v0.1.0"
+	buildVersion       = "v0.2.0-dev"
 	buildVersionSuffix = ""
 
 	// Version is the gateway version to report.
