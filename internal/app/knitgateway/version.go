@@ -21,22 +21,20 @@ import (
 	"connectrpc.com/connect"
 )
 
-const buildVersion = "v0.1.0-dev"
-
 //nolint:gochecknoglobals
 var (
-	// NB: This is a var instead of a const so it can be changed via -X ldflags.
+	// NB: These are vars instead of consts so they can be changed via -X ldflags.
+	buildVersion       = "v0.1.0"
 	buildVersionSuffix = ""
-)
 
-func Version() string {
-	return buildVersion + buildVersionSuffix
-}
+	// Version is the gateway version to report.
+	Version = buildVersion + buildVersionSuffix
+)
 
 func UserAgentInterceptor(call connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 		// decorate user-agent with the program name and version
-		userAgent := fmt.Sprintf("%s knitgateway/%s", req.Header().Get("User-Agent"), Version())
+		userAgent := fmt.Sprintf("%s knitgateway/%s", req.Header().Get("User-Agent"), Version)
 		req.Header().Set("User-Agent", userAgent)
 		return call(ctx, req)
 	}

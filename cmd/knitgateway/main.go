@@ -52,7 +52,7 @@ func main() {
 	_ = flagSet.Parse(os.Args[1:])
 
 	if *version {
-		fmt.Println(knitgateway.Version())
+		fmt.Println(knitgateway.Version)
 		return
 	}
 
