@@ -36,7 +36,7 @@ func Version() string {
 func UserAgentInterceptor(call connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 		// decorate user-agent with the program name and version
-		userAgent := fmt.Sprintf("knitgateway/%s %s", Version(), req.Header().Get("User-Agent"))
+		userAgent := fmt.Sprintf("%s knitgateway/%s", req.Header().Get("User-Agent"), Version())
 		req.Header().Set("User-Agent", userAgent)
 		return call(ctx, req)
 	}
