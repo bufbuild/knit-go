@@ -5,11 +5,11 @@ go 1.19
 require (
 	buf.build/gen/go/bufbuild/knit/connectrpc/go v1.11.0-20230504140941-3dc602456973.1
 	buf.build/gen/go/bufbuild/knit/protocolbuffers/go v1.31.0-20230504140941-3dc602456973.1
-	buf.build/gen/go/bufbuild/reflect/connectrpc/go v1.11.0-20230627113514-3943db27b83c.1
-	connectrpc.com/connect v1.11.0
+	buf.build/gen/go/bufbuild/reflect/connectrpc/go v1.11.1-20230822193137-310c9c4845dd.1
+	connectrpc.com/connect v1.11.1
 	connectrpc.com/grpcreflect v1.2.0
 	github.com/bradfitz/gomemcache v0.0.0-20230611145640-acc696258285
-	github.com/bufbuild/prototransform v0.3.1-0.20230817135718-c86c55ce89fd
+	github.com/bufbuild/prototransform v0.4.0
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/go-cmp v0.5.9
 	github.com/rs/cors v1.9.0
@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/reflect/protocolbuffers/go v1.31.0-20230627113514-3943db27b83c.1 // indirect
+	buf.build/gen/go/bufbuild/reflect/protocolbuffers/go v1.31.0-20230822193137-310c9c4845dd.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
