@@ -6,7 +6,7 @@ require (
 	buf.build/gen/go/bufbuild/knit/connectrpc/go v1.11.0-20230504140941-3dc602456973.1
 	buf.build/gen/go/bufbuild/knit/protocolbuffers/go v1.31.0-20230504140941-3dc602456973.1
 	buf.build/gen/go/bufbuild/reflect/connectrpc/go v1.11.1-20230822193137-310c9c4845dd.1
-	connectrpc.com/connect v1.11.1
+	connectrpc.com/connect v1.14.0
 	connectrpc.com/grpcreflect v1.2.0
 	github.com/bradfitz/gomemcache v0.0.0-20230611145640-acc696258285
 	github.com/bufbuild/prototransform v0.4.0
@@ -17,7 +17,7 @@ require (
 	go.uber.org/zap v1.25.0
 	golang.org/x/net v0.17.0
 	golang.org/x/sync v0.3.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.32.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

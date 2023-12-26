@@ -32,7 +32,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// RelationsServiceName is the fully-qualified name of the RelationsService service.
@@ -70,6 +70,18 @@ const (
 	RelationsServiceGetFizzBuzzesProcedure = "/buf.knittest.RelationsService/GetFizzBuzzes"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	relationsServiceServiceDescriptor                  = knittest.File_buf_knittest_relations_proto.Services().ByName("RelationsService")
+	relationsServiceGetFooStyleMethodDescriptor        = relationsServiceServiceDescriptor.Methods().ByName("GetFooStyle")
+	relationsServiceGetFooBalanceCentsMethodDescriptor = relationsServiceServiceDescriptor.Methods().ByName("GetFooBalanceCents")
+	relationsServiceGetFooBarsMethodDescriptor         = relationsServiceServiceDescriptor.Methods().ByName("GetFooBars")
+	relationsServiceGetFooDescriptionMethodDescriptor  = relationsServiceServiceDescriptor.Methods().ByName("GetFooDescription")
+	relationsServiceGetBarBazMethodDescriptor          = relationsServiceServiceDescriptor.Methods().ByName("GetBarBaz")
+	relationsServiceGetBarBedazzlesMethodDescriptor    = relationsServiceServiceDescriptor.Methods().ByName("GetBarBedazzles")
+	relationsServiceGetFizzBuzzesMethodDescriptor      = relationsServiceServiceDescriptor.Methods().ByName("GetFizzBuzzes")
+)
+
 // RelationsServiceClient is a client for the buf.knittest.RelationsService service.
 type RelationsServiceClient interface {
 	GetFooStyle(context.Context, *connect.Request[knittest.GetFooStyleRequest]) (*connect.Response[knittest.GetFooStyleResponse], error)
@@ -94,42 +106,49 @@ func NewRelationsServiceClient(httpClient connect.HTTPClient, baseURL string, op
 		getFooStyle: connect.NewClient[knittest.GetFooStyleRequest, knittest.GetFooStyleResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooStyleProcedure,
+			connect.WithSchema(relationsServiceGetFooStyleMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getFooBalanceCents: connect.NewClient[knittest.GetFooBalanceCentsRequest, knittest.GetFooBalanceCentsResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooBalanceCentsProcedure,
+			connect.WithSchema(relationsServiceGetFooBalanceCentsMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getFooBars: connect.NewClient[knittest.GetFooBarsRequest, knittest.GetFooBarsResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooBarsProcedure,
+			connect.WithSchema(relationsServiceGetFooBarsMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getFooDescription: connect.NewClient[knittest.GetFooDescriptionRequest, knittest.GetFooDescriptionResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFooDescriptionProcedure,
+			connect.WithSchema(relationsServiceGetFooDescriptionMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getBarBaz: connect.NewClient[knittest.GetBarBazRequest, knittest.GetBarBazResponse](
 			httpClient,
 			baseURL+RelationsServiceGetBarBazProcedure,
+			connect.WithSchema(relationsServiceGetBarBazMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getBarBedazzles: connect.NewClient[knittest.GetBarBedazzlesRequest, knittest.GetBarBedazzlesResponse](
 			httpClient,
 			baseURL+RelationsServiceGetBarBedazzlesProcedure,
+			connect.WithSchema(relationsServiceGetBarBedazzlesMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getFizzBuzzes: connect.NewClient[knittest.GetFizzBuzzesRequest, knittest.GetFizzBuzzesResponse](
 			httpClient,
 			baseURL+RelationsServiceGetFizzBuzzesProcedure,
+			connect.WithSchema(relationsServiceGetFizzBuzzesMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -202,42 +221,49 @@ func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect.Han
 	relationsServiceGetFooStyleHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooStyleProcedure,
 		svc.GetFooStyle,
+		connect.WithSchema(relationsServiceGetFooStyleMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetFooBalanceCentsHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooBalanceCentsProcedure,
 		svc.GetFooBalanceCents,
+		connect.WithSchema(relationsServiceGetFooBalanceCentsMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetFooBarsHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooBarsProcedure,
 		svc.GetFooBars,
+		connect.WithSchema(relationsServiceGetFooBarsMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetFooDescriptionHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFooDescriptionProcedure,
 		svc.GetFooDescription,
+		connect.WithSchema(relationsServiceGetFooDescriptionMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetBarBazHandler := connect.NewUnaryHandler(
 		RelationsServiceGetBarBazProcedure,
 		svc.GetBarBaz,
+		connect.WithSchema(relationsServiceGetBarBazMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetBarBedazzlesHandler := connect.NewUnaryHandler(
 		RelationsServiceGetBarBedazzlesProcedure,
 		svc.GetBarBedazzles,
+		connect.WithSchema(relationsServiceGetBarBedazzlesMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetFizzBuzzesHandler := connect.NewUnaryHandler(
 		RelationsServiceGetFizzBuzzesProcedure,
 		svc.GetFizzBuzzes,
+		connect.WithSchema(relationsServiceGetFizzBuzzesMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
