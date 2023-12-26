@@ -3,9 +3,9 @@ module github.com/bufbuild/knit-go
 go 1.19
 
 require (
-	buf.build/gen/go/bufbuild/knit/connectrpc/go v1.11.0-20230504140941-3dc602456973.1
-	buf.build/gen/go/bufbuild/knit/protocolbuffers/go v1.31.0-20230504140941-3dc602456973.1
-	buf.build/gen/go/bufbuild/reflect/connectrpc/go v1.11.1-20230822193137-310c9c4845dd.1
+	buf.build/gen/go/bufbuild/knit/connectrpc/go v1.14.0-20230822193418-257a6c375e3f.1
+	buf.build/gen/go/bufbuild/knit/protocolbuffers/go v1.32.0-20230822193418-257a6c375e3f.1
+	buf.build/gen/go/bufbuild/reflect/connectrpc/go v1.14.0-20230822193137-310c9c4845dd.1
 	connectrpc.com/connect v1.14.0
 	connectrpc.com/grpcreflect v1.2.0
 	github.com/bradfitz/gomemcache v0.0.0-20230611145640-acc696258285
@@ -22,7 +22,7 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/reflect/protocolbuffers/go v1.31.0-20230822193137-310c9c4845dd.1 // indirect
+	buf.build/gen/go/bufbuild/reflect/protocolbuffers/go v1.32.0-20230822193137-310c9c4845dd.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
