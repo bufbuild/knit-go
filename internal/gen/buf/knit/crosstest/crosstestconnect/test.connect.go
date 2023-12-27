@@ -33,7 +33,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// ParentServiceName is the fully-qualified name of the ParentService service.
@@ -88,6 +88,25 @@ const (
 	RelationsServiceGetParentChildrenProcedure = "/buf.knit.crosstest.RelationsService/GetParentChildren"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	parentServiceServiceDescriptor                    = crosstest.File_buf_knit_crosstest_test_proto.Services().ByName("ParentService")
+	parentServiceListParentsMethodDescriptor          = parentServiceServiceDescriptor.Methods().ByName("ListParents")
+	parentServiceGetParentMethodDescriptor            = parentServiceServiceDescriptor.Methods().ByName("GetParent")
+	parentServiceCreateParentMethodDescriptor         = parentServiceServiceDescriptor.Methods().ByName("CreateParent")
+	parentServiceUpdateParentMethodDescriptor         = parentServiceServiceDescriptor.Methods().ByName("UpdateParent")
+	parentServiceDeleteParentMethodDescriptor         = parentServiceServiceDescriptor.Methods().ByName("DeleteParent")
+	childServiceServiceDescriptor                     = crosstest.File_buf_knit_crosstest_test_proto.Services().ByName("ChildService")
+	childServiceListChildrenMethodDescriptor          = childServiceServiceDescriptor.Methods().ByName("ListChildren")
+	childServiceGetChildMethodDescriptor              = childServiceServiceDescriptor.Methods().ByName("GetChild")
+	childServiceCreateChildMethodDescriptor           = childServiceServiceDescriptor.Methods().ByName("CreateChild")
+	childServiceUpdateChildMethodDescriptor           = childServiceServiceDescriptor.Methods().ByName("UpdateChild")
+	childServiceDeleteChildMethodDescriptor           = childServiceServiceDescriptor.Methods().ByName("DeleteChild")
+	relationsServiceServiceDescriptor                 = crosstest.File_buf_knit_crosstest_test_proto.Services().ByName("RelationsService")
+	relationsServiceGetChildParentMethodDescriptor    = relationsServiceServiceDescriptor.Methods().ByName("GetChildParent")
+	relationsServiceGetParentChildrenMethodDescriptor = relationsServiceServiceDescriptor.Methods().ByName("GetParentChildren")
+)
+
 // ParentServiceClient is a client for the buf.knit.crosstest.ParentService service.
 type ParentServiceClient interface {
 	ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error)
@@ -110,29 +129,34 @@ func NewParentServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 		listParents: connect.NewClient[crosstest.ListParentsRequest, crosstest.ListParentsResponse](
 			httpClient,
 			baseURL+ParentServiceListParentsProcedure,
+			connect.WithSchema(parentServiceListParentsMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getParent: connect.NewClient[crosstest.GetParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceGetParentProcedure,
+			connect.WithSchema(parentServiceGetParentMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createParent: connect.NewClient[crosstest.CreateParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceCreateParentProcedure,
-			opts...,
+			connect.WithSchema(parentServiceCreateParentMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		updateParent: connect.NewClient[crosstest.UpdateParentRequest, crosstest.Parent](
 			httpClient,
 			baseURL+ParentServiceUpdateParentProcedure,
-			opts...,
+			connect.WithSchema(parentServiceUpdateParentMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		deleteParent: connect.NewClient[crosstest.DeleteParentRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ParentServiceDeleteParentProcedure,
-			opts...,
+			connect.WithSchema(parentServiceDeleteParentMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
@@ -189,29 +213,34 @@ func NewParentServiceHandler(svc ParentServiceHandler, opts ...connect.HandlerOp
 	parentServiceListParentsHandler := connect.NewUnaryHandler(
 		ParentServiceListParentsProcedure,
 		svc.ListParents,
+		connect.WithSchema(parentServiceListParentsMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	parentServiceGetParentHandler := connect.NewUnaryHandler(
 		ParentServiceGetParentProcedure,
 		svc.GetParent,
+		connect.WithSchema(parentServiceGetParentMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	parentServiceCreateParentHandler := connect.NewUnaryHandler(
 		ParentServiceCreateParentProcedure,
 		svc.CreateParent,
-		opts...,
+		connect.WithSchema(parentServiceCreateParentMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	parentServiceUpdateParentHandler := connect.NewUnaryHandler(
 		ParentServiceUpdateParentProcedure,
 		svc.UpdateParent,
-		opts...,
+		connect.WithSchema(parentServiceUpdateParentMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	parentServiceDeleteParentHandler := connect.NewUnaryHandler(
 		ParentServiceDeleteParentProcedure,
 		svc.DeleteParent,
-		opts...,
+		connect.WithSchema(parentServiceDeleteParentMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	return "/buf.knit.crosstest.ParentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -276,29 +305,34 @@ func NewChildServiceClient(httpClient connect.HTTPClient, baseURL string, opts .
 		listChildren: connect.NewClient[crosstest.ListChildrenRequest, crosstest.ListChildrenResponse](
 			httpClient,
 			baseURL+ChildServiceListChildrenProcedure,
+			connect.WithSchema(childServiceListChildrenMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getChild: connect.NewClient[crosstest.GetChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceGetChildProcedure,
+			connect.WithSchema(childServiceGetChildMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createChild: connect.NewClient[crosstest.CreateChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceCreateChildProcedure,
-			opts...,
+			connect.WithSchema(childServiceCreateChildMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		updateChild: connect.NewClient[crosstest.UpdateChildRequest, crosstest.Child](
 			httpClient,
 			baseURL+ChildServiceUpdateChildProcedure,
-			opts...,
+			connect.WithSchema(childServiceUpdateChildMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		deleteChild: connect.NewClient[crosstest.DeleteChildRequest, emptypb.Empty](
 			httpClient,
 			baseURL+ChildServiceDeleteChildProcedure,
-			opts...,
+			connect.WithSchema(childServiceDeleteChildMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
@@ -355,29 +389,34 @@ func NewChildServiceHandler(svc ChildServiceHandler, opts ...connect.HandlerOpti
 	childServiceListChildrenHandler := connect.NewUnaryHandler(
 		ChildServiceListChildrenProcedure,
 		svc.ListChildren,
+		connect.WithSchema(childServiceListChildrenMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	childServiceGetChildHandler := connect.NewUnaryHandler(
 		ChildServiceGetChildProcedure,
 		svc.GetChild,
+		connect.WithSchema(childServiceGetChildMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	childServiceCreateChildHandler := connect.NewUnaryHandler(
 		ChildServiceCreateChildProcedure,
 		svc.CreateChild,
-		opts...,
+		connect.WithSchema(childServiceCreateChildMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	childServiceUpdateChildHandler := connect.NewUnaryHandler(
 		ChildServiceUpdateChildProcedure,
 		svc.UpdateChild,
-		opts...,
+		connect.WithSchema(childServiceUpdateChildMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	childServiceDeleteChildHandler := connect.NewUnaryHandler(
 		ChildServiceDeleteChildProcedure,
 		svc.DeleteChild,
-		opts...,
+		connect.WithSchema(childServiceDeleteChildMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	return "/buf.knit.crosstest.ChildService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -439,12 +478,14 @@ func NewRelationsServiceClient(httpClient connect.HTTPClient, baseURL string, op
 		getChildParent: connect.NewClient[crosstest.GetChildParentRequest, crosstest.GetChildParentResponse](
 			httpClient,
 			baseURL+RelationsServiceGetChildParentProcedure,
+			connect.WithSchema(relationsServiceGetChildParentMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		getParentChildren: connect.NewClient[crosstest.GetParentChildrenRequest, crosstest.GetParentChildrenResponse](
 			httpClient,
 			baseURL+RelationsServiceGetParentChildrenProcedure,
+			connect.WithSchema(relationsServiceGetParentChildrenMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -482,12 +523,14 @@ func NewRelationsServiceHandler(svc RelationsServiceHandler, opts ...connect.Han
 	relationsServiceGetChildParentHandler := connect.NewUnaryHandler(
 		RelationsServiceGetChildParentProcedure,
 		svc.GetChildParent,
+		connect.WithSchema(relationsServiceGetChildParentMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	relationsServiceGetParentChildrenHandler := connect.NewUnaryHandler(
 		RelationsServiceGetParentChildrenProcedure,
 		svc.GetParentChildren,
+		connect.WithSchema(relationsServiceGetParentChildrenMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)

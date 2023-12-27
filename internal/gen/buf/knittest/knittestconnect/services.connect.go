@@ -32,7 +32,7 @@ import (
 // generated with a version of connect newer than the one compiled into your binary. You can fix the
 // problem by either regenerating this code with an older version of connect or updating the connect
 // version compiled into your binary.
-const _ = connect.IsAtLeastVersion1_7_0
+const _ = connect.IsAtLeastVersion1_13_0
 
 const (
 	// FooServiceName is the fully-qualified name of the FooService service.
@@ -59,6 +59,16 @@ const (
 	FizzServiceGetFizzProcedure = "/buf.knittest.FizzService/GetFizz"
 )
 
+// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
+var (
+	fooServiceServiceDescriptor         = knittest.File_buf_knittest_services_proto.Services().ByName("FooService")
+	fooServiceGetFooMethodDescriptor    = fooServiceServiceDescriptor.Methods().ByName("GetFoo")
+	fooServiceMutateFooMethodDescriptor = fooServiceServiceDescriptor.Methods().ByName("MutateFoo")
+	fooServiceQueryFoosMethodDescriptor = fooServiceServiceDescriptor.Methods().ByName("QueryFoos")
+	fizzServiceServiceDescriptor        = knittest.File_buf_knittest_services_proto.Services().ByName("FizzService")
+	fizzServiceGetFizzMethodDescriptor  = fizzServiceServiceDescriptor.Methods().ByName("GetFizz")
+)
+
 // FooServiceClient is a client for the buf.knittest.FooService service.
 type FooServiceClient interface {
 	GetFoo(context.Context, *connect.Request[knittest.GetFooRequest]) (*connect.Response[knittest.GetFooResponse], error)
@@ -79,18 +89,21 @@ func NewFooServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 		getFoo: connect.NewClient[knittest.GetFooRequest, knittest.GetFooResponse](
 			httpClient,
 			baseURL+FooServiceGetFooProcedure,
+			connect.WithSchema(fooServiceGetFooMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		mutateFoo: connect.NewClient[knittest.MutateFooRequest, knittest.MutateFooResponse](
 			httpClient,
 			baseURL+FooServiceMutateFooProcedure,
-			opts...,
+			connect.WithSchema(fooServiceMutateFooMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 		queryFoos: connect.NewClient[knittest.QueryFoosRequest, knittest.QueryFoosResponse](
 			httpClient,
 			baseURL+FooServiceQueryFoosProcedure,
-			opts...,
+			connect.WithSchema(fooServiceQueryFoosMethodDescriptor),
+			connect.WithClientOptions(opts...),
 		),
 	}
 }
@@ -133,18 +146,21 @@ func NewFooServiceHandler(svc FooServiceHandler, opts ...connect.HandlerOption) 
 	fooServiceGetFooHandler := connect.NewUnaryHandler(
 		FooServiceGetFooProcedure,
 		svc.GetFoo,
+		connect.WithSchema(fooServiceGetFooMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	fooServiceMutateFooHandler := connect.NewUnaryHandler(
 		FooServiceMutateFooProcedure,
 		svc.MutateFoo,
-		opts...,
+		connect.WithSchema(fooServiceMutateFooMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	fooServiceQueryFoosHandler := connect.NewServerStreamHandler(
 		FooServiceQueryFoosProcedure,
 		svc.QueryFoos,
-		opts...,
+		connect.WithSchema(fooServiceQueryFoosMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
 	)
 	return "/buf.knittest.FooService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
@@ -193,6 +209,7 @@ func NewFizzServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 		getFizz: connect.NewClient[knittest.GetFizzRequest, knittest.GetFizzResponse](
 			httpClient,
 			baseURL+FizzServiceGetFizzProcedure,
+			connect.WithSchema(fizzServiceGetFizzMethodDescriptor),
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
@@ -223,6 +240,7 @@ func NewFizzServiceHandler(svc FizzServiceHandler, opts ...connect.HandlerOption
 	fizzServiceGetFizzHandler := connect.NewUnaryHandler(
 		FizzServiceGetFizzProcedure,
 		svc.GetFizz,
+		connect.WithSchema(fizzServiceGetFizzMethodDescriptor),
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
