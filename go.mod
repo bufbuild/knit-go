@@ -1,6 +1,6 @@
 module github.com/bufbuild/knit-go
 
-go 1.19
+go 1.20
 
 require (
 	buf.build/gen/go/bufbuild/knit/connectrpc/go v1.14.0-20230822193418-257a6c375e3f.1
