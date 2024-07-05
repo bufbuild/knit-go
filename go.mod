@@ -12,7 +12,7 @@ require (
 	github.com/bufbuild/prototransform v0.4.0
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/go-cmp v0.5.9
-	github.com/rs/cors v1.9.0
+	github.com/rs/cors v1.11.0
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.25.0
 	golang.org/x/net v0.23.0
