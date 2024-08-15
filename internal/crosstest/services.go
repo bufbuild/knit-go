@@ -43,7 +43,7 @@ func NewParentService() *ParentService {
 
 func (s *ParentService) ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error) {
 	var parents []*crosstest.Parent
-	s.store.Range(func(key, value any) bool {
+	s.store.Range(func(_, value any) bool {
 		parents = append(parents, value.(*crosstest.Parent))
 		return true
 	})
@@ -100,7 +100,7 @@ func NewChildService(parentClient crosstestconnect.ParentServiceClient) *ChildSe
 
 func (s *ChildService) ListChildren(_ context.Context, req *connect.Request[crosstest.ListChildrenRequest]) (*connect.Response[crosstest.ListChildrenResponse], error) {
 	var children []*crosstest.Child
-	s.store.Range(func(key, value any) bool {
+	s.store.Range(func(_, value any) bool {
 		child := value.(*crosstest.Child) //nolint:errcheck
 		if strings.HasPrefix(child.Id, req.Msg.Parent) {
 			children = append(children, child)

@@ -29,7 +29,7 @@ import (
 // RegisterAdminHandlers registers "/admin/" HTTP handlers on the given mux, to
 // expose admin functions for the given gateway.
 func RegisterAdminHandlers(gateway *Gateway, mux *http.ServeMux) {
-	handleFunc(mux, "/admin/", http.MethodGet, func(respWriter http.ResponseWriter, req *http.Request) {
+	handleFunc(mux, "/admin/", http.MethodGet, func(respWriter http.ResponseWriter, _ *http.Request) {
 		_, _ = fmt.Fprintf(respWriter, `
 		<html>
 		<head><title>Admin :: knitgateway</title></head>
@@ -44,11 +44,11 @@ func RegisterAdminHandlers(gateway *Gateway, mux *http.ServeMux) {
 		</body>
 		`)
 	})
-	handleFunc(mux, "/admin/config", http.MethodGet, func(respWriter http.ResponseWriter, req *http.Request) {
+	handleFunc(mux, "/admin/config", http.MethodGet, func(respWriter http.ResponseWriter, _ *http.Request) {
 		respWriter.Header().Set("Content-Type", "text/yaml")
 		_, _ = respWriter.Write(gateway.config.RawConfig)
 	})
-	handleFunc(mux, "/admin/reload-now", http.MethodPost, func(respWriter http.ResponseWriter, req *http.Request) {
+	handleFunc(mux, "/admin/reload-now", http.MethodPost, func(respWriter http.ResponseWriter, _ *http.Request) {
 		for _, watcher := range gateway.watchers {
 			watcher.ResolveNow()
 		}

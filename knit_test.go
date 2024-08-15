@@ -74,7 +74,7 @@ func TestEndToEnd(t *testing.T) {
 	go func() {
 		_ = svr.Serve(svrListen)
 	}()
-	target, err := url.Parse(fmt.Sprintf("http://" + svrListen.Addr().String()))
+	target, err := url.Parse("http://" + svrListen.Addr().String())
 	require.NoError(t, err)
 
 	// create and configure the knit gateway
@@ -119,7 +119,7 @@ func TestEndToEnd(t *testing.T) {
 	fooMask = fooMask[:i]
 
 	// now we can run the tests
-	knitClient := gatewayv1alpha1connect.NewKnitServiceClient(http.DefaultClient, fmt.Sprintf("http://"+gatewayListen.Addr().String()))
+	knitClient := gatewayv1alpha1connect.NewKnitServiceClient(http.DefaultClient, "http://"+gatewayListen.Addr().String())
 	ctx := context.Background()
 
 	addHeaders := func(headers http.Header) {
@@ -243,7 +243,7 @@ func TestEndToEnd(t *testing.T) {
 
 	t.Cleanup(func() {
 		var methods []string
-		methodsObserved.Range(func(k, v any) bool {
+		methodsObserved.Range(func(k, _ any) bool {
 			methods = append(methods, k.(string)) //nolint:forcetypeassert
 			return true
 		})
@@ -417,7 +417,7 @@ func (s *serverImpl) GetFooBars(_ context.Context, req *connect.Request[knittest
 }
 
 func (s *serverImpl) GetFooDescription(_ context.Context, _ *connect.Request[knittest.GetFooDescriptionRequest]) (*connect.Response[knittest.GetFooDescriptionResponse], error) {
-	return nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("description not available"))
+	return nil, connect.NewError(connect.CodeFailedPrecondition, errors.New("description not available"))
 }
 
 func (s *serverImpl) GetBarBaz(_ context.Context, req *connect.Request[knittest.GetBarBazRequest]) (*connect.Response[knittest.GetBarBazResponse], error) {
@@ -528,12 +528,12 @@ func checkOperations(actualOps []string, procedure string) (errs []string) {
 			}
 			expectedOps = append(expectedOps, currentOp)
 		default:
-			errs = append(errs, fmt.Sprintf("unexpected relation: %s", currentOp))
+			errs = append(errs, "unexpected relation: "+currentOp)
 		}
 	}
 
 	if expectedOps == nil {
-		errs = append(errs, fmt.Sprintf("unexpected operation: %s", topLevelOp))
+		errs = append(errs, "unexpected operation: "+topLevelOp)
 	} else if !reflect.DeepEqual(expectedOps, actualOps) {
 		errs = append(errs, fmt.Sprintf("unexpected operations in resolver metadata: want %v; got %s", expectedOps, actualOps))
 	}

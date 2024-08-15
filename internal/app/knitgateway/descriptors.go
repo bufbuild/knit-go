@@ -16,6 +16,7 @@ package knitgateway
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -61,12 +62,12 @@ func newDescriptorSource(config externalDescriptorConfig, targetURL string, h2c 
 
 	case config.GRPCReflection:
 		if !strings.HasPrefix(targetURL, httpsScheme) && !h2c {
-			return zero, fmt.Errorf("cannot use grpc reflection with http scheme without H2C")
+			return zero, errors.New("cannot use grpc reflection with http scheme without H2C")
 		}
 		return grpcReflectionSource(targetURL), nil
 
 	default:
-		return zero, fmt.Errorf("descriptor config is empty")
+		return zero, errors.New("descriptor config is empty")
 	}
 }
 
@@ -94,7 +95,7 @@ func (f descriptorSetFileSource) newPoller(_ connect.HTTPClient, _ []connect.Cli
 type bufModuleSource string
 
 func (b bufModuleSource) String() string {
-	return fmt.Sprintf("module %s", string(b))
+	return "module " + string(b)
 }
 
 func (b bufModuleSource) isCacheable() bool {
@@ -128,7 +129,7 @@ func (b bufModuleSource) newPoller(_ connect.HTTPClient, _ []connect.ClientOptio
 type grpcReflectionSource string
 
 func (g grpcReflectionSource) String() string {
-	return fmt.Sprintf("gRPC server reflection %s", string(g))
+	return "gRPC server reflection " + string(g)
 }
 
 func (g grpcReflectionSource) isCacheable() bool {
@@ -236,7 +237,7 @@ func (g *grpcReflectionPoller) GetSchema(ctx context.Context, symbols []string, 
 }
 
 func (g *grpcReflectionPoller) GetSchemaID() string {
-	return fmt.Sprintf("grpc reflection %s", g.baseURL)
+	return "grpc reflection " + g.baseURL
 }
 
 func descriptorKind(desc protoreflect.Descriptor) string {

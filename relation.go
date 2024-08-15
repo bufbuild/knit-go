@@ -16,6 +16,7 @@ package knit
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -68,35 +69,35 @@ func getRelationConfig(method protoreflect.MethodDescriptor, name string, client
 	requestMsg := method.Input()
 	requestFields := requestMsg.Fields()
 	if requestFields.Len() < 1 {
-		return nil, fmt.Errorf("request message should have at least one field for the base entities")
+		return nil, errors.New("request message should have at least one field for the base entities")
 	}
 	baseField := requestFields.ByNumber(1)
 	switch {
 	case baseField == nil:
-		return nil, fmt.Errorf("request message should have a field with tag number 1 for the base entities")
+		return nil, errors.New("request message should have a field with tag number 1 for the base entities")
 	case baseField.Name() != "bases":
-		return nil, fmt.Errorf("request message should have a field named 'bases' for the base entities")
+		return nil, errors.New("request message should have a field named 'bases' for the base entities")
 	case !baseField.IsList():
-		return nil, fmt.Errorf("request message field named 'bases' should be repeated (to accept a batch of entities to resolve)")
+		return nil, errors.New("request message field named 'bases' should be repeated (to accept a batch of entities to resolve)")
 	case baseField.Kind() != protoreflect.MessageKind:
-		return nil, fmt.Errorf("request message field named 'bases' should have element type that is a message")
+		return nil, errors.New("request message field named 'bases' should have element type that is a message")
 	}
 
 	responseMsg := method.Output()
 	responseFields := responseMsg.Fields()
 	if responseFields.Len() != 1 {
-		return nil, fmt.Errorf("response message should have exactly one field for the resolved relation values")
+		return nil, errors.New("response message should have exactly one field for the resolved relation values")
 	}
 	resultField := responseFields.ByNumber(1)
 	switch {
 	case resultField == nil:
-		return nil, fmt.Errorf("response message should have a field with tag number 1 for the resolved relation values")
+		return nil, errors.New("response message should have a field with tag number 1 for the resolved relation values")
 	case resultField.Name() != "values":
-		return nil, fmt.Errorf("response message should have a field named 'values' for the resolved relation values")
+		return nil, errors.New("response message should have a field named 'values' for the resolved relation values")
 	case !resultField.IsList():
-		return nil, fmt.Errorf("response message field named 'values' should be repeated (one value for each requested base)")
+		return nil, errors.New("response message field named 'values' should be repeated (one value for each requested base)")
 	case resultField.Kind() != protoreflect.MessageKind:
-		return nil, fmt.Errorf("response message field named 'values' should have element type that is a single-field message")
+		return nil, errors.New("response message field named 'values' should have element type that is a single-field message")
 	}
 	relationWrapperMsg := resultField.Message()
 	relationWrapperFields := relationWrapperMsg.Fields()
