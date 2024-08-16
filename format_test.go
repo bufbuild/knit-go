@@ -16,7 +16,7 @@ package knit
 
 import (
 	"encoding/base64"
-	"fmt"
+	"errors"
 	"math"
 	"os"
 	"testing"
@@ -201,7 +201,7 @@ func TestFormatMessage(t *testing.T) {
 
 func TestFormatError(t *testing.T) {
 	t.Parallel()
-	relErr := connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("msg"))
+	relErr := connect.NewError(connect.CodeInvalidArgument, errors.New("msg"))
 	foo := &knittest.Foo{
 		Name: "name",
 	}
@@ -211,7 +211,7 @@ func TestFormatError(t *testing.T) {
 	val := formatError(relErr, "foo", protoregistry.GlobalTypes)
 	fooBytes, err := proto.Marshal(foo)
 	require.NoError(t, err)
-	require.Equal(t, val.AsInterface(), map[string]any{
+	require.Equal(t, map[string]any{
 		"[@error]": map[string]any{},
 		"code":     gatewayv1alpha1.Error_INVALID_ARGUMENT.String(),
 		"message":  "msg",
@@ -225,7 +225,7 @@ func TestFormatError(t *testing.T) {
 				},
 			},
 		},
-	})
+	}, val.AsInterface())
 }
 
 type patchExpectation struct {

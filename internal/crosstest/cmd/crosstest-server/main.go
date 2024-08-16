@@ -55,7 +55,7 @@ func main() {
 		log.Fatalln("failed to add relations service to gateway")
 	}
 	mux.Handle(knitGateway.AsHandler())
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 	//nolint:gosec

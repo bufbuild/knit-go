@@ -18,6 +18,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"os"
 	"sort"
@@ -101,7 +102,7 @@ func configureServerTLS(conf *externalServerTLSConfig) (*tls.Config, error) {
 	}
 	var tlsConf tls.Config
 	if conf.Cert == "" || conf.Key == "" {
-		return nil, fmt.Errorf("both 'cert' and 'key' properties must be specified")
+		return nil, errors.New("both 'cert' and 'key' properties must be specified")
 	}
 	certs, err := loadCertificateAndKey(conf.Cert, conf.Key)
 	if err != nil {
@@ -137,7 +138,7 @@ func configureServerTLS(conf *externalServerTLSConfig) (*tls.Config, error) {
 			tlsConf.ClientAuth = tls.VerifyClientCertIfGiven
 		}
 		if conf.ClientCerts.CACert == "" {
-			return nil, fmt.Errorf("'client_certs' config is enabled but 'ca_cert' property is missing")
+			return nil, errors.New("'client_certs' config is enabled but 'ca_cert' property is missing")
 		}
 		var err error
 		tlsConf.ClientCAs, err = loadCertificatePool(conf.ClientCerts.CACert)
@@ -158,7 +159,7 @@ func configureClientTLS(conf *externalClientTLSConfig) (*tls.Config, error) {
 	}
 
 	if (conf.Cert == nil) != (conf.Key == nil) {
-		return nil, fmt.Errorf("if either 'cert' and 'key' is specified then both must be specified")
+		return nil, errors.New("if either 'cert' and 'key' is specified then both must be specified")
 	}
 	if conf.Cert != nil {
 		certs, err := loadCertificateAndKey(*conf.Cert, *conf.Key)
@@ -254,7 +255,7 @@ func parseTLSVersion(version string) (uint16, error) {
 func parseCipherSuites(conf *externalCiphersConfig) ([]uint16, error) {
 	switch {
 	case conf.Allow != nil && conf.Disallow != nil:
-		return nil, fmt.Errorf("ciphers config must specify either allow or disallow, but not both")
+		return nil, errors.New("ciphers config must specify either allow or disallow, but not both")
 	case conf.Allow != nil:
 		ciphers := make([]uint16, len(conf.Allow))
 		for i, cipher := range conf.Allow {
@@ -289,16 +290,16 @@ func parseCipherSuites(conf *externalCiphersConfig) ([]uint16, error) {
 		})
 		return ciphers, nil
 	default:
-		return nil, fmt.Errorf("ciphers config must specify either allow or disallow; neither was present")
+		return nil, errors.New("ciphers config must specify either allow or disallow; neither was present")
 	}
 }
 
 func loadCertificateAndKey(cert, key string) ([]tls.Certificate, error) {
 	if cert == "" {
-		return nil, fmt.Errorf("cert filename is empty")
+		return nil, errors.New("cert filename is empty")
 	}
 	if key == "" {
-		return nil, fmt.Errorf("key filename is empty")
+		return nil, errors.New("key filename is empty")
 	}
 	certData, err := os.ReadFile(cert)
 	if err != nil {
@@ -321,7 +322,7 @@ func loadCertificateAndKey(cert, key string) ([]tls.Certificate, error) {
 
 func loadCertificatePool(cacert string) (*x509.CertPool, error) {
 	if cacert == "" {
-		return nil, fmt.Errorf("filename is empty")
+		return nil, errors.New("filename is empty")
 	}
 	data, err := os.ReadFile(cacert)
 	if err != nil {

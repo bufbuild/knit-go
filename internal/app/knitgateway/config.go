@@ -117,7 +117,7 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 	}
 
 	if len(extConf.Backends) == 0 {
-		return nil, fmt.Errorf("backends config is empty")
+		return nil, errors.New("backends config is empty")
 	}
 
 	adminConf, err := loadAdminConfig(&extConf)
@@ -140,7 +140,7 @@ func LoadConfig(path string) (*GatewayConfig, error) { //nolint:gocyclo
 		return nil, fmt.Errorf("default_tls: invalid configuration: %w", err)
 	}
 	if extConf.DefaultBackendTLS != nil && extConf.DefaultBackendTLS.ServerName != "" {
-		return nil, fmt.Errorf("default_tls: invalid configuration: server_name property cannot be used in default settings, only in per-backend config")
+		return nil, errors.New("default_tls: invalid configuration: server_name property cannot be used in default settings, only in per-backend config")
 	}
 
 	for i, backendConf := range extConf.Backends {
@@ -468,7 +468,7 @@ func loadAdminConfig(extConf *externalGatewayConfig) (*AdminConfig, error) {
 	if !adminEnabled {
 		if extConf.Admin.UseMainListeners || extConf.Admin.BindAddress != "" ||
 			extConf.Admin.Port != 0 || extConf.Admin.UseTLS != nil {
-			return nil, fmt.Errorf("admin 'enabled' is false, but other properties for configuring admin endpoints also present")
+			return nil, errors.New("admin 'enabled' is false, but other properties for configuring admin endpoints also present")
 		}
 		return nil, nil //nolint:nilnil
 	}
@@ -477,16 +477,16 @@ func loadAdminConfig(extConf *externalGatewayConfig) (*AdminConfig, error) {
 	if extConf.Admin.UseMainListeners {
 		adminConf.UseMainListeners = true
 		if extConf.Admin.BindAddress != "" || extConf.Admin.Port != 0 || extConf.Admin.UseTLS != nil {
-			return nil, fmt.Errorf("admin 'use_main_listeners' is true, but other properties for configuring separate listener are also present")
+			return nil, errors.New("admin 'use_main_listeners' is true, but other properties for configuring separate listener are also present")
 		}
 		return &adminConf, nil
 	}
 
 	if extConf.Admin.UseTLS != nil && *extConf.Admin.UseTLS && extConf.Listen.TLS == nil {
-		return nil, fmt.Errorf("admin config 'use_tls' is true, but no server TLS configuration present")
+		return nil, errors.New("admin config 'use_tls' is true, but no server TLS configuration present")
 	}
 	if extConf.Listen.Port != nil && extConf.Admin.Port == *extConf.Listen.Port {
-		return nil, fmt.Errorf("admin port cannot be the same as main listen port (did you mean to instead set 'use_main_listeners' to true?)")
+		return nil, errors.New("admin port cannot be the same as main listen port (did you mean to instead set 'use_main_listeners' to true?)")
 	}
 	if extConf.Admin.UseTLS != nil {
 		adminConf.UseTLS = *extConf.Admin.UseTLS

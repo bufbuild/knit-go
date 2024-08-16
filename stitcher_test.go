@@ -16,7 +16,7 @@ package knit
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -60,7 +60,7 @@ func TestStitcher(t *testing.T) {
 	// Configure some resolvers. They must be deterministic functions.
 	var styleCalls atomic.Int32
 	conf := newRelationFooStyle(t,
-		func(ctx context.Context, resCtx *resolveMeta, foo *knittest.Foo, _ *knittest.GetFooStyleRequest) (*string, error) {
+		func(_ context.Context, _ *resolveMeta, foo *knittest.Foo, _ *knittest.GetFooStyleRequest) (*string, error) {
 			peak.Increment()
 			defer peak.Decrement()
 			styleCalls.Add(1)
@@ -80,7 +80,7 @@ func TestStitcher(t *testing.T) {
 
 	var balanceCentsCalls atomic.Int32
 	conf = newRelationFooBalanceCents(t,
-		func(ctx context.Context, resCtx *resolveMeta, foo *knittest.Foo, _ *knittest.GetFooBalanceCentsRequest) (uint64, error) {
+		func(_ context.Context, _ *resolveMeta, foo *knittest.Foo, _ *knittest.GetFooBalanceCentsRequest) (uint64, error) {
 			peak.Increment()
 			defer peak.Decrement()
 			balanceCentsCalls.Add(1)
@@ -95,7 +95,7 @@ func TestStitcher(t *testing.T) {
 	fooBarParams := &knittest.GetFooBarsRequest{UpToThreshold: 102030405060, Limit: 3}
 	var barCalls atomic.Int32
 	conf = newRelationFooBars(t,
-		func(ctx context.Context, resCtx *resolveMeta, foo *knittest.Foo, params *knittest.GetFooBarsRequest) ([]*knittest.Bar, error) {
+		func(_ context.Context, _ *resolveMeta, foo *knittest.Foo, params *knittest.GetFooBarsRequest) ([]*knittest.Bar, error) {
 			peak.Increment()
 			defer peak.Decrement()
 			barCalls.Add(1)
@@ -128,7 +128,7 @@ func TestStitcher(t *testing.T) {
 			defer peak.Decrement()
 			descriptionCalls.Add(1)
 
-			return "", connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("description not available"))
+			return "", connect.NewError(connect.CodeFailedPrecondition, errors.New("description not available"))
 		},
 	)
 	descriptionBatches := measureBatchSizes(conf)
@@ -137,7 +137,7 @@ func TestStitcher(t *testing.T) {
 
 	var bazCalls atomic.Int32
 	conf = newRelationBarBaz(t,
-		func(ctx context.Context, resCtx *resolveMeta, bar *knittest.Bar, _ *knittest.GetBarBazRequest) (*knittest.Baz, error) {
+		func(_ context.Context, _ *resolveMeta, bar *knittest.Bar, _ *knittest.GetBarBazRequest) (*knittest.Baz, error) {
 			peak.Increment()
 			defer peak.Decrement()
 			bazCalls.Add(1)
@@ -169,7 +169,7 @@ func TestStitcher(t *testing.T) {
 	barBedazzleParams := &knittest.GetBarBedazzlesRequest{Limit: 2}
 	var bedazzleCalls atomic.Int32
 	conf = newRelationBarBedazzles(t,
-		func(ctx context.Context, resCtx *resolveMeta, bar *knittest.Bar, params *knittest.GetBarBedazzlesRequest) ([]*knittest.Bedazzle, error) {
+		func(_ context.Context, _ *resolveMeta, bar *knittest.Bar, params *knittest.GetBarBedazzlesRequest) ([]*knittest.Bedazzle, error) {
 			peak.Increment()
 			defer peak.Decrement()
 			bedazzleCalls.Add(1)
@@ -318,7 +318,7 @@ func checkGoldenFile(t *testing.T, goldenFileName, fileContents string) {
 	actual, err := os.ReadFile(path)
 	require.NoError(t, err)
 	diff := cmp.Diff(fileContents, string(actual))
-	require.True(t, diff == "", "difference in output for %q:\n%s", path, diff)
+	require.Empty(t, diff, "difference in output for %q:\n%s", path, diff)
 }
 
 func getFooData() []*knittest.Foo {
