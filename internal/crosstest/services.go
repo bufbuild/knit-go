@@ -44,7 +44,7 @@ func NewParentService() *ParentService {
 func (s *ParentService) ListParents(context.Context, *connect.Request[crosstest.ListParentsRequest]) (*connect.Response[crosstest.ListParentsResponse], error) {
 	var parents []*crosstest.Parent
 	s.store.Range(func(_, value any) bool {
-		parents = append(parents, value.(*crosstest.Parent))
+		parents = append(parents, value.(*crosstest.Parent)) //nolint:errcheck
 		return true
 	})
 	return connect.NewResponse(&crosstest.ListParentsResponse{
@@ -58,7 +58,7 @@ func (s *ParentService) GetParent(_ context.Context, req *connect.Request[crosst
 	if !ok {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("parent with id: %q not found", req.Msg.GetId()))
 	}
-	return connect.NewResponse(parentAny.(*crosstest.Parent)), nil
+	return connect.NewResponse(parentAny.(*crosstest.Parent)), nil //nolint:errcheck
 }
 
 func (s *ParentService) CreateParent(_ context.Context, req *connect.Request[crosstest.CreateParentRequest]) (*connect.Response[crosstest.Parent], error) {
@@ -118,7 +118,7 @@ func (s *ChildService) GetChild(_ context.Context, req *connect.Request[crosstes
 	if !ok {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("child with id: %q not found", req.Msg.GetId()))
 	}
-	return connect.NewResponse(childAny.(*crosstest.Child)), nil
+	return connect.NewResponse(childAny.(*crosstest.Child)), nil //nolint:errcheck
 }
 
 func (s *ChildService) CreateChild(ctx context.Context, req *connect.Request[crosstest.CreateChildRequest]) (*connect.Response[crosstest.Child], error) {

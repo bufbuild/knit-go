@@ -244,7 +244,7 @@ func TestEndToEnd(t *testing.T) {
 	t.Cleanup(func() {
 		var methods []string
 		methodsObserved.Range(func(k, _ any) bool {
-			methods = append(methods, k.(string)) //nolint:forcetypeassert
+			methods = append(methods, k.(string)) //nolint:forcetypeassert,errcheck
 			return true
 		})
 		sort.Strings(methods)

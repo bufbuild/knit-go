@@ -131,10 +131,11 @@ func computeResponseSchema(gateway *Gateway, request *gatewayv1alpha1.Request, f
 	}
 
 	if forFetch {
-		// Since conf.descriptor is a protoreflect.MethodDescriptor, we know the options
-		// type is a *descriptorpb.MethodOptions.
-		//nolint:forcetypeassert
-		idempotence := conf.descriptor.Options().(*descriptorpb.MethodOptions).GetIdempotencyLevel()
+		opts, ok := conf.descriptor.Options().(*descriptorpb.MethodOptions)
+		if !ok {
+			return conf, nil, connect.NewError(connect.CodeInternal, fmt.Errorf("endpoint %q has unexpected options type %T", methodName, conf.descriptor.Options()))
+		}
+		idempotence := opts.GetIdempotencyLevel()
 		if idempotence != descriptorpb.MethodOptions_NO_SIDE_EFFECTS {
 			return conf, nil, connect.NewError(connect.CodeFailedPrecondition, fmt.Errorf("endpoint %q cannot be used with Fetch: idempotency_level = %v", methodName, idempotence))
 		}
