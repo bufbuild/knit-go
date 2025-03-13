@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -161,7 +161,6 @@ func TestFormatMessage(t *testing.T) {
 			},
 		}
 		for _, testCase := range testCases {
-			testCase := testCase
 			t.Run(testCase.name, func(t *testing.T) {
 				t.Parallel()
 				msg := getFooExample()
@@ -493,8 +492,8 @@ func getFizzExample() *knittest.Fizz {
 func getExhaustiveMaskForWellKnownTypes() []*gatewayv1alpha1.MaskField {
 	// generate an exhaustive field mask, to test the serialization for all types
 	fields := (*knittest.WellKnownTypes)(nil).ProtoReflect().Descriptor().Fields()
-	var mask []*gatewayv1alpha1.MaskField
-	for i := 0; i < fields.Len(); i++ {
+	mask := make([]*gatewayv1alpha1.MaskField, 0, fields.Len()+2)
+	for i := range fields.Len() {
 		if fields.Get(i).Number() <= 2 {
 			// skip the nested fields for now
 			continue
@@ -512,8 +511,8 @@ func getExhaustiveMaskForWellKnownTypes() []*gatewayv1alpha1.MaskField {
 func getExhaustiveMaskForScalars() []*gatewayv1alpha1.MaskField {
 	// generate an exhaustive field mask, to test the serialization for all types
 	fields := (*knittest.Scalars)(nil).ProtoReflect().Descriptor().Fields()
-	var mask []*gatewayv1alpha1.MaskField
-	for i := 0; i < fields.Len(); i++ {
+	mask := make([]*gatewayv1alpha1.MaskField, 0, fields.Len())
+	for i := range fields.Len() {
 		mask = append(mask, &gatewayv1alpha1.MaskField{
 			Name: camelCase(string(fields.Get(i).Name())),
 		})

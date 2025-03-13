@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ func TestStitcher(t *testing.T) {
 				num = int(params.Limit)
 			}
 			results := make([]*knittest.Bar, num)
-			for i := 0; i < num; i++ {
+			for i := range num {
 				results[i] = &knittest.Bar{
 					Uid:       int64(foo.Id*100 + uint64(i)),
 					Purpose:   foo.Tags[i],
@@ -144,7 +144,7 @@ func TestStitcher(t *testing.T) {
 
 			num := int(bar.Uid) % 10
 			things := make([]string, num)
-			for j := 0; j < num; j++ {
+			for j := range num {
 				things[j] = bar.Purpose
 			}
 			seq := map[string]knittest.Baz_Enum{}
@@ -181,7 +181,7 @@ func TestStitcher(t *testing.T) {
 				num = int(params.Limit)
 			}
 			results := make([]*knittest.Bedazzle, num)
-			for i := 0; i < num; i++ {
+			for i := range num {
 				results[i] = &knittest.Bedazzle{
 					Brightness: float32(bar.Threshold * 10),
 					Pattern:    knittest.Bedazzle_Pattern(bar.Uid % 7),

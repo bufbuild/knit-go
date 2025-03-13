@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -244,7 +244,7 @@ func TestEndToEnd(t *testing.T) {
 	t.Cleanup(func() {
 		var methods []string
 		methodsObserved.Range(func(k, _ any) bool {
-			methods = append(methods, k.(string)) //nolint:forcetypeassert
+			methods = append(methods, k.(string)) //nolint:forcetypeassert,errcheck
 			return true
 		})
 		sort.Strings(methods)
@@ -291,7 +291,7 @@ func newServerImpl(presentHeaders, missingHeaders map[string]string, observedRes
 		// Baz
 		num := int(bar.Uid) % 10
 		things := make([]string, num)
-		for j := 0; j < num; j++ {
+		for j := range num {
 			things[j] = bar.Purpose
 		}
 		seq := map[string]knittest.Baz_Enum{}
@@ -311,7 +311,7 @@ func newServerImpl(presentHeaders, missingHeaders map[string]string, observedRes
 		// Bedazzles
 		num = len(bar.Purpose) / 2
 		results := make([]*knittest.Bedazzle, num)
-		for i := 0; i < num; i++ {
+		for i := range num {
 			results[i] = &knittest.Bedazzle{
 				Brightness: float32(bar.Threshold * 10),
 				Pattern:    knittest.Bedazzle_Pattern(bar.Uid % 7),
@@ -324,7 +324,7 @@ func newServerImpl(presentHeaders, missingHeaders map[string]string, observedRes
 
 	for _, foo := range svr.foos {
 		num := len(foo.Tags)
-		for i := 0; i < num; i++ {
+		for i := range num {
 			// Bar
 			bar := &knittest.Bar{
 				Uid:       int64(foo.Id*100 + uint64(i)),

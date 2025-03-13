@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -126,7 +126,6 @@ func CreateGateway(ctx context.Context, logger *zap.Logger, config *GatewayConfi
 	}
 	period, jitter := config.PollingPeriod, config.PollingJitter
 	for poller := range pollerInfo {
-		poller := poller
 		details := pollerInfo[poller]
 		stats := &pollingStats{}
 		watcherConfig := &prototransform.SchemaWatcherConfig{
