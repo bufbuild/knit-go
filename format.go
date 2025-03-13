@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -316,7 +316,7 @@ func formatValue(field protoreflect.FieldDescriptor, val protoreflect.Value, res
 			obj[keyStr] = entryVal
 			patches = append(patches, entryPatches...)
 			if deterministicPatchOrder {
-				for i := 0; i < len(entryPatches); i++ {
+				for range entryPatches {
 					keys = append(keys, keyStr)
 				}
 			}
@@ -524,41 +524,39 @@ func shouldCatch(maskField *gatewayv1alpha1.MaskField, fallbackCatch bool) bool 
 
 // camelCase returns the default JSON name for a field with the given name.
 //
-// This function was copied from google.golang.org/protobuf/internal/strs.JSONCamelCase
-//
-//nolint:varnamelen
-func camelCase(s string) string {
-	var b []byte
+// This function was copied from google.golang.org/protobuf/internal/strs.JSONCamelCase.
+func camelCase(str string) string {
+	var buf strings.Builder
 	var wasUnderscore bool
-	for i := 0; i < len(s); i++ { // proto identifiers are always ASCII
-		c := s[i]
-		if c != '_' {
-			if wasUnderscore && isASCIILower(c) {
-				c -= 'a' - 'A' // convert to uppercase
+	// proto identifiers are always ASCII, so we range over bytes
+	for i := range len(str) {
+		char := str[i]
+		if char != '_' {
+			if wasUnderscore && isASCIILower(char) {
+				char -= 'a' - 'A' // convert to uppercase
 			}
-			b = append(b, c)
+			buf.WriteByte(char)
 		}
-		wasUnderscore = c == '_'
+		wasUnderscore = char == '_'
 	}
-	return string(b)
+	return buf.String()
 }
 
 // snakeCase is the inverse of camelCase.
 //
-// This function was copied from google.golang.org/protobuf/internal/strs.JSONSnakeCase
-//
-//nolint:varnamelen
-func snakeCase(s string) string {
-	var b []byte
-	for i := 0; i < len(s); i++ { // proto identifiers are always ASCII
-		c := s[i]
-		if isASCIIUpper(c) {
-			b = append(b, '_')
-			c += 'a' - 'A' // convert to lowercase
+// This function was copied from google.golang.org/protobuf/internal/strs.JSONSnakeCase.
+func snakeCase(str string) string {
+	var buf strings.Builder
+	// proto identifiers are always ASCII, so we range over bytes
+	for i := range len(str) {
+		char := str[i]
+		if isASCIIUpper(char) {
+			buf.WriteByte('_')
+			char += 'a' - 'A' // convert to lowercase
 		}
-		b = append(b, c)
+		buf.WriteByte(char)
 	}
-	return string(b)
+	return buf.String()
 }
 
 func isASCIILower(c byte) bool {

@@ -1,4 +1,4 @@
-// Copyright 2023 Buf Technologies, Inc.
+// Copyright 2023-2025 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ func newRemoteResolver(
 				camelCase(relation.name), relation.baseField.Message().FullName(), len(bases), length)
 		}
 		results := make([]protoreflect.Value, length)
-		for i := 0; i < length; i++ {
+		for i := range length {
 			results[i] = valuesList.Get(i).Message().Get(relation.descriptor)
 		}
 
