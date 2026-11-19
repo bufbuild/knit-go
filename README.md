@@ -3,7 +3,6 @@
 [![License](https://img.shields.io/github/license/bufbuild/knit-go?color=blue)][badges_license]
 [![Slack](https://img.shields.io/badge/slack-buf-%23e01563)][badges_slack]
 [![Build](https://github.com/bufbuild/knit-go/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/bufbuild/knit-go/actions/workflows/ci.yaml)
-[![Report Card](https://goreportcard.com/badge/github.com/bufbuild/knit-go)](https://goreportcard.com/report/github.com/bufbuild/knit-go)
 [![GoDoc](https://pkg.go.dev/badge/github.com/bufbuild/knit-go.svg)](https://pkg.go.dev/github.com/bufbuild/knit-go)
 
 **Knit brings GraphQL-like capabilities to RPCs. Knit has type-safe and
